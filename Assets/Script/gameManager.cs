@@ -7,7 +7,7 @@ public class gameManager : MonoBehaviour
 {
     public GameObject gameOverText;
     public GameObject remainedImageText; 
-    int remainedImage = 5;
+    int remainedImage = 44;
     int maxImage;
 
     // Start is called before the first frame update
