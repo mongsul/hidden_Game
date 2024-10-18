@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class gameManager : MonoBehaviour
 {
@@ -40,5 +41,11 @@ public class gameManager : MonoBehaviour
             remainedImageText.GetComponent<TMP_Text>().text = remainedImage + " / " + maxImage;
 
         }
+    }
+
+    public void GotoLobby()
+    {
+        string sceneName = "Lobby"; // 여기에 이름 넣어주기
+        SceneManager.LoadScene(sceneName);
     }
 }
