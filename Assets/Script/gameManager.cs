@@ -10,6 +10,8 @@ public class gameManager : MonoBehaviour
     public GameObject remainedImageText; 
     int remainedImage = 44;
     int maxImage;
+    // 전체 레벨의 +1을 입력 예를들어 100개 레벨이 있으면 101 입력.
+    int maxLevel = 3;
 
     // Start is called before the first frame update
     void Start()
@@ -21,7 +23,7 @@ public class gameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void finded()
@@ -33,6 +35,7 @@ public class gameManager : MonoBehaviour
             //여기다 게임오버 텍스트 오브젝트 Setactive(true) 추가
             gameOverText.SetActive(true);
             remainedImageText.GetComponent<TMP_Text>().text = remainedImage + " / " + maxImage;
+            nextLevel();
         }
         else
         {
@@ -47,5 +50,22 @@ public class gameManager : MonoBehaviour
     {
         string sceneName = "Lobby"; // 여기에 이름 넣어주기
         SceneManager.LoadScene(sceneName);
+    }
+
+    public void nextLevel()
+    {
+        Scene scene = SceneManager.GetActiveScene();
+        string sceneName = scene.name;
+        int currentLevel = (int)char.GetNumericValue(sceneName[6]);
+        currentLevel++;
+
+        if (currentLevel < maxLevel)
+        {
+            SceneManager.LoadScene("Level " + currentLevel);
+        }
+        else
+        {
+            SceneManager.LoadScene("Lobby");
+        }
     }
 }

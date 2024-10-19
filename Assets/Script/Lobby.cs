@@ -16,15 +16,9 @@ public class Lobby : MonoBehaviour
     {
     }*/
 
-    public void StartStage()
-    {
-        string sceneName = ""; // 여기에 이름 넣어주기
-        SceneManager.LoadScene(sceneName);
-    }
-
     public void StartLevelStage(int level)
     {
-        string sceneName = $"Level {level}"; // 여기에 이름 넣어주기
+        string sceneName = $"Level {level}"; 
         SceneManager.LoadScene(sceneName);
     }
 
