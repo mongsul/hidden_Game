@@ -1256,7 +1256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   linkButton: {fileID: 1000833955}
-  originalObject: {fileID: 1000833952}
+  originalObject: {fileID: 0}
   replaceObject: {fileID: 1143707961}
   isDisplayInitToReplaceObject: 0
 --- !u!114 &1000833955
