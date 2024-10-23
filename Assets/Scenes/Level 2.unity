@@ -3449,7 +3449,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: edf4ffa536fb30146bf162f3cf1e889f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0530453a60bd4c6438d24408f5ad570c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4364,6 +4364,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4505804976732167694, guid: 94696aac86957554b8a8f4d778b9d3af, type: 2}
     - target: {fileID: 941657727461053185, guid: 6ae44fd952bf8b64eb9edc165964f1b7, type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 941657727461053185, guid: 6ae44fd952bf8b64eb9edc165964f1b7, type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 941657727461053185, guid: 6ae44fd952bf8b64eb9edc165964f1b7, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
@@ -4409,12 +4417,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4408063138873984492, guid: 6ae44fd952bf8b64eb9edc165964f1b7, type: 3}
       propertyPath: m_Type
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4408063138873984492, guid: 6ae44fd952bf8b64eb9edc165964f1b7, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: f0b6e5a5c8d6116408478198abd56367, type: 3}
+      objectReference: {fileID: 21300000, guid: dec8adee365ea1548a8a9ae22344afd3, type: 3}
     - target: {fileID: 4408063138873984492, guid: 6ae44fd952bf8b64eb9edc165964f1b7, type: 3}
       propertyPath: m_Color.a
       value: 1
@@ -6281,7 +6289,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 93a9508d9ff58004093d37a8918fbd6f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9bc8df82e2198794897d6588680c6961, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
