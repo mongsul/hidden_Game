@@ -56,8 +56,7 @@ namespace Script.Component
             //string spritePath = "Resource/" + folderPath;
             while (true)
             {
-                //Sprite sprite = CodeUtilLibrary.LoadSprite(ResourcePath.SpriteTest, $"{count}");
-                Sprite sprite = ResourceManager.Instance.Load<Sprite>(ResourcePath.SpriteTest, count.ToString());
+                Sprite sprite = CodeUtilLibrary.LoadSprite(folderPath, count.ToString());
                 if (!sprite)
                 {
                     break;
