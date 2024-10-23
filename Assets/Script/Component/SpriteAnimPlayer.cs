@@ -42,6 +42,7 @@ namespace Script.Component
             if (!onEndDisplayButton)
             {
                 onEndDisplayButton = GetComponent<Button>();
+                onEndDisplayButton.interactable = false;
             }
 
             if (onEndDisplayButton)

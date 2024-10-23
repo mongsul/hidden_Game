@@ -93,7 +93,7 @@ namespace Core.Library
         
         public static Sprite LoadSprite(string resourcePath, string resourceName)
         {
-            return LoadSprite(new ResourcePathData("Resource/" + resourcePath), resourceName);
+            return LoadSprite(new ResourcePathData(resourcePath), resourceName);
         }
         
         public static Sprite LoadSprite(ResourcePathData resourcePath, string resourceName)

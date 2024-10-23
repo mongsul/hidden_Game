@@ -35,7 +35,7 @@ public class gameManager : MonoBehaviour
             //여기다 게임오버 텍스트 오브젝트 Setactive(true) 추가
             gameOverText.SetActive(true);
             remainedImageText.GetComponent<TMP_Text>().text = remainedImage + " / " + maxImage;
-            nextLevel();
+            //nextLevel();
         }
         else
         {
