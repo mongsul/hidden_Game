@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Script.Component
 {
-    public class SpriteAnimPlayer : MonoBehaviour
+    public class SpriteAnimPlayer : MonoBehaviour, IPreloader
     {
         [Tooltip("재생할 이미지")]
         [FormerlySerializedAs("PlayImage")] [SerializeField] private Image playImage; 
@@ -30,7 +30,12 @@ namespace Script.Component
         private int remainPlayCount = 0;
         private int nowDisplayFrame = 0;
         private float nowCheckFrameTime = 0.0f;
-        
+
+        private void Awake()
+        {
+            LoadSprite();
+        }
+
         // Start is called before the first frame update
         void Start()
         {
@@ -50,21 +55,6 @@ namespace Script.Component
                 ColorBlock block = onEndDisplayButton.colors;
                 block.disabledColor = Color.white;
                 onEndDisplayButton.colors = block;
-            }
-            
-            int count = 1;
-            spriteList.Clear();
-            //string spritePath = "Resource/" + folderPath;
-            while (true)
-            {
-                Sprite sprite = CodeUtilLibrary.LoadSprite(folderPath, count.ToString());
-                if (!sprite)
-                {
-                    break;
-                }
-                
-                spriteList.Add(sprite);
-                count++;
             }
         }
 
@@ -127,6 +117,34 @@ namespace Script.Component
         private void OnEnable()
         {
             PlayAnim();
+        }
+
+        public void OnExecutePreload()
+        {
+            LoadSprite();
+        }
+
+        private void LoadSprite()
+        {
+            if (spriteList.Count > 0)
+            {
+                return;
+            }
+            
+            int count = 1;
+            spriteList.Clear();
+            //string spritePath = "Resource/" + folderPath;
+            while (true)
+            {
+                Sprite sprite = CodeUtilLibrary.LoadSprite(folderPath, count.ToString());
+                if (!sprite)
+                {
+                    break;
+                }
+                
+                spriteList.Add(sprite);
+                count++;
+            }
         }
 
         private void RefreshImage()

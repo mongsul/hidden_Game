@@ -16,6 +16,7 @@ public class gameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        PreloadManager.ExecutePreload(); // _SJ     이미지 프리로드
         maxImage = remainedImage;
         remainedImageText.GetComponent<TMP_Text>().text = remainedImage + " / " + maxImage;
     }
