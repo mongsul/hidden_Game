@@ -11,7 +11,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] int remainedImage = 26;
     int maxImage;
     // 전체 레벨의 +1을 입력 예를들어 100개 레벨이 있으면 101 입력.
-    int maxLevel = 4;
+    int maxLevel = 5;
 
     // Start is called before the first frame update
     void Start()
