@@ -472,7 +472,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playImage: {fileID: 0}
-  folderPath: stage1-4/anim/
+  folderPath: stage1-5/anim/
   playSpeed: 1
   playLoopCount: 1
   onEndDisplayButton: {fileID: 0}
