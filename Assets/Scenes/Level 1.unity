@@ -433,7 +433,7 @@ GameObject:
   - component: {fileID: 492013324}
   - component: {fileID: 492013323}
   m_Layer: 5
-  m_Name: Image (2)
+  m_Name: 1-1_BackLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2678,7 +2678,7 @@ GameObject:
   - component: {fileID: 1684192876}
   - component: {fileID: 1684192875}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: BackPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

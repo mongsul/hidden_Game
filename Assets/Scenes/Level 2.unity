@@ -555,7 +555,7 @@ GameObject:
   - component: {fileID: 184380324}
   - component: {fileID: 184380323}
   m_Layer: 5
-  m_Name: Image (2)
+  m_Name: 1-2_BackLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1974,7 +1974,7 @@ GameObject:
   - component: {fileID: 897147303}
   - component: {fileID: 897147302}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: BackPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
