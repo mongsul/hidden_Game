@@ -201,7 +201,7 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -1752,7 +1752,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -3695,13 +3695,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7728688801509677047, guid: ec35881554198bf41b75d5f3090b9db0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1975317172}
   m_SourcePrefab: {fileID: 100100000, guid: ec35881554198bf41b75d5f3090b9db0, type: 3}
 --- !u!224 &1975317170 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5818792962294826849, guid: ec35881554198bf41b75d5f3090b9db0, type: 3}
   m_PrefabInstance: {fileID: 1975317169}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1975317171 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7728688801509677047, guid: ec35881554198bf41b75d5f3090b9db0, type: 3}
+  m_PrefabInstance: {fileID: 1975317169}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1975317172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1975317171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e5956c563a68e34aad5d3ebaa28ac4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  linkButton: {fileID: 0}
+  originalObject: {fileID: 1975317171}
+  replaceObject: {fileID: 139854139184410839}
+  isDisplayInitToReplaceObject: 0
 --- !u!1 &2055937962
 GameObject:
   m_ObjectHideFlags: 0
@@ -4092,11 +4116,50 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hint
       objectReference: {fileID: 0}
+    - target: {fileID: 8419416999982163686, guid: d40d91912e6dc476eabd528e599ca79a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8419416999982163686, guid: d40d91912e6dc476eabd528e599ca79a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 139854139184410841}
   m_SourcePrefab: {fileID: 100100000, guid: d40d91912e6dc476eabd528e599ca79a, type: 3}
+--- !u!1 &139854139184410839 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8419416999982163686, guid: d40d91912e6dc476eabd528e599ca79a, type: 3}
+  m_PrefabInstance: {fileID: 139854139184410838}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &139854139184410840 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7987316217862821335, guid: d40d91912e6dc476eabd528e599ca79a, type: 3}
+  m_PrefabInstance: {fileID: 139854139184410838}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139854139184410839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &139854139184410841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139854139184410839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e5956c563a68e34aad5d3ebaa28ac4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  linkButton: {fileID: 139854139184410840}
+  originalObject: {fileID: 0}
+  replaceObject: {fileID: 1975317171}
+  isDisplayInitToReplaceObject: 0
 --- !u!1001 &1739131063405517762
 PrefabInstance:
   m_ObjectHideFlags: 0
