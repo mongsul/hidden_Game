@@ -1959,7 +1959,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7728688801509677047, guid: ec35881554198bf41b75d5f3090b9db0, type: 3}
       propertyPath: m_Name
-      value: HintBuyPanel
+      value: BuyPanel
       objectReference: {fileID: 0}
     - target: {fileID: 7728688801509677047, guid: ec35881554198bf41b75d5f3090b9db0, type: 3}
       propertyPath: m_IsActive
