@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using ColorUtility = UnityEngine.ColorUtility;
 
 #if UNITY_EDITOR
@@ -98,7 +100,7 @@ namespace Core.Library
         
         public static Sprite LoadSprite(ResourcePathData resourcePath, string resourceName)
         {
-            return ResourceManager.Instance.Load<Sprite>(resourcePath, resourceName);
+            return ResourceManager.Instance.LoadImage(resourcePath, resourceName);
         }
         
         public static Color HexColor(string hexCode)
@@ -143,10 +145,40 @@ namespace Core.Library
             Transform[] transformList = baseObject.GetComponentsInChildren<Transform>();
             for (int i = 0; i < transformList.Length; i++)
             {
-                transformMap.Add(transformList[i].gameObject.name, transformList[i]);
+                string boneName = transformList[i].gameObject.name;
+                if (!transformMap.ContainsKey(boneName))
+                {
+                    transformMap.Add(boneName, transformList[i]);
+                }
             }
 
             return transformMap;
+        }
+        
+        /// <summary>
+        /// Returns the rectangle transform. Will return null if a normal transform is used.
+        /// </summary>
+        /// <param name="component">The component of which to get the rectangle transform.</param>
+        /// <returns>The rectangle transform instance.</returns>
+        public static RectTransform GetRectTransform(UnityEngine.Component component)
+        {
+            if (component == null)
+                throw new ArgumentNullException(nameof(component));
+            
+            return component.transform as RectTransform;
+        }
+
+        /// <summary>
+        /// Returns the rectangle transform. Will return null if a normal transform is used.
+        /// </summary>
+        /// <param name="gameObject">The game object of which to get the rectangle transform.</param>
+        /// <returns>The rectangle transform instance.</returns>
+        public static RectTransform GetRectTransform(GameObject gameObject)
+        {
+            if (gameObject == null)
+                throw new ArgumentNullException(nameof(gameObject));
+            
+            return gameObject.transform as RectTransform;
         }
         #endregion
 
@@ -382,6 +414,60 @@ namespace Core.Library
             
             var main = particleSystem.main;
             main.simulationSpeed = speed;
+        }
+        #endregion
+
+        #region Scene
+        private static IEnumerable<T> GetComponentsEnumerableInActiveScene<T>(bool includeInactive = true)
+        {
+            // Scene내부에 있는 모든 컴포넌트를 리턴하는 함수
+            
+            // 활성화 되어있는 Scene의 루트에 있는 GameObject 목록을 가져온다.
+            var rootGameObjects = SceneManager.GetActiveScene().GetRootGameObjects();
+
+            // 비어있는 IEnumerable<T>
+            IEnumerable<T> resultComponents = (T[])Enumerable.Empty<T>();
+            foreach (var item in rootGameObjects)
+            {
+                // includeInactive = true 로 지정하면, GameObject가 비활성화 되어있어도 가져온다.
+                var components = item.GetComponentsInChildren<T>(includeInactive);
+                resultComponents = resultComponents.Concat(components);
+            }
+
+            return resultComponents;
+        }
+        
+        public static T[] GetComponentsInActiveScene<T>(bool includeInactive = true)
+        {
+            return GetComponentsEnumerableInActiveScene<T>(includeInactive).ToArray();
+        }
+        
+        public static List<T> GetComponentsListInActiveScene<T>(bool includeInactive = true)
+        {
+            return GetComponentsEnumerableInActiveScene<T>(includeInactive).ToList();
+        }
+
+        public static T GetComponentInActiveScene<T>(bool includeInactive = true)
+        {
+            // 1개의 컴포넌트만 얻어올 경우에는 이 함수를 사용한다.
+            // GetComponentsInActiveScene을 기반으로 작성해서 조금 비효율적 (한번 수정을 했음)
+            
+            // 활성화 되어있는 Scene의 루트에 있는 GameObject 목록을 가져온다.
+            var rootGameObjects = SceneManager.GetActiveScene().GetRootGameObjects();
+
+            // 비어있는 IEnumerable<T>
+            IEnumerable<T> resultComponents = (T[])Enumerable.Empty<T>();
+            foreach (var item in rootGameObjects)
+            {
+                // includeInactive = true 로 지정하면, GameObject가 비활성화 되어있어도 가져온다.
+                T component = item.GetComponentInChildren<T>(includeInactive);
+                if (component != null)
+                {
+                    return component;
+                }
+            }
+
+            return default;
         }
         #endregion
     }

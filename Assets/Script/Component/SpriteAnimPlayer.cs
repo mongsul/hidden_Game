@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Core.Library;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -30,6 +31,13 @@ namespace Script.Component
         private int remainPlayCount = 0;
         private int nowDisplayFrame = 0;
         private float nowCheckFrameTime = 0.0f;
+        
+        [Serializable]
+        public class PlayEvent : UnityEvent{}
+
+        [FormerlySerializedAs("OnEndPlayEvent")]
+        [SerializeField]
+        public PlayEvent mOnEndPlay;
 
         private void Awake()
         {
@@ -130,6 +138,11 @@ namespace Script.Component
             {
                 return;
             }
+
+            if (string.IsNullOrEmpty(folderPath))
+            {
+                return;
+            }
             
             int count = 1;
             spriteList.Clear();
@@ -185,10 +198,29 @@ namespace Script.Component
 
         private void OnEndPlayAnim()
         {
+            isNowPlay = false;
             if (onEndDisplayButton)
             {
                 onEndDisplayButton.interactable = true;
             }
+            
+            mOnEndPlay?.Invoke();
+        }
+
+        public void SetNewFolder(string folder)
+        {
+            if (folderPath == folder)
+            {
+                return;
+            }
+            spriteList.Clear();
+            folderPath = folder;
+            LoadSprite();
+        }
+
+        public void RefreshResource()
+        {
+            LoadSprite();
         }
     }
 }

@@ -1,0 +1,175 @@
+recordCd,kr,en,jp,zhCn,zhTw
+string,string,string,string,string,string
+NO_TEXT,텍스트 없음,NO TEXT,テキストなし,无文字,無文字
+AS_UI_settings_01,환경설정,Settings,環境設定,设置,偏好設定
+AS_UI_settings_02,배경음,Bgm,背景音,背景音乐,背景音
+AS_UI_settings_03,효과음,Sfx,効果音,SFX,音效
+AS_UI_settings_04,서비스 이용약관,Terms of Service,サービス利用規約,服务条款,服務條款
+AS_UI_settings_05,개인정보 정책,Privacy Policy,個人情報ポリシー,隐私政策,隱私權政策
+AS_UI_settings_06,언어설정,Language settings,言語設定,语言设置,語言設定
+AS_UI_settings_07,한국어,한국어,한국어,韩国人,한국어
+AS_UI_settings_08,English,English,English,英语,English
+AS_UI_settings_09,日本語,日本語,日本語,日本人,日本語
+ERR_ALREADY_ACCOUNT_ERR,해당 계정은 이미 가입되었습니다.,This account is already registered.,そのアカウントはすでに登録済みです。,该帐户已被注册。,該帳戶已被註冊。
+ERR_chrManage_popup_button_success_0,강화 성공!,Upgrade Success!,強化成功！,升级成功！,強化成功！
+ERR_chrManage_popup_button_success_1,재료가 부족합니다...,Not enough essence...,材料が不足しています...,精华不够...,我們的原料快用完了...
+ERR_equipments_popup_fullSlot,더 이상 재료를 추가할 수 없습니다!,Slot is Full!,もう素材を追加できません！,插槽已满！,不能再添加任何成分了！
+ERR_equipments_popup_blockEnchantEquiped,착용 중인 아이템은 사용할 수 없습니다!,You can't use euipments that already equiped!,着用中のアイテムは使用できません！,已经装备的装备不能使用！,您穿戴的物品無法使用！
+ERR_equipments_blockSellEquiped,착용 중인 아이템은 판매할 수 없습니다!,You can't sell euipments that already equiped!,着用中のアイテムは販売できません！,已经装备的装备是不能卖的！,正在穿戴的物品不能出售！
+ERR_equipments_noSelection,장비를 먼저 선택해주세요!,Choose Equipment First!,機器を最初に選択してください！,首先选择装备！,請先選擇您的設備！
+ERR_ERR_NONE_SESSION_LOGIN,로그인이 필요합니다.,Login is required.,ログインが必要です。,需要登录。,需要登入。
+ERR_ingame_selectSession_shard,마석 파편이 부족합니다...,Not enough Gem Shard...,魔石の破片が不足しています...,宝石碎片不够...,魔石碎片不夠…
+ERR_itemUse_success,아이템 사용 완료!,Item use Complete!,アイテム使用完了！,物品使用完毕！,使用過的物品！
+ERR_next_update,다음 업데이트 때 추가됩니다!,Will be ready soon!,次回のアップデート時に追加されます！,很快就会准备好！,會在下次更新中加入！
+ERR_NOT_CREATE_ACCOUNT,생성되지않은 계정입니다.,This account has not been created.,作成されていないアカウントです。,该帐户尚未创建。,該帳戶尚未建立。
+ERR_NOT_ENOUGH_STAMINA,스태미나가 부족합니다.,Insufficient Stamina!,スタミナが足りません。,体力不足！,我沒有足夠的體力。
+ERR_CHAR_MAX_LV,이미 캐릭터 최대 레벨에 도달하였습니다!,<size=85%>You have already reached maximum character level!</size>,すでにキャラクター最大レベルに達しました！,<size=85%>您已经达到最大角色等级！</size>,您已經達到最高角色等級了！
+ERR_Ui_DAILYDUNGEON_NOTICKET,시도 횟수가 부족합니다!,Not enough attempts lefts!,試行回数が足りません！,剩余尝试次数不足！,嘗試還不夠！
+ERR_FAIL,실패,Failure,失敗,失败,失敗
+ERR_NONE,반응 없음,No response,反応なし,没有回应,沒有反應
+ERR_SUCCESS,성공,Success,成功,成功,成功
+ERR_INCORRECT_PASSWORD,잘못된 비밀번호,Incorrect password,無効なパスワード,密码错误,密碼錯誤
+ERR_REQUEST_LOCK,다른 요청이 진행중입니다,Another request is in progress,他のリクエストが進行中です,另一个请求正在进行中,另一個請求正在進行中
+ERR_INCORRECT_TOKEN,토큰이 만료되었습니다. 다시 로그인해주세요.,"Incorrect authentication token, please login again",トークンの有効期限が切れました。もう一度ログインしてください。,身份验证令牌错误，请重新登录,令牌已過期。請重新登入。
+ERR_INSUFFICIENT_PRIVILEGES,권한이 부족합니다,Insufficient privileges,権限が不足しています,权限不足,權限不足
+ERR_EXPIRE_FAILE,인증이 만료되었습니다.,Authentication expiration time ended due to inactivity,認証が期限切れです。,由于不活动，身份验证过期时间已结束,您的身份驗證已過期。
+ERR_ACCOUNTS_THAT_DO_NOT_EXIST_NOT,존재하지 않는 계정,Account does not exist,存在しないアカウント,账户不存在,帳戶不存在
+ERR_NOT_ENOUGH_GOLD,골드가 부족합니다,Not enough gold,ゴールドが足りない,金币不够,我的金幣不多了
+ERR_NOT_ENOUGH_DIA,다이아가 부족합니다,Not enough diamonds,ダイヤが足りない,钻石不够,鑽石不夠
+ERR_NO_SUCH_ITEM,아이템을 찾을수 없습니다.,Item not found,アイテムが見つかりません。,未找到项目,未找到項目。
+ERR_EXCESS_OF_COST,보유 재화가 부족합니다.,Cost exceeds available resources,保有商品が不足しています。,成本超出可用资源,你的貨不夠。
+ERR_MAX_LEVEL,장비가 최대레벨에 도달했습니다,Maximum equipment level reached,機器が最大レベルに達しました,达到最高装备等级,裝備已達最高等級
+ERR_REINFORCEMENT_COST_MISMATCH,강화 비용이 일치하지 않습니다.,Reinforcement cost mismatch,強化コストが一致しません。,加固成本不匹配,加固成本不一致。
+ERR_MOUNTED_ITEM,이미 장착된 아이템입니다,Item already equipped,すでに装備されているアイテムです,已装备物品,該商品已裝備
+ERR_EXCESS_OF_ITEM,필요 아이템이 부족합니다.,Exceeded maximum item quantity,必要アイテムが不足しています。,超过最大商品数量,所需物品不足。
+ERR_RCV_MAIL,이미 보상을 수령한 메일입니다,Mail reward already received,すでに報酬を受け取ったメールです,邮件奖励已收到,這是一封您已收到獎勵的電子郵件。
+GAME_BASE_AUTHENTICATION_FAILED,게임 베이스 인증에 실패했습니다,Game base authentication failed,ゲームベース認証に失敗しました,游戏库验证失败,遊戲庫驗證失敗
+NOT_SUPPORT_COUNTY,지원되지않는 국가 코드입니다,Unsupported country code,サポートされていない国コードです。,不支持的国家/地区代码,不支援國家/地區代碼
+ERR_DUPLICATE_NICK,중복된 닉네임,Duplicate nickname,重複したニックネーム,昵称重复,重複的暱稱
+ERR_NONE_SESSION_LOGIN,로그인 되지 않은 계정의 요청입니다,Request from a non-logged-in account,ログインしていないアカウントのリクエスト,来自未登录帐户的请求,這是來自未登入帳戶的請求。
+ALREADY_ACCOUNT_ERR,이미 가입된 계정입니다,Already registered account,すでに参加しているアカウントです,已注册账号,該帳號已被註冊
+NOT_CREATE_ACCOUNT,아직 생성되지 않은 계정입니다,Account not yet created,まだ作成されていないアカウントです,帐户尚未创建,該帳戶尚未創建
+THERE_IS_A_PROBLEM_WITH_YOUR_SESSION,세션에 문제가 있습니다,There is a problem with your session,セッションに問題があります,您的会话有问题,您的會話有問題
+BLOCK_ACCOUNT,블럭된 계정,Blocked account,ブロックされたアカウント,帐户被冻结,帳戶被凍結
+ACCOUNT_SCEDULED_DELETED,탈퇴 예정 계정,Scheduled for deletion account,退会予定のアカウント,预定删除帐户,帳戶待註銷
+NONE_SUPPRT_MONEY_TYPE,지원하지 않는 재화 타입입니다,Unsupported currency type,サポートしていない商品タイプです,不支持的货币类型,不支援此產品類型。
+NO_MATCHED_CHAR_JEWELL,강화 캐릭터 정수와 일치하지 않습니다,Character integer for reinforcement does not match,強化キャラ整数と一致しない,加固的字符整数不匹配,與強化角色本質不符
+NOT_A_WAREHOUSE_TYPE_CONSUMPTION_ITEM,창고에서 사용 불가능한 아이템입니다,Item not usable in warehouse,倉庫で使用できないアイテムです,仓库中无法使用的物品,該物品不能在倉庫中使用。
+NO_MATCHING_ITEMS,일치하는 아이템이 없습니다,No matching items,一致するアイテムがありません,没有匹配的项目,沒有匹配的項目
+THE_NUMBER_OF_ITEMS_THAT_CAN_BE_USED_AT_ONCE_HAS_BEEN_EXCEEDED,한 번에 사용할 수 있는 품목 수가 초과되었습니다,Exceeded maximum items usable at once,一度に使用できるアイテム数を超えました,超过一次可用的最大物品数,已超過一次可使用的物品數量
+EQUIPMENT_LEVEL_UP_EXPERIENCE_DISCREPANCY,장비 레벨업 경험치 불일치,Equipment level-up experience discrepancy,装備レベルアップ経験値の不一致,装备升级经验差异,裝備升級經驗差異
+ITEMS_THAT_ARE_BEING_WORN_CANNOT_BE_SOLD,착용 중인 아이템은 판매가 불가능합니다,Items currently equipped cannot be sold,着用中のアイテムは販売できません,当前装备的物品无法出售,正在佩戴的物品不能出售。
+WEARING_ITEMS_CANNOT_BE_USED_AS_MATERIALS,착용 중인 아이템은 재료로 사용 불가합니다,Items currently equipped cannot be used as materials,着用中のアイテムは素材として使用できません,当前装备的物品不能用作材料,穿著的物品不能當作材料。
+ITEM_IS_NO_LONGER_AVAILABLE_FOR_SALE,판매 종료된 아이템입니다,Item is no longer available for sale,販売終了したアイテムです,商品不再出售,該商品已售完
+EXCEEDED_YOUR_PURCHASE_LIMIT,구매 한도를 초과했습니다,Exceeded purchase limit,購入制限を超えました,超出购买限额,您已超出購買限額
+ITEM_INDEX_MISMATCH,아이템 인덱스가 불일치합니다,Item index mismatch,アイテムインデックスが不一致,项目索引不匹配,項目索引不一致
+THE_ITEM_IS_ALREADY_IN_THE_SAME_CONDITION,"아이템이 이미 동일한 상태(레벨, 등급)입니다",Item is already in the same condition,アイテムはすでに同じ状態（レベル、グレード）です,物品已经处于相同状态,該項目已處於相同狀態（等級、等級）
+ALREADY_DISMOUNT_PARTY_SLOT,이미 해제된 파티 프리셋 슬롯입니다,Party preset slot already dismounted,すでに解放されたパーティープリセットスロットです。,派对预设槽已拆卸,這是一個已經解鎖的派對預設槽位。
+SAME_CHAR_SAME_PARTY_SLOT,해당 캐릭터는 해당 위치에 이미 장착되어 있습니다,Same character already equipped in that slot,そのキャラクターはその位置にすでに装備されています,该插槽中已装备相同的角色,該角色已在該位置裝備好
+ALREADY_ADMIN_INFO,이미 계정이 존재하는 관리자 아이디입니다,Administrator ID already exists,すでにアカウントが存在する管理者ID,管理员ID已存在,這是帳戶已存在的管理員 ID。
+GM_ID_DOES_NOT_EXIT,해당 관리자 아이디가 존재하지 않습니다,Administrator ID does not exist,その管理者IDが存在しません,管理员ID不存在,管理員ID不存在
+GM_ID_NOT_HAS_OWNERSHIP,소유권을 가지고 있는 아이디가 아닙니다,ID does not have ownership,所有権を持つIDではありません,ID没有所有权,該ID沒有所有權
+PERMISSION_ERR,권한이 부족합니다,Insufficient permissions,権限が不足しています,权限不足,權限不足
+MY_ACCOUNT_PERMISSION_ERR,내 계정이 아니어서 수정 권한이 존재하지 않습니다,No permission to modify because it's not my account,自分のアカウントではないため、編集権限が存在しません,没有权限修改，因为这不是我的帐户,編輯權限不存在，因為它不是我的帳戶
+BLOCK_ADMIN,차단된 계정입니다,Blocked account,ブロックされたアカウント,帐户被冻结,該帳戶已被封鎖
+ACCESS_BLOCK_ADMIN,패스워드 3회 이상 틀렸습니다. 관리자에게 문의하세요,Password incorrect more than 3 times. Contact administrator,パスワード3回以上間違っています。管理者にお問い合わせください,密码错误3次以上。联系管理员,密碼錯誤3次以上。聯絡您的管理員
+INCORRET_USER_IDX,잘못된 User Idx 정보,Incorrect User Idx information,無効なユーザーIDX情報,用户 Idx 信息不正确,無效的用戶 Idx 訊息
+WAITING_FOR_APPROVAL,아직 승인되지 않은 계정입니다,Account not yet approved,まだ承認されていないアカウントです,帐户尚未批准,您的帳戶尚未獲得批准
+INCORRET_USER_NICK,잘못된 User Nick 정보,Incorrect User Nick information,無効なユーザーニック情報,用户昵称信息不正确,使用者暱稱資訊不正確
+NO_SUCH_MAIL,해당 메일을 찾을 수 없음,Mail not found,そのメールが見つかりません,找不到邮件,找不到該電子郵件
+STAGE_INFORMATION_IS_MISSING,스테이지 정보가 없습니다,Stage information is missing,ステージ情報がありません,舞台信息缺失,暫無舞台訊息
+STAGE_IS_DISABLED,스테이지가 비활성화 상태입니다,Stage is disabled,ステージが無効になっています,舞台已禁用,舞台處於非活動狀態
+PREVIOUS_CHAPTER_NOT_COMPLETED,이전 챕터를 완료하지 않았습니다,Previous chapter not completed,前の章を完了していません,上一章未完成,您還沒完成上一章
+THERE_NOT_ENOUGH_STAMINA,스테미너가 충분하지 않습니다,Not enough stamina,ステミナーが足りない,体力不够,體力不夠
+STEMINA_VALUES_DO_NOT_MATCH,스테미너 값이 일치하지 않습니다,Stamina values do not match,ステミナー値が一致しません,耐力值不匹配,體力值不匹配
+THERE_ARE_NO_EXPEDITION_TICKETS,티켓이 부족합니다.,No expedition tickets,チケットが足りません。,没有探险门票,門票不夠。
+IT_DOES_NOT_MATCH_THE_DUNGEON_INDEX,던전 인덱스가 일치하지 않습니다,Dungeon index does not match,ダンジョンインデックスが一致しません,地牢索引不匹配,地城索引不匹配
+THIS_DUNGEON_DOES_NOT_HAVE_AN_OPENING_DATE,해당 요일에는 열리지 않는 던전입니다,This dungeon does not have an opening date,その曜日には開かないダンジョンです,该地下城没有开放日期,該地牢在一周中的這幾天不開放。
+GEON_FLOOR_IS_DISABLED,아직 잠금 해제되지 않은 층입니다,This dungeon floor is disabled,まだロック解除されていないフロアです,该地牢楼层已禁用,該樓層尚未解鎖
+ALREADY_CLEAR_DUNGEON_FLOOR,이미 클리어한 던전 층입니다,Already cleared dungeon floor,すでにクリアなダンジョン層です,已经清理完地牢地板,這是一個已經清理過的地下城樓層。
+THE_START_STAGE_AND_END_STAGE_VALUES_ARE_DIFFERENT,시작 스테이지와 종료 스테이지가 다릅니다,Start and end stage values are different,開始ステージと終了ステージが異なる,开始阶段和结束阶段值不同,開始階段和結束階段不同
+CHAPTER_INFORMATION_IS_MISSING,챕터 정보가 없습니다,Chapter information is missing,チャプター情報がありません,章节信息缺失,無章節訊息
+THE_NUMBER_OF_STARS_EARNED_IS_NOT_ENOUGH,획득한 별 수가 충분하지 않습니다,The number of stars earned is not enough,獲得した星の数が足りません,获得的星星数量不够,沒有獲得足夠的星星
+NOT_FIND_RANKING_USER,아직 랭킹에 등록된 유저가 없습니다,No user registered in ranking yet,まだランキングに登録されているユーザーはいません,还没有用户注册排名,還沒有用戶註冊進入排行榜
+SEQUENCE_NUMBER_THAT_EXISTS,이미 존재하는 시퀀스 번호입니다,Sequence number already exists,すでに存在するシーケンス番号,序列号已存在,序號已存在
+SEQUENCE_NUMBER_THAT_DOES_NOT_EXIST,존재하지 않는 시퀀스 번호입니다,Sequence number does not exist,存在しないシーケンス番号,序列号不存在,序號不存在
+SCENE_NUMBER_THAT_EXISTS,이미 존재하는 씬 번호입니다,Scene number already exists,すでに存在するシーン番号です。,场景号已存在,該場景編號已存在
+SCENE_NUMBER_THAT_DOES_NOT_EXIS,존재하지 않는 씬 번호입니다,Scene number does not exist,存在しないシーン番号です。,场景号不存在,場景號碼不存在
+STEP_NUMBER_THAT_EXISTS,이미 존재하는 스텝 번호입니다,Step number already exists,すでに存在するステップ番号,步骤号已存在,此步驟編號已存在。
+STEP_NUMBER_THAT_DOES_NOT_EXIS,존재하지 않는 스텝 번호입니다,Step number does not exist,存在しないステップ番号,步骤号不存在,步驟編號不存在。
+RECORDCD_NUMBER_THAT_EXISTS,이미 존재하는 번역코드 입니다,Record code already exists,すでに存在する翻訳コードです。,记录代码已存在,該翻譯代碼已經存在。
+RCV_CHALLENGS,이미 보상받은 도전과제입니다,Challenge already rewarded,すでに報われている課題です。,挑战已获得奖励,這是一個已經得到回報的挑戰。
+THIS_QUEST_DOES_NOT_EXIST,존재하지 않는 퀘스트입니다,Quest does not exist,存在しないクエストです,任务不存在,該任務不存在
+NOT_IN_A_STATE_TO_COMPLETE_THE_QUEST,퀘스트 완료 가능한 상태가 아닙니다,Not in a state to complete the quest,クエスト完了可能な状態ではありません,未处于完成任务的状态,任務尚未準備好完成
+YOU_ARE_NOT_IN_A_STATE_WHERE_YOU_CAN_RECEIVE_ADDITIONAL_COMPENSATION,추가 보상을 받을 수 있는 상태가 아닙니다,Not in a state to receive additional compensation,追加報酬を受けることができる状態ではありません,不处于领取额外补偿的状态,您無法獲得額外補償
+YOU_MUST_RECEIVE_REWARDS_IN_ORDER,순서대로 보상을 받아야 합니다,Must receive rewards in order,順番に報酬を受けなければなりません,必须按顺序领取奖励,您必須按順序獲得獎勵
+METAMERCUPGRADE_INFORMATION_NOT_FOUND,용병단 강화 정보를 찾을 수 없습니다,Mercenary upgrade information not found,傭兵団強化情報が見つかりません,未找到佣兵升级信息,未找到僱傭兵增援訊息
+BELOW_THE_PURCHASE_CONDITION_LEVEL,구매 조건 레벨보다 낮습니다,Below the purchase condition level,購入条件レベルより低い,低于购买条件水平,低於購買條件水平
+MERCUPGRADEIDX_ALREADY_EXISTS,이미 존재하는 용병단 강화 인덱스입니다,Mercenary upgrade index already exists,既に存在する傭兵団強化指標です,佣兵升级指数已存在,這是強化已經存在的傭兵團的指標。
+ATTENDANCE_INFO_NOT_FOUND,출석 정보를 찾을 수 없습니다,Attendance information not found,出席情報が見つかりません,未找到考勤信息,未找到考勤資訊
+INCONSISTENT_CONSECUTIVE_DATA,연속 출석 정보 값이 다릅니다,Inconsistent consecutive attendance data,連続出席情報の値が異なる,连续考勤数据不一致,連續考勤資訊值不同
+MUST_CLAIM_EXISTING_REWARD,기존 출석 보상을 먼저 받아야 합니다,Must claim existing attendance reward first,既存の出席報酬を最初に受け取る必要があります,必须先领取现有的出席奖励,您必須先獲得現有的出席獎勵
+REWARD_ALREADY_CLAIMED_OR_UNAVAILABLE,이미 보상을 받았거나 받을 수 없는 상태입니다,Reward already claimed or unavailable,すでに報酬を受け取ったり受け取ることができない状態です,奖励已领取或不可用,您已經收到賠償或無法收到賠償。
+NOT_REWARD_DAY,보상을 받을 수 있는 날이 아닙니다,Not a reward day,報酬を受けることができる日ではありません,不是奖励日,這不是領取賠償的日子
+THE_BATTLE_PASS_IS_NOT_ACTIVATED,배틀패스가 활성화 되어 있지 않습니다,Battle pass is not activated,バトルパスが有効になっていません,战斗通行证未激活,戰鬥通行證未激活
+YOU_HAVE_NOT_MET_THE_CONDITIONS_FOR_THE_BATTLE_PASS,배틀패스 조건을 충족하지 못하였습니다,Conditions for the battle pass not met,バトルパス条件を満たしていません,不满足战斗通行证的条件,未滿足戰鬥通行證要求
+THE_MONTHLY_REWARD_IS_NOT_ACTIVATED,월정액 구독이 활성화 되어 있지 않습니다,Monthly reward subscription is not activated,月額定期購入が有効になっていません,月奖励订阅未激活,您的每月訂閱未激活
+NOT_EXIST_PURCHASE_HISTORY,월정액 구매 내역이 존재하지 않습니다,No purchase history for monthly reward,月額購入履歴が存在しません,没有每月奖励的购买记录,沒有每月購買記錄
+NOT_EXIST_RECEIVE_REWARD,보상 받을 월정액 내역이 없습니다,No record of receiving monthly reward,報酬を受け取る月額履歴はありません,没有领取每月奖励的记录,每月沒有金額可以領取補償。
+THIS_BATTLE_PASS_HAS_ENDED,종료된 배틀패스입니다,This battle pass has ended,終了したバトルパスです,本次战斗通行证已结束,這是一張過期的戰鬥通行證。
+THIS_BATTLE_PASS_HAS_NOT_BEEN_PURCHASED,구매되지 않은 배틀패스입니다,This battle pass has not been purchased,購入されていないバトルパスです。,此战斗通行证尚未购买,這是未購買的戰鬥通行證。
+THERE_IS_ALREADY_AN_NGOING_SEASON,이미 진행 중인 시즌이 있습니다,There is already an ongoing season,すでに進行中のシーズンがあります,已经有一个正在进行的季节,已經有一個賽季正在進行中
+NO_SEASON_INFORMATION_FOUND,시즌 정보를 찾을 수 없습니다,Season information not found,シーズン情報が見つかりません,未找到季节信息,沒有找到季節資訊
+THE_USER_RANK_DETAILS_CANNOT_BE_OUND,유저 랭크 상세 정보를 찾을 수 없습니다,User rank details cannot be found,ユーザーランクの詳細情報が見つかりません,找不到用户等级详细信息,未找到用戶等級詳細信息
+NO_ONGOING_SEASON,진행 중인 시즌이 없습니다,No ongoing season,進行中のシーズンはありません,没有正在进行的季节,沒有進行中的季節
+RECEIPT_PRODUCT_CODE_DOES_NOT_MATCH,영수증 상품 코드가 일치하지 않습니다,Receipt product code does not match,領収書商品コードが一致しません,收据产品代码不匹配,收據產品代碼不符
+RECEIPT_PAYMENT_AMOUNT_DOES_NOT_MATCH,영수증 결제 금액이 일치하지 않습니다,Receipt payment amount does not match,領収書のお支払い金額が一致しません,收据付款金额不符,收據付款金額不符
+RECEIPT_INFORMATION_DOES_NOT_MATCH,영수증 정보가 일치하지 않습니다,Receipt information does not match,領収書情報が一致しません,收货信息不符,收貨資訊不符
+RECEIPT_NUMBER_ALREADY_EXISTS,이미 존재하는 영수증 번호입니다,Receipt number already exists,既に存在する領収書番号です,收据号码已存在,該收據號碼已存在
+ITEM_ALREADY_ACTIVATED,이미 활성화(구독)된 아이템입니다,Item already activated,すでにアクティブ化（購読）されているアイテムです。,项目已激活,該項目已啟用（已訂閱）
+UI_BTN_CANCEL,취소,Cancel,キャンセル,取消,消除
+UI_BTN_SETTING_ACCOUNT_LINKAGE,연동,Linkage,連動,连锁,蠕動
+UI_SETTING_ACCOUNT_LINKAGE_TITLE,계정 연동,Account Linkage,アカウント連携,账户联动,帳戶關聯
+UI_SETTING_ACCOUNT_LINKAGE_GOOGLE_CONNECT,Google 연동하기,Google Connect,Googleを連携する,谷歌连接,與谷歌集成
+UI_SETTING_ACCOUNT_LINKAGE_GOOGLE_DISCONNECT,Google 연동 해제,Google Disconnect,Googleのリンク解除,谷歌断开连接,取消與 Google 的關聯
+UI_SETTING_ACCOUNT_LINKAGE_APPLE_CONNECT,Apple 연동하기,Apple Connect,Appleを連携する,苹果连接,與蘋果集成
+UI_SETTING_ACCOUNT_LINKAGE_APPLE_DISCONNECT,Apple 연동 해제,Apple Disconnect,Apple 連動解除,苹果断开连接,取消與蘋果的鏈接
+UI_SETTING_ACCOUNT_LINKAGE_FACEBOOK_CONNECT,Facebook 연동하기,Facebook Connect,Facebookを連携する,脸书连接,連結至臉書
+UI_SETTING_ACCOUNT_LINKAGE_FACEBOOK_DISCONNECT,Facebook 연동 해제,Facebook Disconnect,Facebookの連動解除,Facebook 断开连接,中斷與 Facebook 的連接
+UI_BTN_SETTING_ACCOUNT_LOGOUT,로그아웃,Logout,ログアウト,退出,註銷
+UI_SETTING_ACCOUNT_LOGOUT_TITLE,로그아웃,Logout,ログアウト,退出,註銷
+UI_SETTING_ACCOUNT_LOGOUT_CONTENT,로그아웃 하시겠습니까?<br>로그아웃 후 타이틀 화면으로 돌아갑니다.,Would you want to Logout?<br>After then you will go to Main Title.,ログアウトしますか？<br>ログアウト後、タイトル画面に戻ります。,您想注销吗？<br>然后您将转到主标题。,您想退出嗎？
+UI_BTN_CONFIRM,확인,Confirm,確認,确认,查看
+UI_POP_UP_REWARD_GET_CONFIRM_TEXT,화면을 터치하세요,Touch the screen,画面に触れる,触摸屏幕,觸控螢幕
+UI_APP_UPDATE_TITLE,업데이트,Update,更新,更新,更新
+UI_APP_UPDATE_CONTENT,앱이 업데이트 되었습니다.<br>스토어로 이동하여 최신 버전을 받아주세요.,Application has updated.<br>Go to Store and download new version.,アプリが更新されました。<br>ストアにアクセスして最新バージョンを入手してください。,应用程序已更新。<br>前往商店并下载新版本。,該應用程式已更新。
+UI_BTN_GO_TO_STORE,스토어로 이동,Go,ストアに移動,去,前往商店
+UI_POP_UP_MAINTENANCE_TITLE,점검 중,Maintenance,点検中,维护,維護中
+UI_POP_UP_MAINTENANCE_CONTENT,현재 서버 점검 중입니다.<br>예상 점검 완료 시간 : {0},Server maintenance is in progress .<br>Estimated end time : {0},現在サーバーをチェックしています。<br>予想チェック完了時間：{0},服务器维护正在进行中。<br>预计结束时间：{0},伺服器目前正在進行維護。
+UI_BTN_DETAIL_CONTENT,내용 보기,Watch,コンテンツを見る,手表,查看內容
+UI_BTN_APP_EXIT,종료하기,Exit,終了する,出口,辭職
+UI_INITIALIZE_PROCESS,초기화 작업 진행 중입니다.,Initialize work is in progress.,初期化作業中です。,初始化工作正在进行中。,初始化正在進行中。
+UI_TOUCH,Touch,Touch,Touch,触碰,觸碰
+UI_BTN_SWITCH_LANGUAGE,언어 설정,Language,言語設定,语言,語言設定
+UI_LOGIN_TO_GOOGLE,Google로 시작,Google,Googleで始まる,谷歌,從谷歌開始
+UI_LOGIN_TO_APPLE,Apple ID로 시작,Apple ID,Apple IDで始まる,苹果ID,從您的 Apple ID 開始
+UI_CHECK_UPDATE_DATA,업데이트 확인 중입니다.,Check update...,更新確認中です。,检查更新...,檢查更新。
+UI_RES_DOWN_CHECK_TITLE,리소스 다운로드,Resources download,リソースのダウンロード,资源下载,下載資源
+UI_RES_DOWN_CHECK_CONTENT,리소스 다운로드를 진행하시겠습니까?,You want to download resources?,リソースのダウンロードに進みますか？,您想下载资源吗？,您想繼續下載資源嗎？
+UI_RES_DOWN_PROCESS,리소스 다운로드 중입니다.,Resources download in progress,リソースをダウンロードしています。,资源下载中,下載資源。
+UI_CHECK_RES_FILES_PROCESS,파일을 점검 중입니다.,Check files,ファイルを確認しています。,检查文件,文件正在檢查中。
+UI_TERMS_APPROVAL_TITLE,이용약관,Terms,利用規約,条款,使用條款
+UI_CHOOSE_ALL,전체 선택,Choose All,全選択,选择全部,選擇全部
+UI_CHECK_BOX_TERMS_OF_SERVICE,서비스 이용약관 동의 (필수),Terms of services (Essential),利用規約の同意（必須）,服务条款（基本）,同意服務條款（必填）
+UI_CHECK_BOX_PRIVACY_POLICY,개인정보 처리방침 동의 (필수),Privacy polices (Essential),個人情報処理方針の同意（必須）,隐私政策（必要）,同意隱私權政策（必填）
+UI_CHECK_BOX_AD_INFO,게임 소식 및 광고성 정보 수신 동의 (선택),Game notices and advertise receive(Choose),ゲームのニュースと広告性情報を受け取る同意（オプション）,游戏通知及广告接收（选择）,同意接收遊戲新聞和廣告訊息（可選）
+UI_BTN_AGREE,동의하기,Agree,同意する,同意,同意
+SERVER_MAINTENACNE,서버 점검 중 입니다.,Maintenance server,サーバーをチェックしています。,服务器正在维护中。,伺服器正在維護中。
+ERR_SERVER_NETWORK_DELAY,서버네트워크가 지연되고있습니다.,The server network is delayed.,サーバーネットワークが遅れています。,服务器网络有延迟。,伺服器網路有延遲。
+ERR_SERVER_NETWORK_DELAY_TEXT,네트워크 지연 오류,network delay error,ネットワーク遅延エラー,网络延迟错误,網路延遲錯誤
+ERR_SERVER_ERROR_TEXT,서버 오류,server error,サーバーエラー,服务器错误,伺服器錯誤
+ERR_SERVER_DISCONNECT,서버와의 연결이 해제되었습니다.<br>로그인화면으로 되돌아갑니다.,The connection to the server has been lost. You will return to the login screen.,サーバーとの接続が解除されました。ログイン画面に戻ります。,与服务器的连接已丢失。您将返回到登录屏幕。,與伺服器的連線已遺失。您將返回登入畫面。
+ERR_SERVER_BAD_CONNECT,서버와의 연결이 원활하지 않습니다.<br>잠시 후 다시 시도해 주세요.,The connection to the server is not smooth. Please try again later.,サーバーとの接続がスムーズではありません。しばらくしてからもう一度お試しください。,与服务器的连接不顺畅。请稍后重试。,與伺服器的連線不順暢。請稍後重試。
+ERR_SERVER_NETWORK_RESOPNE_DELAY,서버 응답이 지연되고 있습니다.<br>네트워크 연결을 확인한 후 다시 시도해 주세요.,Server response is delayed. Please check your network connection and try again.,サーバーの応答が遅れています。ネットワーク接続を確認してもう一度やり直してください。,服务器响应延迟。请检查您的网络连接并重试。,伺服器回應延遲。請檢查您的網路連線並重試。
+ERR_SERVER_NETWORK_CROWDED,현재 서버가 혼잡하여 처리가 지연되고 있습니다.<br>다시 시도하시겠습니까?,Our servers are currently busy and processing is delayed. Would you like to try again?,現在サーバーが混雑して処理が遅れています。もう一度お試しですか？,我们的服务器当前正忙，处理延迟。您想重试吗？,我們的伺服器目前正忙，處理延遲。
+ERR_UNFORESEEN_ERROR_OCCUR,예기치 않은 오류가 발생했습니다.<br>로그인 화면으로 되돌아갑니다.,An unexpected error occurred. Go back to the login screen.,予期しないエラーが発生しました。ログイン画面に戻ります。,发生意外错误。返回登录屏幕。,發生意外錯誤。返回登入畫面。

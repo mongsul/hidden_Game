@@ -24,7 +24,7 @@ public partial class ResourceManager : SingletonTemplate<ResourceManager>
     /// <param name="isCache"></param>
     /// <param name="KeyCallback"></param>
     /// <returns></returns>
-    public T Load<T>(ResourcePathData pathData, string fileName, bool isCache = true, System.Action<string> KeyCallback = null) where T : Object
+    private T Load<T>(ResourcePathData pathData, string fileName, List<string> extension, bool isCache = true, System.Action<string> KeyCallback = null) where T : Object
     {
         T obj = default(T);
         string key = null;
@@ -39,7 +39,7 @@ public partial class ResourceManager : SingletonTemplate<ResourceManager>
         {
             if (obj == null)
             {
-                obj = LoadFile<T>(pathData.m_Path, fileName, key);
+                obj = LoadFile<T>(pathData.m_Path, fileName, key, extension);
                 #if UNITY_EDITOR
                // Debug.Log($"Load : Path[{pathData.m_Path}], fileName[{fileName}]");
                 #endif
@@ -68,7 +68,7 @@ public partial class ResourceManager : SingletonTemplate<ResourceManager>
         return Resources.LoadAll<T>(pathData.m_Path);
     }
 
-    private T LoadFile<T>(string path, string fileName, string key) where T : Object
+    private T LoadFile<T>(string path, string fileName, string key, List<string> extension) where T : Object
     {
         T obj = default;
         obj = LoadBuiltInFile<T>(key);
@@ -76,9 +76,8 @@ public partial class ResourceManager : SingletonTemplate<ResourceManager>
         if (obj == null)
         {
             string assetKey = string.Format("{0}{1}", path, fileName);
-            obj = LoadLocalFile<T>(assetKey);
+            obj = LoadLocalFile<T>(assetKey, extension);
         }
-
 
         return obj;
     }
@@ -241,56 +240,37 @@ public partial class ResourceManager : SingletonTemplate<ResourceManager>
         return obj;
     }
     */
-
-    /// <summary>
-    /// 지역변수 localPath에 해당하는 경로에서 파일을 불러온다(에디터 전용)
-    /// </summary>
-    private T LoadLocalFile<T>(string key) where T : Object
+    
+    private T LoadLocalFile<T>(string key, List<string> extension) where T : Object
     {
-
         T obj = default;
+        if (extension == null)
+        {
+            return obj;
+        }
 
-        //아래 코드 바꾸고싶은데 급함... 
+        for (int i = 0; i < extension.Count; i++)
+        {
+            obj = Resources.Load<T>($"{localPath}/{key}.{extension[i]}");
+            if (obj != null)
+            {
+                return obj;
+            }
+        }
+        
+        return obj;
+    }
+    
+    private T LoadLocalFile<T>(string key, string extension) where T : Object
+    {
+        T obj = default;
+        if (string.IsNullOrEmpty(extension))
+        {
+            return obj;
+        }
 
-        //프리팹 탐색
-        obj = Resources.Load<T>(string.Format("{0}/{1}.prefab", localPath, key));
-
-        //Bytes 탐색.                                                                     
-        if (null == obj)
-            obj = Resources.Load<T>(string.Format(string.Format("{0}/{1}.mat", localPath, key)));
-
-        //Bytes 탐색.                                                                     
-        if (null == obj)
-            obj = Resources.Load<T>(string.Format(string.Format("{0}/{1}.bytes", localPath, key)));
-
-        if (null == obj)
-            obj = Resources.Load<T>(string.Format(string.Format("{0}/{1}.spriteatlas", localPath, key)));
-
-        //사운드 탐색.
-        if (null == obj)
-            obj = Resources.Load<T>(string.Format(string.Format("{0}/{1}.ogg", localPath, key)));
-        if (null == obj)
-            obj = Resources.Load<T>(string.Format(string.Format("{0}/{1}.wav", localPath, key)));
-        //영상 탐색
-        if (null == obj)
-            obj = Resources.Load<T>(string.Format(string.Format("{0}/{1}.mp4", localPath, key)));
-
-        //이미지 탐색.                                                                     
-        if (null == obj)
-            obj = Resources.Load<T>(string.Format(string.Format("{0}/{1}.png", localPath, key)));
-
-        //텍스트 탐색.                                                                     
-        if (null == obj)
-            obj = Resources.Load<T>(string.Format(string.Format("{0}/{1}.txt", localPath, key)));
-
-        //폰트 탐색.                                                                 
-        if (null == obj)
-            obj = Resources.Load<T>(string.Format(string.Format("{0}/{1}.otf", localPath, key)));
-
-        //json 테이블 탐색                                                                   
-        if (null == obj)
-            obj = Resources.Load<T>(string.Format(string.Format("{0}/{1}.json", localPath, key)));
-
+        obj = Resources.Load<T>($"{localPath}/{key}.{extension}");
+        
         return obj;
     }
 
@@ -303,15 +283,88 @@ public partial class ResourceManager : SingletonTemplate<ResourceManager>
     /// <returns></returns>
     public string GetResourceKey(ResourcePathData pathData, string fileName, bool isAdult = false)
     {
-
         return GetResourceKey(pathData.m_Path, fileName);
     }
+    
     /// <returns>
     /// 조건에 맞는 리소스의 키</returns>
     public string GetResourceKey(string path, string fileName)
     {
         return string.Format("{0}{1}", path, fileName);
     }
+
+    #region LoadBase
+    public T LoadPrefab<T>(ResourcePathData pathData, string fileName, bool isCache = true, System.Action<string> KeyCallback = null) where T : Object
+    {
+        List<string> extension = new List<string>();
+        extension.Add("prefab");
+        return Load<T>(pathData, fileName, extension, isCache, KeyCallback);
+    }
+
+    public Sprite LoadImage(ResourcePathData pathData, string fileName, bool isCache = true, System.Action<string> KeyCallback = null)
+    {
+        List<string> extension = new List<string>();
+        extension.Add("png");
+        return Load<Sprite>(pathData, fileName, extension, isCache, KeyCallback);
+    }
+
+    public T LoadMaterial<T>(ResourcePathData pathData, string fileName, bool isCache = true, System.Action<string> KeyCallback = null) where T : Object
+    {
+        List<string> extension = new List<string>();
+        extension.Add("mat");
+        return Load<T>(pathData, fileName, extension, isCache, KeyCallback);
+    }
+
+    public T LoadByte<T>(ResourcePathData pathData, string fileName, bool isCache = true, System.Action<string> KeyCallback = null) where T : Object
+    {
+        List<string> extension = new List<string>();
+        extension.Add("bytes");
+        return Load<T>(pathData, fileName, extension, isCache, KeyCallback);
+    }
+
+    public T LoadAtlas<T>(ResourcePathData pathData, string fileName, bool isCache = true, System.Action<string> KeyCallback = null) where T : Object
+    {
+        List<string> extension = new List<string>();
+        extension.Add("spriteatlas");
+        return Load<T>(pathData, fileName, extension, isCache, KeyCallback);
+    }
+
+    public T LoadSound<T>(ResourcePathData pathData, string fileName, bool isCache = true, System.Action<string> KeyCallback = null) where T : Object
+    {
+        List<string> extension = new List<string>();
+        extension.Add("wav");
+        extension.Add("ogg");
+        return Load<T>(pathData, fileName, extension, isCache, KeyCallback);
+    }
+
+    public T LoadMovie<T>(ResourcePathData pathData, string fileName, bool isCache = true, System.Action<string> KeyCallback = null) where T : Object
+    {
+        List<string> extension = new List<string>();
+        extension.Add("mp4");
+        return Load<T>(pathData, fileName, extension, isCache, KeyCallback);
+    }
+
+    public T LoadText<T>(ResourcePathData pathData, string fileName, bool isCache = true, System.Action<string> KeyCallback = null) where T : Object
+    {
+        List<string> extension = new List<string>();
+        extension.Add("txt");
+        return Load<T>(pathData, fileName, extension, isCache, KeyCallback);
+    }
+
+    public T LoadFont<T>(ResourcePathData pathData, string fileName, bool isCache = true, System.Action<string> KeyCallback = null) where T : Object
+    {
+        List<string> extension = new List<string>();
+        extension.Add("otf");
+        return Load<T>(pathData, fileName, extension, isCache, KeyCallback);
+    }
+
+    public T LoadJson<T>(ResourcePathData pathData, string fileName, bool isCache = true, System.Action<string> KeyCallback = null) where T : Object
+    {
+        List<string> extension = new List<string>();
+        extension.Add("json");
+        return Load<T>(pathData, fileName, extension, isCache, KeyCallback);
+    }
+    #endregion
 }
 
 public enum BundleGroupingType
@@ -347,6 +400,8 @@ public class ResourcePathData
 public class ResourcePath
 {
     public static ResourcePathData SpriteTest = new ResourcePathData("stage1-5/anim/");
+    // 클라 테이블
+    public static ResourcePathData ClientTable = new ResourcePathData("ClientTable/");
     /*
     public static ResourcePathData Effect_Material = new ResourcePathData("Effects/Effect_Material/");
     public static ResourcePathData Effect_UI = new ResourcePathData("Effects/Effect_Material/");
@@ -483,8 +538,6 @@ public class ResourcePath
 
     public static ResourcePathData HelpGuide = new ResourcePathData("images/HelpGuide/");
     
-    // 클라 테이블
-    public static ResourcePathData ClientTable = new ResourcePathData("ClientTable/");
 
     // boss 벽
     public static ResourcePathData BossWall = new ResourcePathData("LevelPrefabs/");

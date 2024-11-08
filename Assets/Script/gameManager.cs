@@ -18,7 +18,7 @@ public class gameManager : MonoBehaviour
     {
         PreloadManager.ExecutePreload(); // _SJ     이미지 프리로드
         maxImage = remainedImage;
-        remainedImageText.GetComponent<TMP_Text>().text = remainedImage + " ";
+        //remainedImageText.GetComponent<TMP_Text>().text = remainedImage + " ";
     }
 
     // Update is called once per frame
@@ -35,14 +35,14 @@ public class gameManager : MonoBehaviour
             Debug.Log("Game Over");
             //여기다 게임오버 텍스트 오브젝트 Setactive(true) 추가
             gameOverText.SetActive(true);
-            remainedImageText.GetComponent<TMP_Text>().text = remainedImage + " ";
+            //remainedImageText.GetComponent<TMP_Text>().text = remainedImage + " ";
             //nextLevel();
         }
         else
         {
             Debug.Log("Found Remained Image: " + remainedImage);
             //여기다 남은 그림 개수 빼는거 추가.
-            remainedImageText.GetComponent<TMP_Text>().text = remainedImage + " ";
+            //remainedImageText.GetComponent<TMP_Text>().text = remainedImage + " ";
 
         }
     }

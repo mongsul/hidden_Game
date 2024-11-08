@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class Level : MonoBehaviour
@@ -16,6 +19,13 @@ public class Level : MonoBehaviour
     //이미지 배열번호 변수 
     int imageNumber = 0;
     gameManager gameManager;
+    
+    [Serializable]
+    public class FindObjectEvent : UnityEvent{}
+
+    [FormerlySerializedAs("OnFindObjectEvent")]
+    [SerializeField]
+    public FindObjectEvent mOnFindObject;
 
     // Start is called before the first frame update
     void Start()
@@ -25,7 +35,7 @@ public class Level : MonoBehaviour
         //이 스크립트를 가진 오브젝트의 button
         button = this.gameObject.GetComponent<Button>();
 
-        gameManager = GameObject.Find("GameManager").GetComponent<gameManager>();
+        //gameManager = GameObject.Find("GameManager").GetComponent<gameManager>();
 
         //Button 로직 추가 클릭할 때 hideObject 함수를 호출한다.
         Button btn = button.GetComponent<Button>();
@@ -40,13 +50,14 @@ public class Level : MonoBehaviour
 
     void hideObject()
     {
+        mOnFindObject?.Invoke();
         imageNumber++; //imageNumber 1추가
 
         //만약 imageNumber가 넣은 이미지보다 수가 적으면 해당 배열 이미지 출력 넘으면 0부터 다시 시작
         if(imageNumber < chageImage.Length)
         {
             image.sprite = chageImage[imageNumber];
-            gameManager.finded();
+            //gameManager.finded();
         }
         else
         {
