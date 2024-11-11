@@ -1,0 +1,13 @@
+{
+    "clearStage": 0,
+    "stringMapKeyList": [
+        "option_BGMSound",
+        "option_FXSound",
+        "option_Vibration"
+    ],
+    "stringMapValueList": [
+        "True",
+        "True",
+        "True"
+    ]
+}
