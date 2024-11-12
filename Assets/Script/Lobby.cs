@@ -40,6 +40,7 @@ public class Lobby : MonoBehaviour
     [FormerlySerializedAs("DropFXParticle")] [SerializeField] private ParticleSystem dropFXParticle;
     
     private int stageValue = 0;
+    private StageTable nextStage;
 
     private int lastClearStage;
     private StageTable lastStage;
@@ -70,12 +71,14 @@ public class Lobby : MonoBehaviour
         }
 
         InitMachineAnimState();
-        
-        int stage = (lastStage != null) ? lastStage.stage : 0;
+
         if (machineSpine)
         {
+            int stage = GetStageForMachineButton(lastStage);
             SpineUtilLibrary.PlaySpineAnim(machineSpine, $"Machine1Button{stage}On", true);
         }
+        
+        SetStartStageIndex();
         
         if (chapterTitleField)
         {
@@ -195,7 +198,19 @@ public class Lobby : MonoBehaviour
         {
             visibleButtonSwitcher.gameObject.SetActive(false);
         }
+
+        string animName = $"Machine2Button{GetStageForMachineButton(lastStage)}On";
+        TrackEntry animEntry = SpineUtilLibrary.PlaySpineAnim(machineSpine, animName, false);
+        if (animEntry != null)
+        {
+            animEntry.Complete += (trackEntry => OnEndPlayMachineDirection());
+        }
+        else
+        {
+            OnEndPlayMachineDirection();
+        }
         
+        /*
         if (machinePlayer)
         {
             int stage = (lastStage != null) ? lastStage.stage : 0;
@@ -204,7 +219,7 @@ public class Lobby : MonoBehaviour
         else
         {
             OnEndPlayMachineDirection();
-        }
+        }*/
     }
 
     public void OnClickMachine()
@@ -226,6 +241,10 @@ public class Lobby : MonoBehaviour
 
     public void OnEndPlayMachineDirection()
     {
+        int nextStageIndex = GetStageForMachineButton(nextStage);
+        string animName = $"button{nextStageIndex}";
+        SpineUtilLibrary.PlaySpineAnim(machineSpine, animName, true);
+        
         if (backButton)
         {
             backButton.SetActive(true);
@@ -248,7 +267,6 @@ public class Lobby : MonoBehaviour
 
     private void PlayMachineTouchDirection()
     {
-        SetStartStageIndex();
         if (!touchGameStartPlayer)
         {
             StartBySavedLevel();
@@ -286,7 +304,8 @@ public class Lobby : MonoBehaviour
 
     private void SetStartStageIndex()
     {
-        int savedStage = SaveManager.Instance.GetClearStage();
+        int clearStage = SaveManager.Instance.GetClearStage();
+        int savedStage = clearStage;
         if (!StageTableManager.Instance.IsValidStage(savedStage))
         {
             savedStage = StageTableManager.Instance.GetMinStageIndex();
@@ -296,7 +315,13 @@ public class Lobby : MonoBehaviour
             savedStage = StageTableManager.Instance.GetNextStageTableIndex(savedStage);
         }
 
+        if (!StageTableManager.Instance.IsValidStage(savedStage))
+        {
+            savedStage = clearStage;
+        }
+
         stageValue = savedStage;
+        nextStage = StageTableManager.Instance.GetStageTable(stageValue);
     }
 
     public void SetInitState()
@@ -363,5 +388,25 @@ public class Lobby : MonoBehaviour
         }
 
         return true;
+    }
+
+    private int GetMachineOneLineCount()
+    {
+        return 5;
+    }
+
+    private int GetStageForMachineButton(StageTable table)
+    {
+        if (table == null)
+        {
+            return 0;
+        }
+
+        if (table.chapter % 2 == 0)
+        {
+            return table.stage + GetMachineOneLineCount();
+        }
+
+        return table.stage;
     }
 }

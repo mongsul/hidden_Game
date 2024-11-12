@@ -402,6 +402,7 @@ public class ResourcePath
     public static ResourcePathData SpriteTest = new ResourcePathData("stage1-5/anim/");
     // 클라 테이블
     public static ResourcePathData ClientTable = new ResourcePathData("ClientTable/");
+    public static ResourcePathData ClientLanguageTable = new ResourcePathData("ClientTable/Language");
     /*
     public static ResourcePathData Effect_Material = new ResourcePathData("Effects/Effect_Material/");
     public static ResourcePathData Effect_UI = new ResourcePathData("Effects/Effect_Material/");

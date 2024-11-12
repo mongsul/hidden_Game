@@ -12,6 +12,8 @@ public class SaveClass
 {
     public int clearStage;
 
+    public string languageCode;
+
     public string[] stringMapKeyList;
     public string[] stringMapValueList;
 
@@ -107,6 +109,18 @@ public class SaveManager : SingletonTemplate<SaveManager>
         {
             stringMapValue.Add(stringKey, value);
         }
+    }
+    #endregion
+
+    #region Option
+    public void SetLanguageCode(string code)
+    {
+        saveData.languageCode = code;
+    }
+
+    public string GetLanguageCode()
+    {
+        return saveData.languageCode;
     }
     #endregion
     

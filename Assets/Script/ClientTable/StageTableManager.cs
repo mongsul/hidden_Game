@@ -111,7 +111,7 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
         }
         
         // 다음 스테이지 체크
-        int chapterKey = GetChapterKey(nowStage.chapter, nowStage.stageIndex + 1);
+        int chapterKey = GetChapterKey(nowStage.chapter, nowStage.stage + 1);
         StageTable nextStage = GetStageTableByChapterKey(chapterKey);
         if (nextStage != null)
         {
