@@ -18,6 +18,8 @@ public class FindObjectMode : MonoBehaviour
     [FormerlySerializedAs("ToolBox")] [SerializeField] private GameObject toolBox;
     [FormerlySerializedAs("GameEndPanel")] [SerializeField] private GameObject gameEndPanel;
     [FormerlySerializedAs("GameEndNotice")] [SerializeField] private LocalizeTextField gameEndNotice;
+
+    [FormerlySerializedAs("GameOverPanel")] [SerializeField] private GameObject gameOverPanel;
     
     [FormerlySerializedAs("BaseScroll")] [SerializeField] private ScrollRect baseScroll;
     
@@ -35,12 +37,17 @@ public class FindObjectMode : MonoBehaviour
     [FormerlySerializedAs("RemainFindCountField")] [SerializeField] private TMP_Text remainFindCountField;
     [FormerlySerializedAs("RemainTouchCount")] [SerializeField] private TMP_Text remainTouchCountField;
 
-    [FormerlySerializedAs("AnimPlayer")] [SerializeField] private SpriteAnimPlayer animPlayer;
+    [FormerlySerializedAs("TouchCounter")] [SerializeField] private TouchCover touchCounter;
+    
+    
+    //[FormerlySerializedAs("AnimPlayer")] [SerializeField]
+    private SpriteAnimPlayer animPlayer;
     
     private StageTable nowProgressStage;
     
     private int remainFindCount = 0;
     private int remainTouchCount = 0;
+    private float damagedLifeInRange = 10.0f; // 이 값보다 작으면 목숨 까임
 
     // Start is called before the first frame update
     void Start()
@@ -93,6 +100,8 @@ public class FindObjectMode : MonoBehaviour
         {
             InitRemainFindObjectCount(nowProgressStage.findObjectCount);
         }
+
+        damagedLifeInRange = ClientTableManager.Instance.GetBaseFloatValue("DamagedLifeInRange", 10.0f);
         
         InitRemainTouchCount(nowProgressStage.touchCount);
         
@@ -117,6 +126,7 @@ public class FindObjectMode : MonoBehaviour
         GameObject stagePrefab = ResourceManager.Instance.LoadPrefab<GameObject>(new ResourcePathData(path), prefabName);
         if (!stagePrefab)
         {
+            GotoLobby(); // 일단 로비로 강제송환한다.
             return;
         }
         
@@ -400,6 +410,7 @@ public class FindObjectMode : MonoBehaviour
         GameObject activePrefab = baseSwitcher ? baseSwitcher.GetActiveObject() : null;
         if (activePrefab)
         {
+            // 연출 애님 플레이어 세팅
             animPlayer = activePrefab.GetComponentInChildren<SpriteAnimPlayer>(true);
             if (animPlayer)
             {
@@ -412,7 +423,51 @@ public class FindObjectMode : MonoBehaviour
                     animPlayer.RefreshResource();
                 }
             }
+
+            if (touchCounter)
+            {
+                touchCounter.gameObject.transform.SetParent(activePrefab.transform);
+                //activePrefab.transform.child
+                touchCounter.gameObject.transform.SetSiblingIndex(2);
+                RectTransform touchRect = CodeUtilLibrary.GetRectTransform(touchCounter.transform);
+                if (touchRect)
+                {
+                    touchRect.anchorMin = Vector2.zero;
+                    touchRect.anchorMax = Vector2.one;
+                    touchRect.position = Vector3.zero;
+                    touchRect.sizeDelta = Vector2.zero;
+                }
+            }
         }
+    }
+
+    public void OnTouchCover(float dist)
+    {
+        #if UNITY_EDITOR
+        CodeUtilLibrary.SetColorLog($"OnTouchCover : dist[{dist}]", "aqua");
+        #endif
+        if (dist < damagedLifeInRange)
+        {
+            if (remainFindCount > 0)
+            {
+                remainTouchCount--;
+
+                if (remainTouchCountField)
+                {
+                    remainTouchCountField.SetText(remainTouchCount.ToString());
+                }
+                
+                if (remainFindCount <= 0)
+                {
+                    OnGameOver();
+                }
+            }
+        }
+    }
+
+    private void OnGameOver()
+    {
+        OnEndPlayDirection();
     }
     #endregion
 

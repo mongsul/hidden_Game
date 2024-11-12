@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 
 [System.Serializable]
 public class ClientTable
@@ -13,6 +15,11 @@ class ClientBaseTable : ClientTable
 {
     public string rowValue;
     public string value;
+
+    public bool IsValidValue()
+    {
+        return ((!string.IsNullOrEmpty(rowValue) && !string.IsNullOrEmpty(value)));
+    }
 }
 
 public enum LanguageCode
@@ -34,6 +41,13 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
     
     // 언어 테이블 (언어 코드가 바뀌면 해당 테이블만 로드해서 값을 설정해준다.)
     private Dictionary<string, string> clientLanguageTable = new Dictionary<string, string>();
+    private List<string> languageCodeList = new List<string>(); // 사용 가능한 언어 코드 목록
+    private string nowLangCode; // 현재 사용중인 언어 코드
+    
+    public class LanguageEvent : UnityEvent{}
+
+    [SerializeField]
+    private LanguageEvent mOnChangeLanguage;
     
     // Start is called before the first frame update
     void Start()
@@ -54,6 +68,23 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
         //return AssetDatabase.LoadAssetAtPath<T>(fullPath);
         //string fullPath = DEFAULT_CLIENT_TABLE_PATH + fileName + ".csv";
         TextAsset data = ResourceManager.Instance.LoadText<TextAsset>(ResourcePath.ClientTable, fileName);//AssetDatabase.LoadAssetAtPath<TextAsset>(fullPath);
+        if (data)
+        {
+            List<T> list = new List<T>(CSVSerializer.Deserialize<T>(data.text));
+            return list;
+        }
+
+        return null;
+    }
+
+    public static List<T> LoadLanguageTable<T>(LanguageCode code) where T : ClientTable // : UnityEngine.ScriptableObject
+    {
+        return LoadLanguageTable<T>(code.ToString());
+    }
+
+    public static List<T> LoadLanguageTable<T>(string code) where T : ClientTable// : UnityEngine.ScriptableObject
+    {
+        TextAsset data = ResourceManager.Instance.LoadText<TextAsset>(ResourcePath.ClientLanguageTable, $"language_{code}");//AssetDatabase.LoadAssetAtPath<TextAsset>(fullPath);
         if (data)
         {
             List<T> list = new List<T>(CSVSerializer.Deserialize<T>(data.text));
@@ -92,41 +123,41 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
         for (int i = 0; i < baseTableList.Count; i++)
         {
             ClientBaseTable table = baseTableList[i];
-            simpleClientBaseTable.Add(table.rowValue, table.value);
+            if (!simpleClientBaseTable.ContainsKey(table.rowValue))
+            {
+                simpleClientBaseTable.Add(table.rowValue, table.value);
+            }
         }
     }
 
     private void InitLangTable()
     {
-        /*
-        List<MetaLanguage> langTableList = LoadTable<MetaLanguage>("Language");
-        for (int i = 0; i < langTableList.Count; i++)
+        TextAsset[] langTableList = Resources.LoadAll<TextAsset>("ClientTable/Language");
+        languageCodeList.Clear();
+        mOnChangeLanguage = new LanguageEvent();
+        if (langTableList != null)
         {
-            MetaLanguage lang = langTableList[i];
-            string key = lang.recordCd;
-            if (!string.IsNullOrEmpty(key))
+            for (int i = 0; i < langTableList.Length; i++)
             {
-                AddLanguageValue(LanguageType.KR, key, lang.kr);
-                AddLanguageValue(LanguageType.EN, key, lang.en);
-                AddLanguageValue(LanguageType.JP, key, lang.jp);
-                AddLanguageValue(LanguageType.CH, key, lang.zhCn);
-                AddLanguageValue(LanguageType.TW, key, lang.zhTw);
+                TextAsset table = langTableList[i];
+                if (table)
+                {
+                    string tableName = table.name;
+                    string langCode = tableName.Substring(tableName.Length - 2, 2); // 끝의 2문자를 사용함
+                    languageCodeList.Add(langCode);
+                }
             }
-        }*/
-        
-        /*ClientBaseTable langTable = LoadTable<ClientBaseTable>("Language");
-        if (langTable == null)
-        {
-            return;
-        }*/
+        }
+
+        string saveLangCode = SaveManager.Instance.GetLanguageCode();
+        string initLangCode = (string.IsNullOrEmpty(saveLangCode)) ? GetDefaultLanguageCode() : saveLangCode;
+        SetLanguageCode(initLangCode);
     }
     #endregion
 
     #region Base
-    public string GetBaseValue(string key)
+    public string GetBaseValue(string key, string defaultValue = "")
     {
-        //InitTable();
-        
         if (simpleClientBaseTable.ContainsKey(key))
         {
             return simpleClientBaseTable[key];
@@ -134,28 +165,89 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
 
         return "";
     }
+
+    public int GetBaseIntValue(string key, int defaultValue = 0)
+    {
+        string value = GetBaseValue(key, defaultValue.ToString());
+        return string.IsNullOrEmpty(value) ? defaultValue : Convert.ToInt32(value);
+    }
+
+    public float GetBaseFloatValue(string key, float defaultValue = 0.0f)
+    {
+        string value = GetBaseValue(key, defaultValue.ToString());
+        return string.IsNullOrEmpty(value) ? defaultValue : (float)Convert.ToDouble(value);
+    }
+
+    public bool GetBaseBoolValue(string key, bool defaultValue = false)
+    {
+        string value = GetBaseValue(key, defaultValue.ToString());
+        return string.IsNullOrEmpty(value) ? defaultValue : Convert.ToBoolean(value);
+    }
     #endregion
 
     #region Language
-    public string GetLanguageValue(LanguageCode lang, string key)
+    private string GetDefaultLanguageCode()
     {
-        //InitTable();
+        return LanguageCode.en.ToString();
+    }
+    
+    private void SetLanguageCode(LanguageCode code)
+    {
+        SetLanguageCode(code.ToString());
+    }
 
-        /*
-        if (clientLanguageTable.ContainsKey(lang))
+    public void SetLanguageCode(string code)
+    {
+        SaveManager.Instance.SetLanguageCode(code);
+        
+        List<ClientBaseTable> baseTableList = LoadLanguageTable<ClientBaseTable>(code);
+        clientLanguageTable.Clear();
+        if (baseTableList != null)
         {
-            if (clientLanguageTable[lang].ContainsKey(key))
+            for (int i = 0; i < baseTableList.Count; i++)
             {
-                return clientLanguageTable[lang][key];
+                ClientBaseTable table = baseTableList[i];
+                if (table.IsValidValue())
+                {
+                    if (!clientLanguageTable.ContainsKey(table.rowValue))
+                    {
+                        clientLanguageTable.Add(table.rowValue, table.value);
+                    }
+                }
             }
-        }*/
+        }
 
+        CallOnChangeLanguageCode();
+    }
+    
+    public string GetLanguageValue(string key)
+    {
+        if (clientLanguageTable.ContainsKey(key))
+        {
+            return clientLanguageTable[key];
+        }
+        
         return "";
     }
 
-    public string GetLanguageValue(string key)
+    public List<string> GetLanguageCodeList()
     {
-        return "";
+        return languageCodeList;
+    }
+
+    public void AddChangeLanguageCodeEvent(UnityAction localizeAction)
+    {
+        mOnChangeLanguage?.AddListener(localizeAction);
+    }
+
+    private void CallOnChangeLanguageCode()
+    {
+        mOnChangeLanguage?.Invoke();
+    }
+
+    public void RemoveChangeLanguageCodeEvent(UnityAction localizeAction)
+    {
+        mOnChangeLanguage?.RemoveListener(localizeAction);
     }
     #endregion
 }

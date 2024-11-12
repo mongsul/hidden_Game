@@ -25,6 +25,7 @@ namespace UI.Common
         // Start is called before the first frame update
         void Start()
         {
+            ClientTableManager.Instance.AddChangeLanguageCodeEvent(RefreshLocalize);
             InitThis();
         }
 
@@ -33,7 +34,12 @@ namespace UI.Common
         void Update()
         {
         }*/
-        
+
+        private void OnDestroy()
+        {
+            ClientTableManager.Instance.RemoveChangeLanguageCodeEvent(RefreshLocalize);
+        }
+
 #if UNITY_EDITOR
         protected void OnValidate()
         {

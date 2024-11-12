@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
-public class OptionSetterToggle : MonoBehaviour
+public class OptionSetterToggle : MonoBehaviour, IOptionValueConnector
 {
     [FormerlySerializedAs("SaveKey")] [SerializeField]
     private string saveKey;

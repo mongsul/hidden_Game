@@ -50,7 +50,13 @@ public class Level : MonoBehaviour
 
     void hideObject()
     {
+        if (imageNumber >= 1)
+        {
+            return;
+        }
+        
         mOnFindObject?.Invoke();
+        
         imageNumber++; //imageNumber 1추가
 
         //만약 imageNumber가 넣은 이미지보다 수가 적으면 해당 배열 이미지 출력 넘으면 0부터 다시 시작

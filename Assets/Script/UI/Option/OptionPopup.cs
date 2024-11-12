@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 
 public class OptionPopup : MonoBehaviour
 {
-    private List<OptionSetterToggle> toggleList;
+    private List<IOptionValueConnector> valueConnectorList;
     
     /*
     // Start is called before the first frame update
@@ -32,34 +32,34 @@ public class OptionPopup : MonoBehaviour
 
     private void LoadOption()
     {
-        if (toggleList == null)
+        if (valueConnectorList == null)
         {
-            toggleList = gameObject.GetComponentsInChildren<OptionSetterToggle>().ToList();
+            valueConnectorList = gameObject.GetComponentsInChildren<IOptionValueConnector>().ToList();
         }
         
-        for (int i = 0; i < toggleList.Count; i++)
+        for (int i = 0; i < valueConnectorList.Count; i++)
         {
-            OptionSetterToggle toggle = toggleList[i];
-            if (toggle)
+            IOptionValueConnector valueConnector = valueConnectorList[i];
+            if (valueConnector != null)
             {
-                toggle.InitThis();
+                valueConnector.InitThis();
             }
         }
     }
 
     private void SaveOption()
     {
-        if (toggleList == null)
+        if (valueConnectorList == null)
         {
             return;
         }
         
-        for (int i = 0; i < toggleList.Count; i++)
+        for (int i = 0; i < valueConnectorList.Count; i++)
         {
-            OptionSetterToggle toggle = toggleList[i];
-            if (toggle)
+            IOptionValueConnector valueConnector = valueConnectorList[i];
+            if (valueConnector != null)
             {
-                toggle.ValueToSaveData();
+                valueConnector.ValueToSaveData();
             }
         }
         
@@ -68,18 +68,18 @@ public class OptionPopup : MonoBehaviour
 
     private void CancelOption()
     {
-        if (toggleList == null)
+        if (valueConnectorList == null)
         {
             return;
         }
         
-        for (int i = 0; i < toggleList.Count; i++)
+        for (int i = 0; i < valueConnectorList.Count; i++)
         {
-            OptionSetterToggle toggle = toggleList[i];
-            if (toggle)
+            IOptionValueConnector valueConnector = valueConnectorList[i];
+            if (valueConnector != null)
             {
-                toggle.InitThis();
-                toggle.SetApplyOption();
+                valueConnector.InitThis();
+                valueConnector.SetApplyOption();
             }
         }
     }
@@ -98,6 +98,19 @@ public class OptionPopup : MonoBehaviour
     public void RefreshVibration(bool value)
     {
         // 딱히 적용사항 없을듯?
+    }
+
+    public void RefreshLang(string value)
+    {
+        ClientTableManager.Instance.SetLanguageCode(value);
+    }
+
+    public void SetLanguageList(OptionValueSelector selector)
+    {
+        selector.SetValueList(ClientTableManager.Instance.GetLanguageCodeList());
+        
+        string value = SaveManager.Instance.GetLanguageCode();
+        selector.SetSelect(value);
     }
     #endregion
 }

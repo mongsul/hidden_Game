@@ -158,5 +158,11 @@ public class SaveManager : SingletonTemplate<SaveManager>
         string value = GetOptionValue(isBGM ? "BGMSound" : "FXSound");
         return Convert.ToBoolean(value);
     }
+
+    public bool GetVibrationOptionValue()
+    {
+        string value = GetOptionValue("Vibration");
+        return Convert.ToBoolean(value);
+    }
     #endregion
 }
