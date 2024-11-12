@@ -2,9 +2,12 @@ using System.Collections.Generic;
 using Core.Library;
 using Spine;
 using Spine.Unity;
-using Spine.Unity.Editor;
 using Unity.VisualScripting;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using Spine.Unity.Editor;
+#endif
 
 namespace Script.Library
 {
