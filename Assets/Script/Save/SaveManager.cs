@@ -50,10 +50,13 @@ public class SaveManager : SingletonTemplate<SaveManager>
         
         string json = JsonUtility.ToJson(saveData, true);
         string folder = GetSaveFolder();
+        
+#if UNITY_EDITOR
         if (!Directory.Exists(folder))
         {
             Directory.CreateDirectory(folder);
         }
+#endif
         
         File.WriteAllText(GetSavePath(), json);
     }
