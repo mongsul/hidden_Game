@@ -26,6 +26,9 @@ public class SpineAnimPlayer : MonoBehaviour
     
     [Serializable]
     public class PlaySimpleEvent : UnityEvent{}
+    
+    [Serializable]
+    public class PlayObjectEvent : UnityEvent<GameObject>{}
 
     [Serializable]
     private struct SpineStreamGroup
@@ -48,6 +51,9 @@ public class SpineAnimPlayer : MonoBehaviour
 
     [FormerlySerializedAs("OnEndPlayAllEvent")] [SerializeField]
     public PlaySimpleEvent mOnEndPlayAll;
+    
+    [FormerlySerializedAs("OnEndPlayAllEvent")] [SerializeField]
+    public PlayObjectEvent mOnEndPlayAllWithObject;
     
     private int nowPlayIndex;
     private LocalizeTextField.LocalizeInfo nameInfo = new LocalizeTextField.LocalizeInfo();
@@ -136,6 +142,7 @@ public class SpineAnimPlayer : MonoBehaviour
     private void OnEndPlayAll()
     {
         mOnEndPlayAll?.Invoke();
+        mOnEndPlayAllWithObject?.Invoke(gameObject);
     }
 
     public void PlusParamValue(EditPlayParamType paramType, int listIndex, int value)

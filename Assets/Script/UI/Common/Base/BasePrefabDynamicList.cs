@@ -252,6 +252,7 @@ namespace UI.Common.Base
                 }
             }
             
+            prefab.gameObject.SetActive(true);
             return prefab;
         }
 
@@ -274,6 +275,7 @@ namespace UI.Common.Base
                 list.DeactivateList = new List<BaseSimplePrefab>();
             }
 
+            prefab.gameObject.SetActive(isActivate);
             if (!isActivate)
             {
                 list.List.Remove(prefab);

@@ -26,7 +26,7 @@ public enum LanguageCode
 {
     ko = 0, // 한국어
     en, // 영어
-    jp, // 일본어
+    ja, // 일본어
 }
 
 // _SJ      클라이언트 테이블 관리자. csv 테이블을 사용한다.
@@ -49,6 +49,10 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
     [SerializeField]
     private LanguageEvent mOnChangeLanguage;
     
+    #if UNITY_IOS
+    private Dictionary<string, int> soundIDTable = new Dictionary<string, string>();
+    #endif
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -60,6 +64,13 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
     void Update()
     {
     }*/
+
+    private void OnDestroy()
+    {
+        simpleClientBaseTable.Clear();
+        clientLanguageTable.Clear();
+        languageCodeList.Clear();
+    }
 
     #region Init
     public static List<T> LoadTable<T>(string fileName) where T : ClientTable// : UnityEngine.ScriptableObject
@@ -103,6 +114,7 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
         
         InitBaseTable();
         InitLangTable();
+        InitIOSTable();
 
         isInitTable = true;
     }
@@ -150,8 +162,9 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
         }
 
         string saveLangCode = SaveManager.Instance.GetLanguageCode();
-        string initLangCode = (string.IsNullOrEmpty(saveLangCode)) ? GetDefaultLanguageCode() : saveLangCode;
-        SetLanguageCode(initLangCode);
+        bool isDefaultCode = string.IsNullOrEmpty(saveLangCode);
+        string initLangCode = isDefaultCode ? GetDefaultLanguageCode() : saveLangCode;
+        SetLanguageCode(initLangCode, isDefaultCode);
     }
     #endregion
 
@@ -188,16 +201,41 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
     #region Language
     private string GetDefaultLanguageCode()
     {
-        return LanguageCode.en.ToString();
+        LanguageCode code = LanguageCode.en;
+        switch (Application.systemLanguage)
+        {
+            case SystemLanguage.Korean:
+                code = LanguageCode.ko;
+                break;
+            case SystemLanguage.Japanese:
+                code = LanguageCode.ja;
+                break;
+        }
+        
+        return code.ToString();
     }
     
-    private void SetLanguageCode(LanguageCode code)
+    private void SetLanguageCode(LanguageCode code, bool isDefaultCode = false)
     {
-        SetLanguageCode(code.ToString());
+        SetLanguageCode(code.ToString(), isDefaultCode);
     }
 
-    public void SetLanguageCode(string code)
+    public void SetLanguageCode(string code, bool isDefaultCode = false)
     {
+        // 언어 코드 값 없을 때 예외처리
+        if (!languageCodeList.Contains(code))
+        {
+            if (isDefaultCode)
+            {
+                code = "en";
+            }
+            else
+            {
+                SetLanguageCode(GetDefaultLanguageCode(), true);
+                return;
+            }
+        }
+        
         SaveManager.Instance.SetLanguageCode(code);
         
         List<ClientBaseTable> baseTableList = LoadLanguageTable<ClientBaseTable>(code);
@@ -249,5 +287,46 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
     {
         mOnChangeLanguage?.RemoveListener(localizeAction);
     }
+    #endregion
+
+    #region IOSSound
+    private void InitIOSTable()
+    {
+#if UNITY_IOS
+        InitIOSSoundIDTable();
+#endif
+    }
+    
+    #if UNITY_IOS
+    private void InitIOSSoundIDTable()
+    {
+        List<ClientBaseTable> iosSoundTableList = LoadTable<ClientBaseTable>("SoundForIOS");
+        if (iosSoundTableList == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < iosSoundTableList.Count; i++)
+        {
+            ClientBaseTable table = iosSoundTableList[i];
+            if (!soundIDTable.ContainsKey(table.rowValue))
+            {
+                soundIDTable.Add(table.rowValue, Convert.ToInt32(table.value));
+            }
+        }
+    }
+    #endif
+
+    public int GetIOSSoundID(string soundName)
+    {
+#if UNITY_IOS
+        if (soundIDTable.ContainsKey(soundName))
+        {
+            return soundIDTable[soundName];
+        }
+#endif
+        return 0;
+    }
+    
     #endregion
 }

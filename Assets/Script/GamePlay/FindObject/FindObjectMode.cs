@@ -4,6 +4,7 @@ using Core.Library;
 using Script.Component;
 using TMPro;
 using UI.Common;
+using UI.Common.Base;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -12,12 +13,22 @@ using UnityEngine.UI;
 // _SJ      물건 찾는 모드
 public class FindObjectMode : MonoBehaviour
 {
-    [FormerlySerializedAs("StageIndex")] [SerializeField] private int stageIndex;
+    private enum FindFXKind
+    {
+        TouchToCollect = 0,
+        TouchToWrong,
+        UseHint,
+    }
+    
+#if UNITY_EDITOR
     [FormerlySerializedAs("IsFindCountOne")] [SerializeField] private bool isFindCountOne = false;
+#endif
+    
+    [FormerlySerializedAs("StageIndex")] [SerializeField] private int stageIndex;
     
     [FormerlySerializedAs("ToolBox")] [SerializeField] private GameObject toolBox;
     [FormerlySerializedAs("GameEndPanel")] [SerializeField] private GameObject gameEndPanel;
-    [FormerlySerializedAs("GameEndNotice")] [SerializeField] private LocalizeTextField gameEndNotice;
+    [FormerlySerializedAs("GameEndPlayer")] [SerializeField] private SpineAnimPlayer gameEndPlayer;
 
     [FormerlySerializedAs("GameOverPanel")] [SerializeField] private GameObject gameOverPanel;
     
@@ -38,7 +49,8 @@ public class FindObjectMode : MonoBehaviour
     [FormerlySerializedAs("RemainTouchCount")] [SerializeField] private TMP_Text remainTouchCountField;
 
     [FormerlySerializedAs("TouchCounter")] [SerializeField] private TouchCover touchCounter;
-    
+    [FormerlySerializedAs("FXList")] [SerializeField] private BasePrefabDynamicList fxList;
+    [FormerlySerializedAs("MainCamera")] [SerializeField] private Camera mainCamera;
     
     //[FormerlySerializedAs("AnimPlayer")] [SerializeField]
     private SpriteAnimPlayer animPlayer;
@@ -48,6 +60,8 @@ public class FindObjectMode : MonoBehaviour
     private int remainFindCount = 0;
     private int remainTouchCount = 0;
     private float damagedLifeInRange = 10.0f; // 이 값보다 작으면 목숨 까임
+
+    private List<Level> findList = new List<Level>();
 
     // Start is called before the first frame update
     void Start()
@@ -83,7 +97,7 @@ public class FindObjectMode : MonoBehaviour
             return;
         }
         
-        int chapter = nowProgressStage.chapter;
+        int chapter = StageTableManager.Instance.GetChapterSort(nowProgressStage.chapter);
         int chapterStage = nowProgressStage.stage;
 
         bool isOne = false;
@@ -208,15 +222,15 @@ public class FindObjectMode : MonoBehaviour
 
     private void InitStagePrefab(GameObject stagePrefab)
     {
-        List<Level> findObjectList = new List<Level>(stagePrefab.GetComponentsInChildren<Level>());
-        if (findObjectList == null)
+        findList = new List<Level>(stagePrefab.GetComponentsInChildren<Level>());
+        if (findList == null)
         {
             return;
         }
 
-        for (int i = 0; i < findObjectList.Count; i++)
+        for (int i = 0; i < findList.Count; i++)
         {
-            Level findObject = findObjectList[i];
+            Level findObject = findList[i];
             if (findObject)
             {
                 findObject.mOnFindObject.AddListener(OnFindObject);
@@ -269,8 +283,17 @@ public class FindObjectMode : MonoBehaviour
         }
     }
 
-    private void OnFindObject()
+    private void OnFindObject(Level findObject)
     {
+        if (findObject)
+        {
+            BaseSimplePrefab hint = findObject.GetHint();
+            if (hint)
+            {
+                OnEndPlayHintFX(hint.gameObject);
+            }
+        }
+        
         remainFindCount--;
         RefreshRemainFindObjectCount();
         if (remainFindCount <= 0)
@@ -379,14 +402,14 @@ public class FindObjectMode : MonoBehaviour
             toolBox.SetActive(true);
         }
 
-        if (gameEndNotice)
+        if (gameEndPanel)
         {
-            gameEndNotice.SetText(IsGameClear() ? "Game clear!" : "Game over!");
+            gameEndPanel.SetActive(true);
         }
 
         if (gameEndPanel)
         {
-            gameEndPanel.SetActive(true);
+            gameEndPlayer.PlayAnim();
         }
     }
 
@@ -400,6 +423,11 @@ public class FindObjectMode : MonoBehaviour
         if (gameEndPanel)
         {
             gameEndPanel.SetActive(false);
+        }
+
+        if (gameOverPanel)
+        {
+            gameOverPanel.SetActive(false);
         }
         
         if (toolBox)
@@ -426,9 +454,15 @@ public class FindObjectMode : MonoBehaviour
 
             if (touchCounter)
             {
+                BackLineComponent backline = activePrefab.GetComponentInChildren<BackLineComponent>();
+                int sibliningIndex = 2;
+                if (backline)
+                {
+                    sibliningIndex = backline.transform.GetSiblingIndex() + 1;
+                }
+                
                 touchCounter.gameObject.transform.SetParent(activePrefab.transform);
-                //activePrefab.transform.child
-                touchCounter.gameObject.transform.SetSiblingIndex(2);
+                touchCounter.gameObject.transform.SetSiblingIndex(sibliningIndex);
                 RectTransform touchRect = CodeUtilLibrary.GetRectTransform(touchCounter.transform);
                 if (touchRect)
                 {
@@ -441,14 +475,14 @@ public class FindObjectMode : MonoBehaviour
         }
     }
 
-    public void OnTouchCover(float dist)
+    public void OnTouchCover(Vector2 pos, float dist)
     {
         #if UNITY_EDITOR
-        CodeUtilLibrary.SetColorLog($"OnTouchCover : dist[{dist}]", "aqua");
+        //CodeUtilLibrary.SetColorLog($"OnTouchCover : dist[{dist}]", "aqua");
         #endif
         if (dist < damagedLifeInRange)
         {
-            if (remainFindCount > 0)
+            if (remainTouchCount > 0)
             {
                 remainTouchCount--;
 
@@ -457,17 +491,24 @@ public class FindObjectMode : MonoBehaviour
                     remainTouchCountField.SetText(remainTouchCount.ToString());
                 }
                 
-                if (remainFindCount <= 0)
+                if (remainTouchCount <= 0)
                 {
                     OnGameOver();
                 }
+
+                PlayWrongFX(pos);
+                //ProjectUtilLibrary.VibrateByBaseValue();
+                VibrationLibrary.Instance.ExecuteSimpleVibration();
             }
         }
     }
 
     private void OnGameOver()
     {
-        OnEndPlayDirection();
+        if (gameOverPanel)
+        {
+            gameOverPanel.SetActive(true);
+        }
     }
     #endregion
 
@@ -494,6 +535,146 @@ public class FindObjectMode : MonoBehaviour
     public void GotoNextStage()
     {
         SetStage(StageTableManager.Instance.GetNextStageTableIndex(stageIndex));
+    }
+
+    public void UseHint()
+    {
+        if (findList == null)
+        {
+            return;
+        }
+
+        if (findList.Count < 1)
+        {
+            return;
+        }
+
+        int levelIndex = Random.Range(0, findList.Count - 1);
+        Level findObject = findList[levelIndex];
+        if (!findObject)
+        {
+            return;
+        }
+
+        PlayHintFX(findObject);
+            
+        findList.Remove(findObject);
+        
+        /*
+        float scaleRate = 2.0f;
+        SetScaleRate(scaleRate);
+
+        if (baseScroll)
+        {
+            RectTransform rect = CodeUtilLibrary.GetRectTransform(findObject.transform);
+            RectTransform parentRect = CodeUtilLibrary.GetRectTransform(findObject.transform.parent.transform);
+            if (rect && parentRect)
+            {
+                Vector2 pos = parentRect.sizeDelta * rect.anchorMin * scaleRate;
+                Vector2 backupPos = pos; 
+                pos.x += rect.localPosition.x;
+                pos.y += rect.localPosition.y;
+                baseScroll.horizontalNormalizedPosition = pos.x / parentRect.sizeDelta.x;
+                baseScroll.verticalNormalizedPosition = pos.y / parentRect.sizeDelta.y;
+                CodeUtilLibrary.SetColorLog($"UseHint : local[{rect.localPosition}] pos[{pos}], backup[{backupPos}], focus[{baseScroll.horizontalNormalizedPosition}, {baseScroll.verticalNormalizedPosition}]", "aqua");
+            }
+        }*/
+    }
+    #endregion
+
+    #region Record
+    private void AddRecord(FindFXKind fxKind)
+    {
+        SaveManager.Instance.AddStageRecord(stageIndex, fxKind.ToString());
+    }
+    #endregion
+    
+    #region FX
+    private void OnEndPlayFX(GameObject fxObject, int index)
+    {
+        if (!fxList)
+        {
+            return;
+        }
+        
+        if (fxObject)
+        {
+            BaseSimplePrefab prefab = fxObject.GetComponent<BaseSimplePrefab>();
+            if (prefab)
+            {
+                fxList.OnSetActivatePrefab(prefab, index, false);
+            }
+        }
+    }
+    
+    private void PlayTouchFX()
+    {
+        AddRecord(FindFXKind.TouchToCollect);
+    }
+
+    public void OnEndPlayTouchFX(GameObject fxObject)
+    {
+        OnEndPlayFX(fxObject, (int)FindFXKind.TouchToCollect);
+    }
+    
+    private void PlayWrongFX(Vector2 pos)
+    {
+        AddRecord(FindFXKind.TouchToWrong);
+
+        /*
+        if (fxList)
+        {
+            BaseSimplePrefab prefab = fxList.GetNewActivePrefab((int)FindFXKind.TouchToWrong);
+            if (prefab)
+            {
+                RectTransform rect = CodeUtilLibrary.GetRectTransform(prefab.transform);
+                if (rect)
+                {
+                    rect.anchorMin = Vector2.zero;
+                    rect.anchorMax = Vector2.zero;
+                    //rect.localPosition = pos;
+                    //rect.localPosition = rect.worldToLocalMatrix.MultiplyPoint3x4(pos);
+                    Vector2 newpos;
+                    RectTransformUtility.ScreenPointToLocalPointInRectangle(rect, pos, mainCamera, out newpos);
+                    rect.localPosition = newpos;
+                }
+
+                SpineAnimPlayer anim = prefab.GetBasePrefab<SpineAnimPlayer>();
+                if (anim)
+                {
+                    anim.mOnEndPlayAllWithObject.RemoveAllListeners();
+                    anim.mOnEndPlayAllWithObject.AddListener(OnEndPlayWrongFX);
+                    anim.PlayAnim();
+                }
+            }
+        }*/
+    }
+
+    public void OnEndPlayWrongFX(GameObject fxObject)
+    {
+        OnEndPlayFX(fxObject, (int)FindFXKind.TouchToWrong);
+    }
+    
+    private void PlayHintFX(Level findObject)
+    {
+        if (findObject)
+        {
+            if (fxList)
+            {
+                BaseSimplePrefab prefab = fxList.GetNewActivePrefab((int)FindFXKind.UseHint);
+                if (prefab)
+                {
+                    findObject.SetHint(prefab);
+                }
+            }
+        }
+
+        AddRecord(FindFXKind.UseHint);
+    }
+
+    public void OnEndPlayHintFX(GameObject fxObject)
+    {
+        OnEndPlayFX(fxObject, (int)FindFXKind.UseHint);
     }
     #endregion
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using TMPro;
+using UI.Common;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using ColorUtility = UnityEngine.ColorUtility;
@@ -101,6 +102,27 @@ namespace Core.Library
         public static Sprite LoadSprite(ResourcePathData resourcePath, string resourceName)
         {
             return ResourceManager.Instance.LoadImage(resourcePath, resourceName);
+        }
+
+        public static Sprite LoadLocalizeSprite(string resourcePath, string resourceName, bool isUpper = true)
+        {
+            return LoadLocalizeSprite(new ResourcePathData(resourcePath), resourceName);
+        }
+        
+        public static Sprite LoadLocalizeSprite(ResourcePathData resourcePath, string resourceName, bool isUpper = true)
+        {
+            LocalizeTextField.LocalizeInfo localizeInfo = new LocalizeTextField.LocalizeInfo();
+            localizeInfo.localizeKey = resourceName;
+            localizeInfo.contentsList = new List<string>();
+
+            string langCode = SaveManager.Instance.GetLanguageCode();
+            if (isUpper)
+            {
+                langCode = langCode.ToUpper();
+            }
+            localizeInfo.contentsList.Add(langCode);
+            string localizeName = LocalizeTextField.GetFormatStringByLocalizeInfo(localizeInfo);
+            return ResourceManager.Instance.LoadImage(resourcePath, localizeName);
         }
         
         public static Color HexColor(string hexCode)

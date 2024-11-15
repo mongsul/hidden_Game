@@ -1,13 +1,6 @@
 {
-    "clearStage": 0,
-    "stringMapKeyList": [
-        "option_BGMSound",
-        "option_FXSound",
-        "option_Vibration"
-    ],
-    "stringMapValueList": [
-        "True",
-        "True",
-        "True"
-    ]
+    "clearStage": 300204,
+    "languageCode": "ko",
+    "stringMapKeyList": [],
+    "stringMapValueList": []
 }

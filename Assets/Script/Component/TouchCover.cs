@@ -9,10 +9,16 @@ using UnityEngine.Serialization;
 public class TouchCover : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [Serializable]
-    public class TouchCoverEvent : UnityEvent<float>{}
-
-    // Event delegates triggered on click.
+    public class TouchCoverEvent : UnityEvent<Vector2, float>{}
+    
+    [Serializable]
+    public class TouchCoverPosEvent : UnityEvent<Vector2>{}
+    
     [FormerlySerializedAs("OnClickEvent")]
+    [SerializeField]
+    private TouchCoverPosEvent mOnPress;
+
+    [FormerlySerializedAs("OnReleaseEvent")]
     [SerializeField]
     private TouchCoverEvent mOnRelease;
 
@@ -32,11 +38,12 @@ public class TouchCover : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public void OnPointerDown(PointerEventData eventData)
     {
         pressPos = eventData.position;
+        mOnPress?.Invoke(eventData.position);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
         float dist = Vector2.Distance(pressPos, eventData.position);
-        mOnRelease?.Invoke(dist);
+        mOnRelease?.Invoke(eventData.position, dist);
     }
 }

@@ -12,7 +12,7 @@ public class ProjectUtilLibrary : MonoBehaviour
         if (isUseVibration)
         {
             int time = ClientTableManager.Instance.GetBaseIntValue("VibrationTime");
-            Vibrator.Vibrate(time);
+            //Vibrator.Vibrate(time);
         }
     }
     #endregion

@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Core.Library;
+using UI.Common;
 using UnityEngine;
 using UnityEngine.Windows;
 using File = System.IO.File;
@@ -35,7 +37,11 @@ public class SaveManager : SingletonTemplate<SaveManager>
     #region Base
     private static string GetSaveFolder()
     {
+#if UNITY_EDITOR
         return Application.dataPath + "/Save";
+#else
+        return Application.persistentDataPath + "/Save";
+#endif
     }
     
     private static string GetSavePath()
@@ -50,15 +56,24 @@ public class SaveManager : SingletonTemplate<SaveManager>
         
         string json = JsonUtility.ToJson(saveData, true);
         string folder = GetSaveFolder();
+
+        if (!System.IO.Directory.Exists(folder))
+        {
+            System.IO.Directory.CreateDirectory(folder);
+        }
         
+        /*
 #if UNITY_EDITOR
         if (!Directory.Exists(folder))
         {
             Directory.CreateDirectory(folder);
         }
-#endif
+#endif*/
         
-        File.WriteAllText(GetSavePath(), json);
+        //File.WriteAllText(GetSavePath(), json);
+        StreamWriter wr = new StreamWriter(GetSavePath(), false);
+        wr.WriteLine(json);
+        wr.Close();
     }
 
     public void Load()
@@ -71,7 +86,9 @@ public class SaveManager : SingletonTemplate<SaveManager>
             return;
         }
 
-        string json = File.ReadAllText(savePath);
+        //string json = File.ReadAllText(savePath);
+        StreamReader rd = new StreamReader(savePath);
+        string json = rd.ReadToEnd();
         saveData = JsonUtility.FromJson<SaveClass>(json);
         
         stringMapValue = new Dictionary<string, string>();
@@ -84,7 +101,7 @@ public class SaveManager : SingletonTemplate<SaveManager>
     #endregion
 
     #region Dictionary
-    public string GetStringMapValue(string stringKey)
+    public string GetStringMapValue(string stringKey, string defaultValue = "")
     {
         if (stringMapValue != null)
         {
@@ -94,7 +111,22 @@ public class SaveManager : SingletonTemplate<SaveManager>
             }
         }
 
-        return "";
+        return defaultValue;
+    }
+
+    public int GetStringMapIntValue(string stringKey, int defaultValue = 0)
+    {
+        return Convert.ToInt32(GetStringMapValue(stringKey, defaultValue.ToString()));
+    }
+
+    public bool GetStringMapBoolValue(string stringKey, bool defaultValue = false)
+    {
+        return Convert.ToBoolean(GetStringMapValue(stringKey, defaultValue.ToString()));
+    }
+
+    public float GetStringMapFloatValue(string stringKey, float defaultValue = 0)
+    {
+        return (float)Convert.ToDouble(GetStringMapValue(stringKey, defaultValue.ToString()));
     }
 
     public void SetStringMapValue(string stringKey, string value)
@@ -142,6 +174,80 @@ public class SaveManager : SingletonTemplate<SaveManager>
     {
         return saveData.clearStage;
     }
+
+    public string GetStageRecordTitle(int stage, string title)
+    {
+        return $"{stage}_{title}";
+    }
+
+    public void AddStageRecord(int stage, string title)
+    {
+        int nowStageRecord = GetStageRecord(stage, title) + 1;
+        SetStringMapValue(GetStageRecordTitle(stage, title), nowStageRecord.ToString());
+    }
+
+    public void SetStageRecord(int stage, string title, int count)
+    {
+        SetStringMapValue(GetStageRecordTitle(stage, title), count.ToString());
+    }
+
+    public int GetStageRecord(int stage, string title)
+    {
+        return GetStringMapIntValue(GetStageRecordTitle(stage, title), 0);
+    }
+
+    public string GetAllStageRecord()
+    {
+        int minStage = StageTableManager.Instance.GetMinStageIndex();
+        int maxStage = StageTableManager.Instance.GetMinStageIndex();
+        int nowStage = minStage;
+        string record = "";
+        List<string> titleList = new List<string>();
+        titleList.Add("TouchToCollect");
+        titleList.Add("TouchToWrong");
+        titleList.Add("UseHint");
+
+        List<int> countList = new List<int>();
+        int i;
+        for (i = 0; i < titleList.Count; i++)
+        {
+            countList.Add(0);
+        }
+
+        LocalizeTextField.LocalizeInfo localizeInfo = new LocalizeTextField.LocalizeInfo();
+        
+        while (true)
+        {
+            StageTable table = StageTableManager.Instance.GetStageTable(nowStage);
+            if (table == null)
+            {
+                break;
+            }
+
+            bool isCounting = false;
+            string nowStageRecord = "";
+            for (i = 0; i < titleList.Count; i++)
+            {
+                int count = GetStageRecord(nowStage, titleList[i]);
+                if (count > 0)
+                {
+                    localizeInfo.localizeKey = titleList[i];
+                    localizeInfo.SetContent(count.ToString());
+                    nowStageRecord += LocalizeTextField.GetFormatStringByLocalizeInfo(localizeInfo) + "\n";
+                    isCounting = true;
+                }
+            }
+
+            if (isCounting)
+            {
+                record += nowStageRecord;
+            }
+
+            nowStage = StageTableManager.Instance.GetNextStageTableIndex(nowStage);
+        }
+        
+        return record;
+    }
     #endregion
 
     #region Option
@@ -152,7 +258,7 @@ public class SaveManager : SingletonTemplate<SaveManager>
 
     public string GetOptionValue(string key)
     {
-        string value = GetStringMapValue("option_" + key);
+        string value = GetStringMapValue("option_" + key, true.ToString());
         return string.IsNullOrEmpty(value) ? "true" : value;
     }
 

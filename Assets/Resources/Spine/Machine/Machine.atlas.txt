@@ -72,7 +72,7 @@ offsets:326,772,1080,1920
 start_cat2
 bounds:1561,87,280,217
 offsets:326,772,1080,1920
-white
+white2
 bounds:1861,307,101,100
 rotate:90
 
@@ -81,7 +81,7 @@ size:2048,2048
 filter:Linear,Linear
 pma:true
 Night/cat
-bounds:117,24,96,92
+bounds:818,832,96,92
 Night/machine
 bounds:2,803,814,1231
 offsets:169,478,1080,1920
@@ -101,7 +101,7 @@ out
 bounds:1750,1644,390,96
 rotate:90
 paper
-bounds:818,825,91,99
+bounds:1887,1003,91,99
 offsets:0,1,92,102
 soldout_ad
 bounds:1084,659,320,128
@@ -143,5 +143,5 @@ offsets:339,763,1080,1920
 start_cat3
 bounds:1848,1764,195,270
 offsets:373,761,1080,1920
-white2
-bounds:1887,1002,101,100
+white
+bounds:1414,594,200,200

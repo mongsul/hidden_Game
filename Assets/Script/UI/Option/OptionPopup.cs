@@ -112,5 +112,9 @@ public class OptionPopup : MonoBehaviour
         string value = SaveManager.Instance.GetLanguageCode();
         selector.SetSelect(value);
     }
+
+    public void OnClickRestorePurchase()
+    {
+    }
     #endregion
 }

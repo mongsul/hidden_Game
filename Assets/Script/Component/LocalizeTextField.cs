@@ -10,14 +10,31 @@ namespace UI.Common
     public class LocalizeTextField : MonoBehaviour
     {
         [Serializable]
-        public struct LocalizeInfo
+        public class LocalizeInfo
         {
             [FormerlySerializedAs("LocalizeKey")] [SerializeField] public string localizeKey;
             [FormerlySerializedAs("ContentsList")] [SerializeField] public List<string> contentsList;
+
+            public void SetContent(string content)
+            {
+                if (contentsList == null)
+                {
+                    contentsList = new List<string>();
+                }
+
+                if (contentsList.Count > 0)
+                {
+                    contentsList[0] = content;
+                }
+                else
+                {
+                    contentsList.Add(content);
+                }
+            }
         }
     
         [FormerlySerializedAs("TextField")] [SerializeField] private TMP_Text textField;
-
+        [FormerlySerializedAs("ImagePath")] [SerializeField] private string imagePath;
         [FormerlySerializedAs("Localize")] [SerializeField] private LocalizeInfo localize;
 
         private TMP_Text fieldValue;

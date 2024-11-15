@@ -161,8 +161,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 336, y: 416.2}
-  m_SizeDelta: {x: 259.6, y: 95.6}
+  m_AnchoredPosition: {x: 310.6, y: 416.2}
+  m_SizeDelta: {x: 310.4, y: 95.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3998788205879147693
 CanvasRenderer:
@@ -245,7 +245,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8456225326090270148}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2880666692350828813}
+        m_TargetAssemblyTypeName: OptionPopup, Assembly-CSharp
+        m_MethodName: OnClickRestorePurchase
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3948175633833710682
 GameObject:
   m_ObjectHideFlags: 0
@@ -312,7 +324,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uAD6C\uB9E4\uBCF5\uC6D0"
+  m_text: RestorePurchase
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 94696aac86957554b8a8f4d778b9d3af, type: 2}
   m_sharedMaterial: {fileID: 4505804976732167694, guid: 94696aac86957554b8a8f4d778b9d3af, type: 2}
@@ -393,9 +405,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4be40d3098e8bce49930fb683107cda4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textField: {fileID: 0}
+  textField: {fileID: 6958065663686302942}
   localize:
-    localizeKey: PurchaseCheck
+    localizeKey: RestorePurchase
     contentsList: []
 --- !u!1 &4002584765308358426
 GameObject:
@@ -455,15 +467,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.972549, g: 0.9372549, b: 0.8862745, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e304a04af5dc8a341a03ff14cd7f673b, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: cb1b3db79414a124981762d8d896690b, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -537,7 +549,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 571e53d09e280894d8f7a3c7d4ee6588, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 38cafc6a7e28d06409e98bf6ef082c6a, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1320,7 +1332,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7658503290750195329, guid: ace01d4f1109473478591518c112b1c8, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 19
+      value: 19.000017
       objectReference: {fileID: 0}
     - target: {fileID: 7658503290750195329, guid: ace01d4f1109473478591518c112b1c8, type: 3}
       propertyPath: m_AnchoredPosition.y

@@ -9,23 +9,28 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class Lobby : MonoBehaviour
 {
     private enum LobbyState
     {
-        None = 0,
+        None = 0, // 일반 타이틀 상태
+        PlayTitleDirection,
+        EndTitleDirection,
         PlayDirection,
         ReadyToStart,
         PlayStartTouchDirection,
         OnStart,
         ZoomOut,
     }
-    
+
+    [FormerlySerializedAs("LogoSpine")] [SerializeField] private SkeletonGraphic logoSpine;
     [FormerlySerializedAs("MachineSpine")] [SerializeField] private SkeletonGraphic machineSpine;
     [FormerlySerializedAs("MachinePlayer")] [SerializeField] private SpineAnimPlayer machinePlayer;
     [FormerlySerializedAs("ChapterTitleField")] [SerializeField] private LocalizeTextField chapterTitleField;
 
+    [FormerlySerializedAs("TouchNoticeTitleField")] [SerializeField] private LocalizeTextField touchNoticeTitleField;
     [FormerlySerializedAs("NoticeTouchMachineObject")] [SerializeField] private GameObject noticeTouchMachineObject;
     [FormerlySerializedAs("TitleObject")] [SerializeField] private GameObject titleObject;
     
@@ -38,6 +43,12 @@ public class Lobby : MonoBehaviour
     [FormerlySerializedAs("VisibleButtonSwitcher")] [SerializeField] private ObjectSwitcher visibleButtonSwitcher;
 
     [FormerlySerializedAs("DropFXParticle")] [SerializeField] private ParticleSystem dropFXParticle;
+
+    [FormerlySerializedAs("TitleImage")] [SerializeField] private Image titleImage;
+    [FormerlySerializedAs("TitleButton")] [SerializeField] private GameObject titleButton;
+    [FormerlySerializedAs("TitleDirectionAnim")] [SerializeField] private SpineAnimPlayer titleDirectionAnim;
+
+    private bool isExecuteStartDirection = true;
     
     private int stageValue = 0;
     private StageTable nextStage;
@@ -69,21 +80,39 @@ public class Lobby : MonoBehaviour
                 }
             }
         }
-
-        InitMachineAnimState();
-
-        if (machineSpine)
-        {
-            int stage = GetStageForMachineButton(lastStage);
-            SpineUtilLibrary.PlaySpineAnim(machineSpine, $"Machine1Button{stage}On", true);
-        }
         
+        if (titleImage)
+        {
+            SpineUtilLibrary.AttachToSpineBone(logoSpine, "Logo", titleImage.gameObject);
+        }
+
         SetStartStageIndex();
         
         if (chapterTitleField)
         {
-            int chapter = (lastStage != null) ? lastStage.chapter : 1;
-            chapterTitleField.SetText($"ChaterTitle_{chapter}");
+            int chapter = 0;
+            if (nextStage == null)
+            {
+                chapter = (lastStage != null) ? lastStage.chapter : 1;
+            }
+            else
+            {
+                chapter = nextStage.chapter;
+            }
+            
+            int chapterSort = StageTableManager.Instance.GetChapterSort(chapter);
+            chapterTitleField.SetText($"ChaterTitle_{chapterSort}");
+        }
+
+        if (titleButton)
+        {
+            titleButton.SetActive(isExecuteStartDirection);
+        }
+        
+        StartTitleLoopDirection();
+        if (isExecuteStartDirection)
+        {
+            StartTitleDirection();
         }
     }
 
@@ -100,6 +129,20 @@ public class Lobby : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
+    public void ToStartByInGame()
+    {
+        isExecuteStartDirection = false;
+    }
+
+    public void OnClickStartOnTitleDirection()
+    {
+        /*
+        if (lobbyState == LobbyState.EndTitleDirection)
+        {
+            InitMachineAnimState();
+        }*/
+    }
+
     public void InitMachineAnimState()
     {
         lobbyState = LobbyState.None;
@@ -107,12 +150,7 @@ public class Lobby : MonoBehaviour
         {
             backButton.SetActive(false);
         }
-
-        if (titleObject)
-        {
-            titleObject.SetActive(true);
-        }
-
+        
         if (noticeTouchMachineObject)
         {
             noticeTouchMachineObject.SetActive(true);
@@ -127,6 +165,94 @@ public class Lobby : MonoBehaviour
         {
             visibleButtonSwitcher.gameObject.SetActive(true);
         }
+
+        if (titleButton)
+        {
+            titleButton.SetActive(false);
+        }
+
+        if (titleObject)
+        {
+            titleObject.SetActive(true);
+        }
+    }
+
+    private void StartTitleDirection()
+    {
+        if (backButton)
+        {
+            backButton.SetActive(false);
+        }
+
+        if (noticeTouchMachineObject)
+        {
+            noticeTouchMachineObject.SetActive(true);
+        }
+
+        if (toolBoxObject)
+        {
+            toolBoxObject.SetActive(false);
+        }
+
+        if (visibleButtonSwitcher)
+        {
+            visibleButtonSwitcher.gameObject.SetActive(false);
+        }
+
+        if (titleObject)
+        {
+            titleObject.SetActive(true);
+        }
+
+        if (titleButton)
+        {
+            titleButton.SetActive(true);
+        }
+        
+        if (titleDirectionAnim)
+        {
+            /*
+            if (titleImage)
+            {
+                Sprite logo = CodeUtilLibrary.LoadLocalizeSprite("ui/Logo/", "Logo_{0}");
+                titleImage.sprite = logo;
+            }*/
+            
+            titleDirectionAnim.PlayAnim();
+        }
+        else
+        {
+            OnClickStartOnTitleDirection();
+        }
+    }
+
+    private void StartTitleLoopDirection()
+    {
+        InitMachineAnimState();
+        
+        if (titleButton)
+        {
+            titleButton.SetActive(false);
+        }
+        
+        if (machineSpine)
+        {
+            if (nextStage != null)
+            {
+                int stage = GetStageForMachineButton(lastStage);
+                SpineUtilLibrary.PlaySpineAnim(machineSpine, $"Machine1Button{stage}On", true);
+            }
+            else
+            {
+                SpineUtilLibrary.PlaySpineAnim(machineSpine, "Lock", true);
+            }
+        }
+    }
+
+    public void OnEndStarTitleDirection()
+    {
+        lobbyState = LobbyState.EndTitleDirection;
+        InitMachineAnimState();
     }
 
     private void SetZoomOut()
@@ -224,6 +350,11 @@ public class Lobby : MonoBehaviour
 
     public void OnClickMachine()
     {
+        if (nextStage == null)
+        {
+            return;
+        }
+        
         if (!IsVisibleUI())
         {
             return;
@@ -297,7 +428,7 @@ public class Lobby : MonoBehaviour
         {
             chapterTitleField.gameObject.SetActive(false);
         }
-
+        
         lobbyState = LobbyState.PlayStartTouchDirection;
         touchGameStartPlayer.PlayAnim(stageValue);
     }
@@ -402,8 +533,14 @@ public class Lobby : MonoBehaviour
             return 0;
         }
 
-        if (table.chapter % 2 == 0)
+        int chapterSort = StageTableManager.Instance.GetChapterSort(table.chapter);
+        if (chapterSort % 2 == 0)
         {
+            if (table.stage == 0)
+            {
+                return table.stage;
+            }
+            
             return table.stage + GetMachineOneLineCount();
         }
 

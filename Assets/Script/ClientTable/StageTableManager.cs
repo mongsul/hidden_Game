@@ -1,6 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+[System.Serializable]
+public class ChapterTable : ClientTable
+{
+    public int chapterIndex;
+    public int chapterSort;
+    public string episodeIcon;
+}
 
 [System.Serializable]
 public class StageTable : ClientTable
@@ -10,13 +19,19 @@ public class StageTable : ClientTable
     public int stage;
     public int findObjectCount;
     public int touchCount;
+    public bool afterAd;
+    public string episodeText;
+    public string episodeImagePath;
+    public string episodeImageName;
 }
 
 public class StageTableManager : SingletonTemplate<StageTableManager>
 {
-    private bool isInitTable = false;
+    private Dictionary<int, ChapterTable> chapterTableMap = new Dictionary<int, ChapterTable>();
+    private Dictionary<int, int> chapterSortIndexMap = new Dictionary<int, int>();
     private Dictionary<int, StageTable> stageTableMap = new Dictionary<int, StageTable>();
     private Dictionary<int, int> chapterKeyIndexMap = new Dictionary<int, int>();
+    private int maxStageChapterKey;
     
     // Start is called before the first frame update
     void Start()
@@ -29,17 +44,19 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
     void Update()
     {
     }*/
-    
+
+    private void OnDestroy()
+    {
+        chapterTableMap.Clear();
+        chapterSortIndexMap.Clear();
+        stageTableMap.Clear();
+        chapterKeyIndexMap.Clear();
+    }
+
     public void InitTable()
     {
-        if (isInitTable)
-        {
-            return;
-        }
-
+        InitChapterTable();
         InitStageTable();
-
-        isInitTable = true;
     }
 
     private int GetChapterKey(StageTable stageTable)
@@ -48,18 +65,44 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
         {
             return 0;
         }
+
+        int sort = GetChapterSort(stageTable.chapter);
         
-        return stageTable.chapter * 1000 + stageTable.stage;
+        return sort * 1000 + stageTable.stage;
     }
 
-    private int GetChapterKey(int chapter, int stage)
+    private int GetChapterKey(int chapterSort, int stage)
     {
-        return chapter * 1000 + stage;
+        return chapterSort * 1000 + stage;
+    }
+
+    private void InitChapterTable()
+    {
+        List<ChapterTable> chapterTableList = ClientTableManager.LoadTable<ChapterTable>("Chapter");
+        chapterTableMap = new Dictionary<int, ChapterTable>();
+        chapterSortIndexMap = new Dictionary<int, int>();
+        maxStageChapterKey = 0;
+        for (int i = 0; i < chapterTableList.Count; i++)
+        {
+            int key = chapterTableList[i].chapterIndex;
+            int sort = chapterTableList[i].chapterSort;
+            if (!chapterTableMap.ContainsKey(key))
+            {
+                chapterTableMap.Add(key, chapterTableList[i]);
+            }
+
+            if (!chapterSortIndexMap.ContainsKey(sort))
+            {
+                chapterSortIndexMap.Add(sort, key);
+            }
+        }
     }
 
     private void InitStageTable()
     {
         List<StageTable> stageTableList = ClientTableManager.LoadTable<StageTable>("Stage");
+        stageTableMap = new Dictionary<int, StageTable>();
+        chapterKeyIndexMap = new Dictionary<int, int>();
         for (int i = 0; i < stageTableList.Count; i++)
         {
             int key = stageTableList[i].stageIndex;
@@ -72,6 +115,10 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
             if (!chapterKeyIndexMap.ContainsKey(chapterKey))
             {
                 chapterKeyIndexMap.Add(chapterKey, key);
+                if (maxStageChapterKey < chapterKey)
+                {
+                    maxStageChapterKey = chapterKey; // 최대 챕터 키 기록
+                }
             }
         }
     }
@@ -109,9 +156,11 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
         {
             return GetMinStageTable();
         }
+
+        int nowChapterSort = GetChapterSort(nowStage.chapter);
         
         // 다음 스테이지 체크
-        int chapterKey = GetChapterKey(nowStage.chapter, nowStage.stage + 1);
+        int chapterKey = GetChapterKey(nowChapterSort, nowStage.stage + 1);
         StageTable nextStage = GetStageTableByChapterKey(chapterKey);
         if (nextStage != null)
         {
@@ -119,7 +168,7 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
         }
         
         // 다음 챕터 체크
-        chapterKey = GetChapterKey(nowStage.chapter + 1, 1);
+        chapterKey = GetChapterKey(nowChapterSort + 1, 1);
         return GetStageTableByChapterKey(chapterKey);
     }
 
@@ -144,5 +193,42 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
     {
         StageTable minStage = GetMinStageTable();
         return (minStage != null) ? minStage.stageIndex : 0;
+    }
+
+    public StageTable GetMaxStageTable()
+    {
+        return GetStageTableByChapterKey(maxStageChapterKey);
+    }
+
+    public int GetMaxStageIndex()
+    {
+        StageTable maxStage = GetMaxStageTable();
+        return (maxStage != null) ? maxStage.stageIndex : 0;
+    }
+
+    public ChapterTable GetChapterTable(int chapterIndex)
+    {
+        if (chapterTableMap.ContainsKey(chapterIndex))
+        {
+            return chapterTableMap[chapterIndex];
+        }
+
+        return null;
+    }
+
+    public int GetChapterSort(int chapterIndex)
+    {
+        ChapterTable chapterTable = GetChapterTable(chapterIndex);
+        return (chapterTable != null) ? chapterTable.chapterSort : 0;
+    }
+
+    public int GetChapterBySort(int chapterSort)
+    {
+        if (chapterSortIndexMap.ContainsKey(chapterSort))
+        {
+            return chapterSortIndexMap[chapterSort];
+        }
+
+        return 0;
     }
 }

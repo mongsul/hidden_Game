@@ -1,7 +1,5 @@
-﻿"rowValue","value",""
-"IsFindToApplyTouch","0","오브젝트를 찾았을 때 터치 횟수에 영향을 주는 방식
-0 - 아무것도 안함
-1 - 터치 횟수 1회 회복"
-"VibrationTime","250","진동 시간 (m/s)"
-"DamagedLifeInRange","10","데미지 입는 거리
-(거리 안이면, 데미지 입음)"
+﻿"rowValue","value"
+"IsFindToApplyTouch","0"
+"VibrationTime","250"
+"DamagedLifeInRange","10"
+"IOSVibrationID","vibration_Short"

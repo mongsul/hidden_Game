@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Core.Library;
+using UI.Common.Base;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using Vector2 = System.Numerics.Vector2;
 
 public class Level : MonoBehaviour
 {
@@ -21,11 +24,13 @@ public class Level : MonoBehaviour
     gameManager gameManager;
     
     [Serializable]
-    public class FindObjectEvent : UnityEvent{}
+    public class FindObjectEvent : UnityEvent<Level>{}
 
     [FormerlySerializedAs("OnFindObjectEvent")]
     [SerializeField]
     public FindObjectEvent mOnFindObject;
+
+    private BaseSimplePrefab hint; 
 
     // Start is called before the first frame update
     void Start()
@@ -55,7 +60,7 @@ public class Level : MonoBehaviour
             return;
         }
         
-        mOnFindObject?.Invoke();
+        mOnFindObject?.Invoke(this);
         
         imageNumber++; //imageNumber 1추가
 
@@ -69,5 +74,32 @@ public class Level : MonoBehaviour
         {
             button.interactable = false;
         }
+    }
+
+    public void SetHint(BaseSimplePrefab hintPrefab)
+    {
+        hint = hintPrefab;
+        if (hint)
+        {
+            hint.transform.SetParent(gameObject.transform);
+            RectTransform hintRect = CodeUtilLibrary.GetRectTransform(hint.transform);
+            if (hintRect)
+            {
+                hintRect.anchorMax = new UnityEngine.Vector2(0.5f, 0.5f);
+                hintRect.anchorMin = new UnityEngine.Vector2(0.5f, 0.5f);
+                hintRect.localPosition = Vector3.zero;
+            }
+            
+            SpineAnimPlayer anim = hint.GetBasePrefab<SpineAnimPlayer>();
+            if (anim)
+            {
+                anim.PlayAnim();
+            }
+        }
+    }
+
+    public BaseSimplePrefab GetHint()
+    {
+        return hint;
     }
 }

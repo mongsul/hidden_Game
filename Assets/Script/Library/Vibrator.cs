@@ -27,7 +27,6 @@ public static class Vibrator
         if (IsMobile())
             vibrator.Call("vibrate", milliseconds);
 #elif (UNITY_IOS) && !UNITY_EDITOR
-            if(isUseVibration)
             Handheld.Vibrate();
 #endif
     }
