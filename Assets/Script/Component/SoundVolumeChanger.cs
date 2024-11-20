@@ -10,7 +10,7 @@ using UnityEngine.Serialization;
 public class SoundVolumeChanger : MonoBehaviour
 {
     [FormerlySerializedAs("Sound")] [SerializeField]
-    private AudioSource sound;
+    protected AudioSource sound;
 
     [FormerlySerializedAs("IsBGM")] [SerializeField] private bool isBGM;
 

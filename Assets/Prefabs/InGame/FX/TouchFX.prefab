@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1167051751573508207}
   - component: {fileID: 765863312638172830}
   - component: {fileID: 711335079480854020}
+  - component: {fileID: 8432835035979668852}
   m_Layer: 0
   m_Name: TouchFX
   m_TagString: Untagged
@@ -142,6 +143,41 @@ MonoBehaviour:
     endListIndex: 0
     endValue: 0
   baseSpine: {fileID: 1167051751573508207}
+  mOnStartPlay:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8432835035979668852}
+        m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+        m_MethodName: PlaySound
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  mOnStartPlayWithObject:
+    m_PersistentCalls:
+      m_Calls: []
   mOnEndPlayAll:
     m_PersistentCalls:
       m_Calls: []
+  mOnEndPlayAllWithObject:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &8432835035979668852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5676961209099171829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bac47c04392fd48458bb580881c7c39d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sound: {fileID: 0}
+  isBGM: 0

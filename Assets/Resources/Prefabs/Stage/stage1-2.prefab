@@ -152,6 +152,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &998614328948015146
 GameObject:
   m_ObjectHideFlags: 0
@@ -189,7 +193,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: -226.9, y: 1544}
-  m_SizeDelta: {x: 48, y: 52}
+  m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3100214554442737516
 CanvasRenderer:
@@ -304,6 +308,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &1516424643198935983
 GameObject:
   m_ObjectHideFlags: 0
@@ -456,6 +464,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &2446451191030819615
 GameObject:
   m_ObjectHideFlags: 0
@@ -608,6 +620,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &2981514149899969362
 GameObject:
   m_ObjectHideFlags: 0
@@ -645,7 +661,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: -483.2, y: 1509.7}
-  m_SizeDelta: {x: 60, y: 68}
+  m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8605460021926436295
 CanvasRenderer:
@@ -760,6 +776,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &3389823094910020551
 GameObject:
   m_ObjectHideFlags: 0
@@ -1194,6 +1214,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &4932669944927706057
 GameObject:
   m_ObjectHideFlags: 0
@@ -1346,6 +1370,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &5199309856650858832
 GameObject:
   m_ObjectHideFlags: 0
@@ -1498,6 +1526,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &5297798838221620942
 GameObject:
   m_ObjectHideFlags: 0
@@ -1650,6 +1682,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &5617977620756537988
 GameObject:
   m_ObjectHideFlags: 0
@@ -1802,6 +1838,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &6400510108578633372
 GameObject:
   m_ObjectHideFlags: 0
@@ -1954,6 +1994,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &6566052395000940035
 GameObject:
   m_ObjectHideFlags: 0
@@ -2106,6 +2150,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &7584863857385350622
 GameObject:
   m_ObjectHideFlags: 0
@@ -2411,6 +2459,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &8344617230383999134
 GameObject:
   m_ObjectHideFlags: 0
@@ -2563,6 +2615,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &9032315432855496344
 GameObject:
   m_ObjectHideFlags: 0
@@ -2715,6 +2771,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1001 &2442243299925562068
 PrefabInstance:
   m_ObjectHideFlags: 0

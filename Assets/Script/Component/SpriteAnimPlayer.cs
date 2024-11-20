@@ -25,7 +25,7 @@ namespace Script.Component
         [Tooltip("끝나고 나서 활성화 되는 버튼")]
         [FormerlySerializedAs("OnEndDisplayButton")] [SerializeField] private Button onEndDisplayButton;
 
-        private const float OnceFrame = 1.0f / 30.0f;
+        private const float OnceFrame = 1.0f / 12.5f;
         private List<Sprite> spriteList = new List<Sprite>();
         private bool isNowPlay = false;
         private int remainPlayCount = 0;

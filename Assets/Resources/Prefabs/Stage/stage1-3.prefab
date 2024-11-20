@@ -152,6 +152,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &57405766138791654
 GameObject:
   m_ObjectHideFlags: 0
@@ -304,6 +308,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &111442062107331392
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,7 +349,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: -346.9, y: 1772.6}
-  m_SizeDelta: {x: 52, y: 88}
+  m_SizeDelta: {x: 88, y: 88}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7380350285618952509
 CanvasRenderer:
@@ -456,6 +464,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &138395690333718644
 GameObject:
   m_ObjectHideFlags: 0
@@ -696,6 +708,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &1914969027673859047
 GameObject:
   m_ObjectHideFlags: 0
@@ -848,6 +864,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &1967372578553416284
 GameObject:
   m_ObjectHideFlags: 0
@@ -1000,6 +1020,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &2161988426074011964
 GameObject:
   m_ObjectHideFlags: 0
@@ -1152,6 +1176,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &2412192805461727977
 GameObject:
   m_ObjectHideFlags: 0
@@ -1304,6 +1332,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &2794834940662992137
 GameObject:
   m_ObjectHideFlags: 0
@@ -1341,7 +1373,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 35, y: 1643.1}
-  m_SizeDelta: {x: 60, y: 60}
+  m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5622901428837153475
 CanvasRenderer:
@@ -1456,6 +1488,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &3081528013517386389
 GameObject:
   m_ObjectHideFlags: 0
@@ -1608,6 +1644,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &3186340671881779574
 GameObject:
   m_ObjectHideFlags: 0
@@ -1760,6 +1800,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &3225225795914367261
 GameObject:
   m_ObjectHideFlags: 0
@@ -2111,6 +2155,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &3745401816221815782
 GameObject:
   m_ObjectHideFlags: 0
@@ -2263,6 +2311,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &5104827613706029529
 GameObject:
   m_ObjectHideFlags: 0
@@ -2300,7 +2352,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: -446.9, y: 1915}
-  m_SizeDelta: {x: 60, y: 80}
+  m_SizeDelta: {x: 88, y: 88}
   m_Pivot: {x: 0.4999997, y: 0.5000015}
 --- !u!222 &7306251083700017810
 CanvasRenderer:
@@ -2415,6 +2467,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &5579186560423105535
 GameObject:
   m_ObjectHideFlags: 0
@@ -2720,6 +2776,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &6740361907816656374
 GameObject:
   m_ObjectHideFlags: 0
@@ -2757,7 +2817,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: -345.2, y: 833.2}
-  m_SizeDelta: {x: 100, y: 80}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6671539177224557617
 CanvasRenderer:
@@ -2872,6 +2932,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &6850378709795162026
 GameObject:
   m_ObjectHideFlags: 0
@@ -3024,6 +3088,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &7857742540410642324
 GameObject:
   m_ObjectHideFlags: 0
@@ -3176,6 +3244,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &8260427072960084604
 GameObject:
   m_ObjectHideFlags: 0
@@ -3328,6 +3400,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1 &8493906082884889102
 GameObject:
   m_ObjectHideFlags: 0
@@ -3480,6 +3556,10 @@ MonoBehaviour:
   mOnFindObject:
     m_PersistentCalls:
       m_Calls: []
+  mOnFindWrabObject:
+    m_PersistentCalls:
+      m_Calls: []
+  index: 0
 --- !u!1001 &7571535706439590981
 PrefabInstance:
   m_ObjectHideFlags: 0

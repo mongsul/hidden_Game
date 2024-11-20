@@ -202,6 +202,32 @@ namespace Core.Library
             
             return gameObject.transform as RectTransform;
         }
+
+        public static float GetInRectFitSize(float standardSize, float insideSize)
+        {
+            if ((standardSize == 0.0f) || (insideSize == 0.0f))
+            {
+                return 1.0f;
+            }
+            
+            return standardSize / insideSize;
+        }
+
+        public static float GetInRectMinFitSize(Vector2 standardSize, Vector2 insideSize)
+        {
+            float fitX = GetInRectFitSize(standardSize.x, insideSize.x);
+            float fitY = GetInRectFitSize(standardSize.y, insideSize.y);
+            return (fitX < fitY) ? fitX : fitY;
+        }
+
+        public static Vector2 GetInRectFitSize(Vector2 standardSize, Vector2 insideSize)
+        {
+            Vector2 fitSize = new Vector2();
+            float resultFit = GetInRectMinFitSize(standardSize, insideSize);
+            fitSize.x = resultFit;
+            fitSize.y = resultFit;
+            return fitSize;
+        }
         #endregion
 
         #region Math

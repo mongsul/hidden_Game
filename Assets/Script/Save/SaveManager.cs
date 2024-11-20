@@ -206,6 +206,8 @@ public class SaveManager : SingletonTemplate<SaveManager>
         titleList.Add("TouchToCollect");
         titleList.Add("TouchToWrong");
         titleList.Add("UseHint");
+        titleList.Add("GameClear");
+        titleList.Add("GameOver");
 
         List<int> countList = new List<int>();
         int i;
@@ -225,7 +227,7 @@ public class SaveManager : SingletonTemplate<SaveManager>
             }
 
             bool isCounting = false;
-            string nowStageRecord = "";
+            string nowStageRecord = $"{StageTableManager.Instance.GetChapterSort(nowStage)} - {table.stage}";
             for (i = 0; i < titleList.Count; i++)
             {
                 int count = GetStageRecord(nowStage, titleList[i]);

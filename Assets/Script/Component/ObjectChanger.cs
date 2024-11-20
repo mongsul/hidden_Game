@@ -1,10 +1,14 @@
+using System;
+using Core.Library;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Script.Component
 {
-    public class ObjectChanger : MonoBehaviour
+    public class ObjectChanger : MonoBehaviour, IPointerClickHandler
     {
         [Tooltip("이벤트 링크시켜줄 버튼")]
         [FormerlySerializedAs("LinkButton")] [SerializeField] private Button linkButton;
@@ -18,6 +22,15 @@ namespace Script.Component
         [Tooltip("처음에 ReplaceObject를 출력을 해줄지 여부입니다.")] 
         [FormerlySerializedAs("IsDisplayInitToReplaceObject")] [SerializeField] private bool isDisplayInitToReplaceObject = false;
 
+        [Serializable]
+        public class TouchPosEvent : UnityEvent<RectTransform, PointerEventData>{}
+    
+        [FormerlySerializedAs("OnClickEvent")]
+        [SerializeField]
+        public TouchPosEvent mOnPress;
+        
+        private RectTransform myRect;
+        
         // Start is called before the first frame update
         void Start()
         {
@@ -28,6 +41,12 @@ namespace Script.Component
 
             if (replaceObject)
             {
+                Level findObject = replaceObject.GetComponent<Level>();
+                if (findObject)
+                {
+                    findObject.SetLinkedWrapObject(this); // 포장지 설정
+                }
+                
                 replaceObject.SetActive(isDisplayInitToReplaceObject);
             }
             
@@ -47,6 +66,15 @@ namespace Script.Component
         void Update()
         {
         }*/
+    
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            RectTransform rect = GetMyRect();
+            if (rect)
+            {
+                mOnPress?.Invoke(rect, eventData);
+            }
+        }
 
         private void OnClick()
         {
@@ -59,6 +87,22 @@ namespace Script.Component
             {
                 replaceObject.SetActive(true);
             }
+        }
+
+        public bool IsWrappedObject()
+        {
+            Level findObject = replaceObject.GetComponent<Level>();
+            return (findObject != null);
+        }
+
+        private RectTransform GetMyRect()
+        {
+            if (!myRect)
+            {
+                myRect = CodeUtilLibrary.GetRectTransform(transform);
+            }
+
+            return myRect;
         }
     }
 }

@@ -49,10 +49,16 @@ public class SpineAnimPlayer : MonoBehaviour
     [FormerlySerializedAs("SpineStreamAnimList")] [SerializeField] private List<SpineStreamGroup> spineStreamAnimList;
     [FormerlySerializedAs("BaseSpine")] [SerializeField] private SkeletonGraphic baseSpine;
 
+    [FormerlySerializedAs("OnStartPlayEvent")] [SerializeField]
+    public PlaySimpleEvent mOnStartPlay;
+    
+    [FormerlySerializedAs("OnStartPlayWithObjectEvent")] [SerializeField]
+    public PlayObjectEvent mOnStartPlayWithObject;
+
     [FormerlySerializedAs("OnEndPlayAllEvent")] [SerializeField]
     public PlaySimpleEvent mOnEndPlayAll;
     
-    [FormerlySerializedAs("OnEndPlayAllEvent")] [SerializeField]
+    [FormerlySerializedAs("OnEndPlayAllWithObjectEvent")] [SerializeField]
     public PlayObjectEvent mOnEndPlayAllWithObject;
     
     private int nowPlayIndex;
@@ -120,6 +126,8 @@ public class SpineAnimPlayer : MonoBehaviour
     private void StartPlayAnim()
     {
         nowPlayIndex = -1;
+        mOnStartPlay?.Invoke();
+        mOnStartPlayWithObject?.Invoke(gameObject);
         PlayNextAnim();
     }
 
