@@ -106,12 +106,11 @@ public class Level : MonoBehaviour, IPointerClickHandler
 
     private void FindObject()
     {
-        if (imageNumber >= 1)
+        mOnFindObject?.Invoke(this);
+        if (IsEndFindObject())
         {
             return;
         }
-        
-        mOnFindObject?.Invoke(this);
         
         imageNumber++; //imageNumber 1추가
 
@@ -125,6 +124,11 @@ public class Level : MonoBehaviour, IPointerClickHandler
         {
             button.interactable = false;
         }
+    }
+
+    public bool IsEndFindObject()
+    {
+        return (imageNumber >= 1);
     }
 
     public void SetHint(BaseSimplePrefab hintPrefab = null)

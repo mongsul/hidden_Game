@@ -97,6 +97,7 @@ public class SpineAnimPlayer : MonoBehaviour
 
         nameInfo.localizeKey = spine.animName;
         string animName = LocalizeTextField.GetFormatStringByLocalizeInfo(nameInfo);
+        SpineUtilLibrary.StopSpineAnim(baseSpine);
         TrackEntry animEntry = SpineUtilLibrary.PlaySpineAnim(baseSpine, animName, spine.isPlayLoop);
         if (spine.isPlayLoop)
         {
@@ -215,6 +216,16 @@ public class SpineAnimPlayer : MonoBehaviour
         nameInfo.contentsList = new List<string>();
         nameInfo.contentsList.Add(param.ToString());
         StartPlayAnim();
+    }
+    #endregion
+
+    #region PlayAnimETC
+    public void PlayLastAnim()
+    {
+        nowPlayIndex = spineStreamAnimList.Count - 2;
+        mOnStartPlay?.Invoke();
+        mOnStartPlayWithObject?.Invoke(gameObject);
+        PlayNextAnim();
     }
     #endregion
 }

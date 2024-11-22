@@ -13,27 +13,13 @@ using File = System.IO.File;
 public class SaveClass
 {
     public int clearStage;
-
-    public string languageCode;
-
-    public string[] stringMapKeyList;
-    public string[] stringMapValueList;
-
-    public int GetStringMapCount()
-    {
-        int keyCount = (stringMapKeyList != null) ? stringMapKeyList.Length : 0;
-        int valueCount = (stringMapValueList != null) ? stringMapValueList.Length : 0;
-        return Math.Min(keyCount, valueCount);
-    }
 }
 
 // _SJ      저장 데이터 관리자
-public class SaveManager : SingletonTemplate<SaveManager>
+public class SaveManager : SaveBaseManager
 {
     private SaveClass saveData;
     
-    private Dictionary<string, string> stringMapValue = new Dictionary<string, string>();
-
     #region Base
     private static string GetSaveFolder()
     {
@@ -49,11 +35,8 @@ public class SaveManager : SingletonTemplate<SaveManager>
         return GetSaveFolder() + "/SaveData.json";
     }
     
-    public void Save()
+    public void SaveGameOption()
     {
-        saveData.stringMapKeyList = stringMapValue.Keys.ToArray();
-        saveData.stringMapValueList = stringMapValue.Values.ToArray();
-        
         string json = JsonUtility.ToJson(saveData, true);
         string folder = GetSaveFolder();
 
@@ -62,27 +45,19 @@ public class SaveManager : SingletonTemplate<SaveManager>
             System.IO.Directory.CreateDirectory(folder);
         }
         
-        /*
-#if UNITY_EDITOR
-        if (!Directory.Exists(folder))
-        {
-            Directory.CreateDirectory(folder);
-        }
-#endif*/
-        
-        //File.WriteAllText(GetSavePath(), json);
         StreamWriter wr = new StreamWriter(GetSavePath(), false);
         wr.WriteLine(json);
         wr.Close();
     }
 
-    public void Load()
+    public override void Load()
     {
+        base.Load();
+        
         string savePath = GetSavePath();
         if (!File.Exists(savePath))
         {
             saveData = new SaveClass();
-            stringMapValue = new Dictionary<string, string>();
             return;
         }
 
@@ -90,72 +65,6 @@ public class SaveManager : SingletonTemplate<SaveManager>
         StreamReader rd = new StreamReader(savePath);
         string json = rd.ReadToEnd();
         saveData = JsonUtility.FromJson<SaveClass>(json);
-        
-        stringMapValue = new Dictionary<string, string>();
-        int count = saveData.GetStringMapCount();
-        for (int i = 0; i < count; i++)
-        {
-            stringMapValue.Add(saveData.stringMapKeyList[i], saveData.stringMapValueList[i]);
-        }
-    }
-    #endregion
-
-    #region Dictionary
-    public string GetStringMapValue(string stringKey, string defaultValue = "")
-    {
-        if (stringMapValue != null)
-        {
-            if (stringMapValue.ContainsKey(stringKey))
-            {
-                return stringMapValue[stringKey];
-            }
-        }
-
-        return defaultValue;
-    }
-
-    public int GetStringMapIntValue(string stringKey, int defaultValue = 0)
-    {
-        return Convert.ToInt32(GetStringMapValue(stringKey, defaultValue.ToString()));
-    }
-
-    public bool GetStringMapBoolValue(string stringKey, bool defaultValue = false)
-    {
-        return Convert.ToBoolean(GetStringMapValue(stringKey, defaultValue.ToString()));
-    }
-
-    public float GetStringMapFloatValue(string stringKey, float defaultValue = 0)
-    {
-        return (float)Convert.ToDouble(GetStringMapValue(stringKey, defaultValue.ToString()));
-    }
-
-    public void SetStringMapValue(string stringKey, string value)
-    {
-        if (stringMapValue == null)
-        {
-            stringMapValue = new Dictionary<string, string>();
-        }
-
-        if (stringMapValue.ContainsKey(stringKey))
-        {
-            stringMapValue[stringKey] = value;
-        }
-        else
-        {
-            stringMapValue.Add(stringKey, value);
-        }
-    }
-    #endregion
-
-    #region Option
-    public void SetLanguageCode(string code)
-    {
-        saveData.languageCode = code;
-    }
-
-    public string GetLanguageCode()
-    {
-        return saveData.languageCode;
     }
     #endregion
     
@@ -166,7 +75,7 @@ public class SaveManager : SingletonTemplate<SaveManager>
         if (nowMaxClearStage < stage)
         {
             saveData.clearStage = stage;
-            Save();
+            SaveGameOption();
         }
     }
 
@@ -183,17 +92,17 @@ public class SaveManager : SingletonTemplate<SaveManager>
     public void AddStageRecord(int stage, string title)
     {
         int nowStageRecord = GetStageRecord(stage, title) + 1;
-        SetStringMapValue(GetStageRecordTitle(stage, title), nowStageRecord.ToString());
+        SetValue(SaveKind.Record, GetStageRecordTitle(stage, title), nowStageRecord.ToString());
     }
 
     public void SetStageRecord(int stage, string title, int count)
     {
-        SetStringMapValue(GetStageRecordTitle(stage, title), count.ToString());
+        SetValue(SaveKind.Record, GetStageRecordTitle(stage, title), count.ToString());
     }
 
     public int GetStageRecord(int stage, string title)
     {
-        return GetStringMapIntValue(GetStageRecordTitle(stage, title), 0);
+        return GetIntValue(SaveKind.Record, GetStageRecordTitle(stage, title), 0);
     }
 
     public string GetAllStageRecord()
@@ -253,27 +162,34 @@ public class SaveManager : SingletonTemplate<SaveManager>
     #endregion
 
     #region Option
-    public void SetOptionValue(string key, string value)
+    public void SetLanguageCode(string code)
     {
-        SetStringMapValue("option_" + key, value);
+        SetValue(SaveKind.Option, "language", code);
     }
 
-    public string GetOptionValue(string key)
+    public string GetLanguageCode()
     {
-        string value = GetStringMapValue("option_" + key, true.ToString());
-        return string.IsNullOrEmpty(value) ? "true" : value;
+        return GetValue(SaveKind.Option, "language");
+    }
+    
+    public void SetOptionValue(string key, string value)
+    {
+        SetValue(SaveKind.Option, key, value);
+    }
+
+    public bool GetOptionValue(string key)
+    {
+        return GetBoolValue(SaveKind.Option, key, true);
     }
 
     public bool GetSoundOptionValue(bool isBGM)
     {
-        string value = GetOptionValue(isBGM ? "BGMSound" : "FXSound");
-        return Convert.ToBoolean(value);
+        return GetOptionValue(isBGM ? "BGMSound" : "FXSound");
     }
 
     public bool GetVibrationOptionValue()
     {
-        string value = GetOptionValue("Vibration");
-        return Convert.ToBoolean(value);
+        return GetOptionValue("Vibration");
     }
     #endregion
 }

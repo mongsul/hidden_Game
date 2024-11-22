@@ -39,5 +39,6 @@ public class StartupInitializer : MonoBehaviour {
         SaveManager.Instance.Load(); // 저장 정보 로드
         ClientTableManager.Instance.InitTable();
         StageTableManager.Instance.InitTable();
+        ItemManager.Instance.InitItem();
     }
 }

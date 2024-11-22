@@ -122,11 +122,7 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
     private void InitBaseTable()
     {
         List<ClientBaseTable> baseTableList = LoadTable<ClientBaseTable>("ClientBaseOption");
-        if (baseTableList == null)
-        {
-            return;
-        }
-
+        simpleClientBaseTable.Clear();
         if (baseTableList == null)
         {
             return;

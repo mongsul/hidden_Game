@@ -48,6 +48,12 @@ public class Lobby : MonoBehaviour
     [FormerlySerializedAs("TitleButton")] [SerializeField] private GameObject titleButton;
     [FormerlySerializedAs("TitleDirectionAnim")] [SerializeField] private SpineAnimPlayer titleDirectionAnim;
 
+    [FormerlySerializedAs("BookOpenPanel")] [SerializeField] private GameObject bookOpenPanel;
+    [FormerlySerializedAs("BookOpenDirectionAnim")] [SerializeField] private SpineAnimPlayer bookOpenDirectionAnim;
+    [FormerlySerializedAs("BookCloseDirectionAnim")] [SerializeField] private SpineAnimPlayer bookCloseDirectionAnim;
+    [FormerlySerializedAs("BookCloseImage")] [SerializeField] private Image bookCloseImage;
+    [FormerlySerializedAs("StartBookOpenDirectioinDelayTime")] [SerializeField] private float startBookOpenDirectioinDelayTime = 1.5f; 
+
     private bool isExecuteStartDirection = true;
     
     private int stageValue = 0;
@@ -60,9 +66,6 @@ public class Lobby : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        lastClearStage = SaveManager.Instance.GetClearStage();
-        lastStage = StageTableManager.Instance.GetStageTable(lastClearStage);
-
         if (machineSpine)
         {
             SkeletonUtility bone = SpineUtilLibrary.SpawnHierarchySpineBone(machineSpine);
@@ -86,6 +89,35 @@ public class Lobby : MonoBehaviour
             SpineUtilLibrary.AttachToSpineBone(logoSpine, "Logo", titleImage.gameObject);
         }
 
+        Vector2 safeZone = ResolutionManager.Instance.GetSafeZonePos();
+        if (toolBoxObject)
+        {
+            RectTransform toolBoxRect = CodeUtilLibrary.GetRectTransform(toolBoxObject);
+            if (toolBoxRect)
+            {
+                //Vector2 nowPos = toolBoxRect.anchoredPosition;
+                //nowPos.y += safeZone.y;
+                //toolBoxRect.anchoredPosition = nowPos;
+                Vector2 nowSize = toolBoxRect.sizeDelta;
+                nowSize.y += safeZone.y;
+                toolBoxRect.sizeDelta = nowSize;
+            }
+        }
+
+        if (visibleButtonSwitcher)
+        {
+            RectTransform visibleRect = CodeUtilLibrary.GetRectTransform(visibleButtonSwitcher.gameObject);
+            if (visibleRect)
+            {
+                Vector2 nowPos = visibleRect.anchoredPosition;
+                nowPos.y += safeZone.y;
+                visibleRect.anchoredPosition = nowPos;
+            }
+        }
+        
+        lastClearStage = SaveManager.Instance.GetClearStage();
+        lastStage = StageTableManager.Instance.GetStageTable(lastClearStage);
+
         SetStartStageIndex();
         
         if (chapterTitleField)
@@ -103,16 +135,30 @@ public class Lobby : MonoBehaviour
             int chapterSort = StageTableManager.Instance.GetChapterSort(chapter);
             chapterTitleField.SetText($"ChaterTitle_{chapterSort}");
         }
-
-        if (titleButton)
-        {
-            titleButton.SetActive(isExecuteStartDirection);
-        }
         
         StartTitleLoopDirection();
         if (isExecuteStartDirection)
         {
             StartTitleDirection();
+            
+            if (bookCloseImage)
+            {
+                bookCloseImage.color = Color.white;
+            }
+
+            if (bookCloseDirectionAnim)
+            {
+                bookCloseDirectionAnim.PlayLastAnim();
+            }
+        }
+        else
+        {
+            if (titleDirectionAnim)
+            {
+                titleDirectionAnim.PlayLastAnim();
+            }
+
+            StartOpenBookDirection();
         }
     }
 
@@ -121,6 +167,53 @@ public class Lobby : MonoBehaviour
     void Update()
     {
     }*/
+
+    private void StartOpenBookDirection()
+    {
+        if (bookCloseImage)
+        {
+            bookCloseImage.color = Color.clear;
+        }
+        
+        if (titleButton)
+        {
+            titleButton.SetActive(true);
+        }
+        
+        if (bookOpenPanel)
+        {
+            bookOpenPanel.SetActive(true);
+        }
+
+        Invoke("StartPlayOpenBookAnim", startBookOpenDirectioinDelayTime);
+    }
+
+    private void StartPlayOpenBookAnim()
+    {
+        if (bookOpenDirectionAnim)
+        {
+            bookOpenDirectionAnim.gameObject.SetActive(true);
+            bookOpenDirectionAnim.PlayAnim();
+        }
+    }
+
+    public void OnEndBookDirection()
+    {
+        if (bookCloseImage)
+        {
+            bookCloseImage.color = Color.white;
+        }
+        
+        if (bookOpenPanel)
+        {
+            bookOpenPanel.SetActive(false);
+        }
+
+        if (titleButton)
+        {
+            titleButton.SetActive(false);
+        }
+    }
 
     public void StartLevelStage(int level)
     {

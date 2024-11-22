@@ -34,7 +34,6 @@ namespace UI.Common
         }
     
         [FormerlySerializedAs("TextField")] [SerializeField] private TMP_Text textField;
-        [FormerlySerializedAs("ImagePath")] [SerializeField] private string imagePath;
         [FormerlySerializedAs("Localize")] [SerializeField] private LocalizeInfo localize;
 
         private TMP_Text fieldValue;

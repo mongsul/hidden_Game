@@ -49,7 +49,7 @@ namespace Script.Component
                 
                 replaceObject.SetActive(isDisplayInitToReplaceObject);
             }
-            
+            /*
             if (!linkButton)
             {
                 linkButton = GetComponent<Button>();
@@ -58,7 +58,7 @@ namespace Script.Component
             if (linkButton)
             {
                 linkButton.onClick.AddListener(OnClick);
-            }
+            }*/
         }
 
         /*
@@ -74,6 +74,8 @@ namespace Script.Component
             {
                 mOnPress?.Invoke(rect, eventData);
             }
+
+            OnClick();
         }
 
         private void OnClick()

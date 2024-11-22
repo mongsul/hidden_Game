@@ -9,6 +9,7 @@ public class ChapterTable : ClientTable
     public int chapterIndex;
     public int chapterSort;
     public string episodeIcon;
+    public int chapterReward;
 }
 
 [System.Serializable]
@@ -33,13 +34,13 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
     private Dictionary<int, int> chapterKeyIndexMap = new Dictionary<int, int>();
     private int maxStageChapterKey;
     
-    // Start is called before the first frame update
+    // Start is called before th
+    /*e first frame update
     void Start()
     {
-        InitTable();
+        //InitTable();
     }
 
-    /*
     // Update is called once per frame
     void Update()
     {

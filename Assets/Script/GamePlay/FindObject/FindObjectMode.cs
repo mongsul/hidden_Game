@@ -37,6 +37,7 @@ public class FindObjectMode : MonoBehaviour
     [FormerlySerializedAs("GameOverPanel")] [SerializeField] private GameObject gameOverPanel;
     
     [FormerlySerializedAs("BaseScroll")] [SerializeField] private ScrollRect baseScroll;
+    [SerializeField] private RectTransform scrollViewportRect;
     
     [FormerlySerializedAs("PrefabBaseObject")] [SerializeField]
     private GameObject prefabBaseObject;
@@ -56,6 +57,15 @@ public class FindObjectMode : MonoBehaviour
     [FormerlySerializedAs("DisplayTouchRect")] [SerializeField] private RectTransform displayTouchRect;
     [FormerlySerializedAs("DisplayWrongRect")] [SerializeField] private RectTransform displayWrongRect;
     [FormerlySerializedAs("DisplayDirectionRect")] [SerializeField] private RectTransform displayDirectionRect;
+    [FormerlySerializedAs("DisplayEndDirectionDelayTime")] [SerializeField] private float displayEndDirectionDelayTime = 3.0f;
+    
+    [FormerlySerializedAs("FindSoundAudio")] [SerializeField] private GameObject findSoundAudio;
+
+    [FormerlySerializedAs("BottomToolBoxRect")] [SerializeField] private RectTransform bottomToolBoxRect;
+    [FormerlySerializedAs("BottonToolBoxDefaultSize")] [SerializeField] private float bottonToolBoxDefaultSize = 200.0f;
+    [FormerlySerializedAs("BannerAdPanel")] [SerializeField] private GameObject bannerAdPanel;
+    
+    [FormerlySerializedAs("TopToolBoxRect")] [SerializeField] private RectTransform topToolBoxRect;
 
     private GameObject baseFindObject; // 찾기 페널 (stage1-1등, 로드 후 인스턴스 생성 한 파일)
     private SpriteAnimPlayer animPlayer;
@@ -69,11 +79,93 @@ public class FindObjectMode : MonoBehaviour
 
     private List<Level> findList = new List<Level>();
 
+    //private float toolBoxHeight;
     private Vector3 imageSize;
+
+    private List<AudioSource> findSoundList = new List<AudioSource>();
+    private bool isPlayFXSound = false;
 
     // Start is called before the first frame update
     void Start()
     {
+        isPlayFXSound = SaveManager.Instance.GetSoundOptionValue(false);
+        if (findSoundAudio)
+        {
+            findSoundList = findSoundAudio.GetComponentsInChildren<AudioSource>(true).ToList();
+        }
+
+        damagedLifeInRange = ClientTableManager.Instance.GetBaseFloatValue("DamagedLifeInRange", 10.0f);
+        
+        if (topToolBoxRect)
+        {
+            // 상단 세이프존 처리
+            Vector2 safeZoneSize = ResolutionManager.Instance.GetSafeZoneSize();
+            float safeZoneTopHeight = safeZoneSize.y;
+            Vector2 topSize = topToolBoxRect.sizeDelta;
+            topSize.y += safeZoneTopHeight;
+            topToolBoxRect.sizeDelta = topSize;
+            //toolBoxHeight += safeZoneTopHeight;
+            
+            if (scrollViewportRect)
+            {
+                Vector2 viewportPos = scrollViewportRect.offsetMax;
+                viewportPos.y -= topSize.y;
+                scrollViewportRect.offsetMax = viewportPos;
+            }
+        }
+        
+        if (bottomToolBoxRect)
+        {
+            // 배너 광고 및 하단 세이프존 처리
+            bool isActivateAD = ItemManager.Instance.IsActivateAD(); // 광고 활성화 여부
+            float bottomHeight = bottonToolBoxDefaultSize;
+            Vector2 safeZonePos = ResolutionManager.Instance.GetSafeZonePos();
+            float safeZoneBottomHeight = safeZonePos.y;
+            if (isActivateAD)
+            {
+                float bannerHeight = ClientTableManager.Instance.GetBaseFloatValue("BannerADHeight", 200.0f);
+                if (bannerHeight < safeZoneBottomHeight)
+                {
+                    bannerHeight = safeZoneBottomHeight;
+                }
+
+                bottomHeight += bannerHeight;
+                
+                if (bannerAdPanel)
+                {
+                    RectTransform bannerRect = CodeUtilLibrary.GetRectTransform(bannerAdPanel);
+                    if (bannerRect)
+                    {
+                        Vector2 bannerSize = bannerRect.sizeDelta;
+                        bannerSize.y = bannerHeight;
+                        bannerRect.sizeDelta = bannerSize;
+                    }
+                    
+                    bannerAdPanel.SetActive(true);
+                }
+            }
+            else
+            {
+                bottomHeight += safeZoneBottomHeight;
+                if (bannerAdPanel)
+                {
+                    bannerAdPanel.SetActive(false);
+                }
+            }
+
+            Vector2 bottomSize = bottomToolBoxRect.sizeDelta;
+            bottomSize.y = bottomHeight;
+            bottomToolBoxRect.sizeDelta = bottomSize;
+            //toolBoxHeight += bottomHeight;
+            
+            if (scrollViewportRect)
+            {
+                Vector2 viewportPos = scrollViewportRect.offsetMin;
+                viewportPos.y += bottomSize.y;
+                scrollViewportRect.offsetMin = viewportPos;
+            }
+        }
+        
 #if UNITY_EDITOR
         if (stageIndex < 1)
         {
@@ -104,14 +196,8 @@ public class FindObjectMode : MonoBehaviour
         
         int chapter = StageTableManager.Instance.GetChapterSort(nowProgressStage.chapter);
         int chapterStage = nowProgressStage.stage;
-
-        damagedLifeInRange = ClientTableManager.Instance.GetBaseFloatValue("DamagedLifeInRange", 10.0f);
         
         InitRemainTouchCount(nowProgressStage.touchCount);
-        if (baseFindObject)
-        {
-            Destroy(baseFindObject); // 기존에 사용하던 녀석은 삭제처리
-        }
         
         if (!prefabBaseObject)
         {
@@ -134,6 +220,7 @@ public class FindObjectMode : MonoBehaviour
         }
 
         InitStagePrefab(newStagePrefab);
+        
         SetDefaultScaleRate();
         OnGameStart();
     }
@@ -161,7 +248,7 @@ public class FindObjectMode : MonoBehaviour
         {
             return;
         }
-
+        
         baseRect.sizeDelta = imageSize * scaleRate;
 
         // 가운데 맞춤
@@ -177,6 +264,8 @@ public class FindObjectMode : MonoBehaviour
         int findCount = 0;
         int specialCount = 0;
         int i;
+
+        GameObject lastFindObject = baseFindObject;
         baseFindObject = stagePrefab;
         
         //stagePrefab.transform.localPosition = Vector3.zero;
@@ -184,6 +273,9 @@ public class FindObjectMode : MonoBehaviour
         if (rect)
         {
             imageSize = rect.sizeDelta;
+            //imageSize.y += toolBoxHeight;
+            rect.sizeDelta = imageSize;
+            rect.anchoredPosition = Vector2.zero;
             //rect.position = Vector3.zero;
             /*rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
@@ -220,10 +312,35 @@ public class FindObjectMode : MonoBehaviour
             }
         }
 
+        if (touchCounter)
+        {
+            BackLineComponent backline = baseFindObject.GetComponentInChildren<BackLineComponent>();
+            int sibliningIndex = 2;
+            if (backline)
+            {
+                sibliningIndex = backline.transform.GetSiblingIndex() + 1;
+            }
+                
+            touchCounter.gameObject.transform.SetParent(baseFindObject.transform);
+            touchCounter.gameObject.transform.SetSiblingIndex(sibliningIndex);
+            RectTransform touchRect = CodeUtilLibrary.GetRectTransform(touchCounter.transform);
+            if (touchRect)
+            {
+                touchRect.anchorMin = Vector2.zero;
+                touchRect.anchorMax = Vector2.one;
+                touchRect.position = Vector3.zero;
+                touchRect.sizeDelta = Vector2.zero;
+            }
+        }
+
         bool isOne = false;
 #if UNITY_EDITOR
         isOne = isFindCountOne;
 #endif
+        if (lastFindObject)
+        {
+            Destroy(lastFindObject); // 기존에 사용하던 녀석은 삭제처리
+        }
         
         // 찾는 개수 한개
         if (isOne)
@@ -313,6 +430,12 @@ public class FindObjectMode : MonoBehaviour
 
     private void OnFindObject(Level findObject)
     {
+        PlayFindSound();
+        if (findObject.IsEndFindObject())
+        {
+            return;
+        }
+        
         if (findObject)
         {
             BaseSimplePrefab hint = findObject.GetHint();
@@ -463,11 +586,11 @@ public class FindObjectMode : MonoBehaviour
 
     private void OnEndPlayDirection()
     {
-        if (toolBox)
-        {
-            //toolBox.SetActive(true);
-        }
+        Invoke("OnDisplayGameEndPanel", displayEndDirectionDelayTime);
+    }
 
+    private void OnDisplayGameEndPanel()
+    {
         if (gameEndPanel)
         {
             gameEndPanel.SetActive(true);
@@ -516,27 +639,6 @@ public class FindObjectMode : MonoBehaviour
                     animPlayer.RefreshResource();
                 }
             }
-
-            if (touchCounter)
-            {
-                BackLineComponent backline = baseFindObject.GetComponentInChildren<BackLineComponent>();
-                int sibliningIndex = 2;
-                if (backline)
-                {
-                    sibliningIndex = backline.transform.GetSiblingIndex() + 1;
-                }
-                
-                touchCounter.gameObject.transform.SetParent(baseFindObject.transform);
-                touchCounter.gameObject.transform.SetSiblingIndex(sibliningIndex);
-                RectTransform touchRect = CodeUtilLibrary.GetRectTransform(touchCounter.transform);
-                if (touchRect)
-                {
-                    touchRect.anchorMin = Vector2.zero;
-                    touchRect.anchorMax = Vector2.one;
-                    touchRect.position = Vector3.zero;
-                    touchRect.sizeDelta = Vector2.zero;
-                }
-            }
         }
     }
 
@@ -571,7 +673,7 @@ public class FindObjectMode : MonoBehaviour
     private void OnGameOver()
     {
         AddRecord("GameOver");
-        SaveManager.Instance.Save(); // 기록 저장
+        SaveManager.Instance.SaveFile(SaveKind.Record); // 기록 저장
         if (gameOverPanel)
         {
             gameOverPanel.SetActive(true);
@@ -580,9 +682,30 @@ public class FindObjectMode : MonoBehaviour
     #endregion
 
     #region Util
-    public void GotoLobby()
+    public void GotoLobby(bool isPlayEndChapterDirection = false)
     {
+        if (isPlayEndChapterDirection)
+        {
+            SceneManager.sceneLoaded += GameSceneLoaded;
+        }
+        
         SceneManager.LoadScene("Lobby");
+    }
+
+    private void GameSceneLoaded(Scene next, LoadSceneMode mode)
+    {
+        // 신 전환 후 스크립트 취득
+        GameObject lobbyMainObject = GameObject.Find("LobbyMain");
+        if (!lobbyMainObject)
+        {
+            return;
+        }
+        
+        Lobby lobby = lobbyMainObject.GetComponent<Lobby>();
+        if (lobby)
+        {
+            lobby.ToStartByInGame();
+        }
     }
 
     public void GotoLobbyOrNextStage()
@@ -601,7 +724,20 @@ public class FindObjectMode : MonoBehaviour
 
     public void GotoNextStage()
     {
-        SetStage(StageTableManager.Instance.GetNextStageTableIndex(stageIndex));
+        StageTable nextStage = StageTableManager.Instance.GetNextStageTable(stageIndex);
+        if (nextStage == null)
+        {
+            GotoLobby(true); // 마지막 스테이지였음
+            return;
+        }
+
+        if (nowProgressStage.chapter != nextStage.chapter)
+        {
+            GotoLobby(true); // 챕터가 달라짐
+            return;
+        }
+        
+        SetStage(nextStage.stageIndex);
     }
 
     public void UseHint()
@@ -631,24 +767,20 @@ public class FindObjectMode : MonoBehaviour
             findList.RemoveAt(levelIndex);
         }
         
-                /*
-        float scaleRate = 2.0f;
-        //SetScaleRate(scaleRate);
-
+        /*
         if (baseScroll)
         {
             RectTransform rect = CodeUtilLibrary.GetRectTransform(findObject.transform);
             RectTransform parentRect = CodeUtilLibrary.GetRectTransform(findObject.transform.parent.transform);
             if (rect && parentRect)
             {
-                Vector2 pos = parentRect.sizeDelta * rect.anchorMin * scaleRate;
+                Vector2 pos = parentRect.sizeDelta * rect.anchorMin;
                 Vector2 backupPos = pos; 
                 pos.x += rect.localPosition.x;
                 pos.y += rect.localPosition.y;
-                baseScroll.horizontalNormalizedPosition = pos.x / parentRect.sizeDelta.x;
-                baseScroll.verticalNormalizedPosition = pos.y / parentRect.sizeDelta.y;
+                //baseScroll.horizontalNormalizedPosition = pos.x / parentRect.sizeDelta.x;
+                //baseScroll.verticalNormalizedPosition = pos.y / parentRect.sizeDelta.y;
                 CodeUtilLibrary.SetColorLog($"UseHint : local[{rect.localPosition}] pos[{pos}], backup[{backupPos}], focus[{baseScroll.horizontalNormalizedPosition}, {baseScroll.verticalNormalizedPosition}]", "aqua");
-            
             }
         }*/
     }
@@ -760,6 +892,33 @@ public class FindObjectMode : MonoBehaviour
             anim.mOnEndPlayAllWithObject.RemoveAllListeners();
             anim.mOnEndPlayAllWithObject.AddListener(endPlayEvent);
             anim.PlayAnim();
+        }
+    }
+    #endregion
+
+    #region Sound
+    private void PlayFindSound()
+    {
+        if (!isPlayFXSound)
+        {
+            return;
+        }
+        
+        if (findSoundList == null)
+        {
+            return;
+        }
+
+        if (findSoundList.Count < 1)
+        {
+            return;
+        }
+
+        int index = Random.Range(0, findSoundList.Count - 1);
+        AudioSource nowPlaySource = findSoundList[index];
+        if (nowPlaySource)
+        {
+            nowPlaySource.Play();
         }
     }
     #endregion

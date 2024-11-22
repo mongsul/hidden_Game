@@ -148,7 +148,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textField: {fileID: 4847073865859986441}
-  imagePath: 
   localize:
     localizeKey: EndNotice
     contentsList: []
@@ -259,7 +258,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spineStreamAnimList:
-  - animName: GameOver1234_done
+  - animName: GameOver1234_ing
     mOnEndPlay:
       m_PersistentCalls:
         m_Calls: []
@@ -267,11 +266,11 @@ MonoBehaviour:
     endParamType: 0
     endListIndex: 0
     endValue: 0
-  - animName: GameOver1234_ing
+  - animName: GameOver1234_done
     mOnEndPlay:
       m_PersistentCalls:
         m_Calls: []
-    isPlayLoop: 0
+    isPlayLoop: 1
     endParamType: 0
     endListIndex: 0
     endValue: 0
@@ -629,7 +628,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textField: {fileID: 1386484617618410974}
-  imagePath: 
   localize:
     localizeKey: StageClear
     contentsList: []

@@ -518,5 +518,12 @@ namespace Core.Library
             return default;
         }
         #endregion
+
+        #region Application
+        public static void OpenURL(string url)
+        {
+            Application.OpenURL(url);
+        }
+        #endregion
     }
 }

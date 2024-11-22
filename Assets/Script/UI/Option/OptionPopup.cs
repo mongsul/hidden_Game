@@ -63,7 +63,7 @@ public class OptionPopup : MonoBehaviour
             }
         }
         
-        SaveManager.Instance.Save();
+        SaveManager.Instance.SaveFile(SaveKind.Option);
     }
 
     private void CancelOption()
