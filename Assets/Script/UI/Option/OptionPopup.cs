@@ -3,11 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
 public class OptionPopup : MonoBehaviour
 {
+    [FormerlySerializedAs("IsDisplayLobby")] [SerializeField] private bool isDisplayLobby = true;
+    
     private List<IOptionValueConnector> valueConnectorList;
+    private List<OptionVisibleSetter> visibleSetterList;
     
     /*
     // Start is called before the first frame update
@@ -32,17 +36,44 @@ public class OptionPopup : MonoBehaviour
 
     private void LoadOption()
     {
+        int i;
         if (valueConnectorList == null)
         {
             valueConnectorList = gameObject.GetComponentsInChildren<IOptionValueConnector>().ToList();
         }
-        
-        for (int i = 0; i < valueConnectorList.Count; i++)
+
+        int start = valueConnectorList.Count - 1;
+        for (i = start; i >= 0; i--)
         {
             IOptionValueConnector valueConnector = valueConnectorList[i];
             if (valueConnector != null)
             {
-                valueConnector.InitThis();
+                if (valueConnector.IsUseLobby() == isDisplayLobby)
+                {
+                    valueConnector.InitThis();
+                }
+                else
+                {
+                    valueConnectorList.RemoveAt(i);
+                }
+            }
+            else
+            {
+                valueConnectorList.RemoveAt(i);
+            }
+        }
+
+        if (visibleSetterList == null)
+        {
+            visibleSetterList = gameObject.GetComponentsInChildren<OptionVisibleSetter>(true).ToList();
+        }
+        
+        for (i = 0; i < visibleSetterList.Count; i++)
+        {
+            OptionVisibleSetter visibleSetter = visibleSetterList[i];
+            if (visibleSetter != null)
+            {
+                visibleSetter.SetIsLobby(isDisplayLobby);
             }
         }
     }
@@ -97,7 +128,7 @@ public class OptionPopup : MonoBehaviour
 
     public void RefreshVibration(bool value)
     {
-        // 딱히 적용사항 없을듯?
+        VibrationLibrary.SetIsUseVibration(value);
     }
 
     public void RefreshLang(string value)
@@ -115,6 +146,31 @@ public class OptionPopup : MonoBehaviour
 
     public void OnClickRestorePurchase()
     {
+    }
+    #endregion
+
+    #region Function
+    public void GotoLobby()
+    {
+        SceneManager.sceneLoaded += GameSceneLoaded;
+        
+        SceneManager.LoadScene("Lobby");
+    }
+
+    private void GameSceneLoaded(Scene next, LoadSceneMode mode)
+    {
+        // 신 전환 후 스크립트 취득
+        GameObject lobbyMainObject = GameObject.Find("LobbyMain");
+        if (!lobbyMainObject)
+        {
+            return;
+        }
+        
+        Lobby lobby = lobbyMainObject.GetComponent<Lobby>();
+        if (lobby)
+        {
+            lobby.SetDirection();
+        }
     }
     #endregion
 }

@@ -29,6 +29,13 @@ namespace Script.Component
         [SerializeField]
         public TouchPosEvent mOnPress;
         
+        [Serializable]
+        public class TouchLevelEvent : UnityEvent<Level>{}
+    
+        [FormerlySerializedAs("OnOpenLevelEvent")]
+        [SerializeField]
+        public TouchLevelEvent mOnOpenLevel;
+        
         private RectTransform myRect;
         
         // Start is called before the first frame update
@@ -88,6 +95,13 @@ namespace Script.Component
             if (replaceObject)
             {
                 replaceObject.SetActive(true);
+                
+                Level findObject = replaceObject.GetComponent<Level>();
+                if (findObject)
+                {
+                    findObject.OnOpen();
+                    mOnOpenLevel?.Invoke(findObject);
+                }
             }
         }
 

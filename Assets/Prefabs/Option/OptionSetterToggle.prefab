@@ -96,6 +96,7 @@ MonoBehaviour:
   saveKey: 
   onButton: {fileID: 8589143738936236371}
   offButton: {fileID: 4085788063878344408}
+  isUseInLobby: 0
   mOnValueChange:
     m_PersistentCalls:
       m_Calls: []
@@ -266,7 +267,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textField: {fileID: 3182333922406693305}
-  imagePath: 
   localize:
     localizeKey: BGM
     contentsList: []
@@ -541,6 +541,18 @@ PrefabInstance:
     - target: {fileID: 90264978828628389, guid: 2dcf4a3e37f338c4b9ec0491d6545784, type: 3}
       propertyPath: localize.localizeKey
       value: Option_Off
+      objectReference: {fileID: 0}
+    - target: {fileID: 534823574696728062, guid: 2dcf4a3e37f338c4b9ec0491d6545784, type: 3}
+      propertyPath: m_Colors.m_PressedColor.b
+      value: 0.41963333
+      objectReference: {fileID: 0}
+    - target: {fileID: 534823574696728062, guid: 2dcf4a3e37f338c4b9ec0491d6545784, type: 3}
+      propertyPath: m_Colors.m_PressedColor.g
+      value: 0.4275564
+      objectReference: {fileID: 0}
+    - target: {fileID: 534823574696728062, guid: 2dcf4a3e37f338c4b9ec0491d6545784, type: 3}
+      propertyPath: m_Colors.m_PressedColor.r
+      value: 0.4339623
       objectReference: {fileID: 0}
     - target: {fileID: 534823574696728062, guid: 2dcf4a3e37f338c4b9ec0491d6545784, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size

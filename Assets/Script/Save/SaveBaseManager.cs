@@ -90,6 +90,7 @@ public enum SaveKind
     Option,
     Record,
     Item,
+    Equipment,
     Max, // 최대 개수 체크 용도, 건드리지 말것
 }
 
@@ -215,6 +216,38 @@ public class SaveBaseManager : SingletonTemplate<SaveManager>
     }
     #endregion
 
+    #region Valid
+    public bool IsValidSaveData()
+    {
+        if (saveGroup == null)
+        {
+            return false;
+        }
+
+        return saveGroup.Count > 0;
+    }
+    
+    private bool IsValidSaveData(string fileName)
+    {
+        if (saveGroup == null)
+        {
+            return false;
+        }
+
+        if (saveGroup.ContainsKey(fileName))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool IsValidSaveData(SaveKind kind)
+    {
+        return IsValidSaveData(kind);
+    }
+    #endregion
+
     #region Value
     private string GetValue(string fileName, string key, string defaultValue = "")
     {
@@ -255,6 +288,33 @@ public class SaveBaseManager : SingletonTemplate<SaveManager>
     public void SetValue(SaveKind kind, string key, string value)
     {
         SetValue(kind.ToString(), key, value);
+    }
+
+    public Dictionary<string, string> GetValueMap(string fileName)
+    {
+        StringMapGroup saveMap = new StringMapGroup();
+        if (!GetSaveMapGroup(fileName, ref saveMap))
+        {
+            return null;
+        }
+
+        return saveMap.GetMap();
+    }
+
+    private Dictionary<string, string> GetValueMap(SaveKind kind)
+    {
+        return GetValueMap(kind.ToString());
+    }
+
+    public List<string> GetValueKeyList(SaveKind kind)
+    {
+        Dictionary<string, string> valueMap = GetValueMap(kind);
+        if (valueMap == null)
+        {
+            return null;
+        }
+
+        return valueMap.Keys.ToList();
     }
     #endregion
 

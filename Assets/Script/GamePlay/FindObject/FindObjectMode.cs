@@ -1,8 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Library;
 using Script.Component;
+using Script.Library;
+using Spine;
+using Spine.Unity;
 using TMPro;
 using UI.Common;
 using UI.Common.Base;
@@ -12,6 +16,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 // _SJ      물건 찾는 모드
 public class FindObjectMode : MonoBehaviour
@@ -38,9 +43,8 @@ public class FindObjectMode : MonoBehaviour
     
     [FormerlySerializedAs("BaseScroll")] [SerializeField] private ScrollRect baseScroll;
     [SerializeField] private RectTransform scrollViewportRect;
-    
-    [FormerlySerializedAs("PrefabBaseObject")] [SerializeField]
-    private GameObject prefabBaseObject;
+    [FormerlySerializedAs("PrefabBaseObject")] [SerializeField] private GameObject prefabBaseObject;
+    [SerializeField] private RectTransform prefabBaseRect;
 
     [FormerlySerializedAs("ScaleRateValueField")] [SerializeField] private TMP_Text scaleRateValueField;
     [FormerlySerializedAs("ChangeScaleRateList")] [SerializeField] private List<float> changeScaleRateList = new List<float>();
@@ -67,7 +71,21 @@ public class FindObjectMode : MonoBehaviour
     
     [FormerlySerializedAs("TopToolBoxRect")] [SerializeField] private RectTransform topToolBoxRect;
 
+    [FormerlySerializedAs("HintCountField")] [SerializeField] private TMP_Text hintCountField;
+
+    [FormerlySerializedAs("HintADSpine")] [SerializeField] private SkeletonGraphic hintADSpine;
+    [FormerlySerializedAs("HintADAnim")] [SerializeField] private SpineAnimPlayer hintADAnim;
+    [FormerlySerializedAs("HintAdMsgField")] [SerializeField] private LocalizeTextField hintAdMsgField;
+
+    [FormerlySerializedAs("HintSwitcher")] [SerializeField] private ObjectSwitcher hintSwitcher;
+    [FormerlySerializedAs("HintAnimPlayer")] [SerializeField] private SpineAnimPlayer hintAnimPlayer;
+    
+    [FormerlySerializedAs("DebugField")] [SerializeField] private TMP_Text debugField;
+
+    [SerializeField] private GameObject gotoBookShelfPanel;
+    
     private GameObject baseFindObject; // 찾기 페널 (stage1-1등, 로드 후 인스턴스 생성 한 파일)
+    private RectTransform baseFindRect; // 찾기 페널 RectTransform
     private SpriteAnimPlayer animPlayer;
     
     private StageTable nowProgressStage;
@@ -85,6 +103,26 @@ public class FindObjectMode : MonoBehaviour
     private List<AudioSource> findSoundList = new List<AudioSource>();
     private bool isPlayFXSound = false;
 
+    private float displayHintADDelayTime = 60.0f;
+    private float onceDisplayHintADTime = 3.0f;
+    private float maxHintADCount = 3;
+    private float remainDelayHintADTime = 0.0f;
+    private float remainDisplayHintADTime = 0.0f;
+
+    private LobbyInit initToLobby;
+    private int lobbyInitParam;
+
+    private string debugStr = "";
+    private float touchDist = 0.0f;
+    private float touchedScaleRate = 1.0f;
+
+    private float nowScaleRate = 1.0f;
+    private float minScaleRate = 1.0f;
+
+    private Vector2 centerPos;
+
+    private bool isPlayRetry = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -95,6 +133,8 @@ public class FindObjectMode : MonoBehaviour
         }
 
         damagedLifeInRange = ClientTableManager.Instance.GetBaseFloatValue("DamagedLifeInRange", 10.0f);
+        displayHintADDelayTime = ClientTableManager.Instance.GetBaseFloatValue("DisplayHintADDelayTime", 60.0f);
+        onceDisplayHintADTime = ClientTableManager.Instance.GetBaseFloatValue("OnceDisplayHintADTime", 3.0f);
         
         if (topToolBoxRect)
         {
@@ -165,6 +205,18 @@ public class FindObjectMode : MonoBehaviour
                 scrollViewportRect.offsetMin = viewportPos;
             }
         }
+
+        if (hintADSpine && hintAdMsgField)
+        {
+            if (hintAdMsgField)
+            {
+                SpineUtilLibrary.AttachToSpineBone(hintADSpine, "Ad_Text", hintAdMsgField.gameObject);
+            }
+            
+            hintADSpine.gameObject.SetActive(false);
+        }
+
+        RefreshHintCount();
         
 #if UNITY_EDITOR
         if (stageIndex < 1)
@@ -176,17 +228,51 @@ public class FindObjectMode : MonoBehaviour
         SetStage(stageIndex);
 #endif
     }
-
-    /*
+    
     // Update is called once per frame
     void Update()
     {
-    }*/
+        if (remainDelayHintADTime > 0.0f)
+        {
+            remainDelayHintADTime -= Time.deltaTime;
+            if (remainDelayHintADTime <= 0.0f)
+            {
+                DisplayHintAD();
+            }
+        }
+
+        if (remainDisplayHintADTime > 0.0f)
+        {
+            remainDisplayHintADTime -= Time.deltaTime;
+            if (remainDisplayHintADTime <= 0.0f)
+            {
+                EraseHintAD();
+            }
+        }
+
+        CheckMultiTouch();
+
+        //if (Input.GetMouseButtonUp(1))
+        /*if (Input.GetKeyUp(KeyCode.M))
+        {
+            PlayTouchFX(Input.mousePosition);
+        }*/
+        
+    #if UNITY_EDITOR
+        ScrollingCheck();
+        if (Input.GetKeyUp(KeyCode.H))
+        {
+            ItemManager.Instance.AddFunctionItem(FunctionItemType.Hint, 5);
+            RefreshHintCount();
+        }
+    #endif
+    }
 
     #region Stage
-    public void SetStage(int stage)
+    public void SetStage(int stage, bool isRetry = false)
     {
         stageIndex = stage;
+        isPlayRetry = isRetry;
 
         nowProgressStage = StageTableManager.Instance.GetStageTable(stageIndex);
         if (nowProgressStage == null)
@@ -199,7 +285,7 @@ public class FindObjectMode : MonoBehaviour
         
         InitRemainTouchCount(nowProgressStage.touchCount);
         
-        if (!prefabBaseObject)
+        if (!prefabBaseRect)
         {
             return;
         }
@@ -213,7 +299,7 @@ public class FindObjectMode : MonoBehaviour
             return;
         }
         
-        GameObject newStagePrefab = Instantiate<GameObject>(stagePrefab, Vector3.zero, Quaternion.identity, prefabBaseObject.transform);
+        GameObject newStagePrefab = Instantiate<GameObject>(stagePrefab, Vector3.zero, Quaternion.identity, prefabBaseRect);
         if (!newStagePrefab)
         {
             return;
@@ -227,36 +313,61 @@ public class FindObjectMode : MonoBehaviour
     #endregion
 
     #region StagePrefab
+
     public void SetScaleRate(float scaleRate)
     {
-        if (scaleRateValueField)
+        SetScaleRate(scaleRate, new Vector2(0.5f, 0.5f));
+    }
+    
+    public void SetScaleRate(float scaleRate, Vector2 centerRate)
+    {
+        scaleRate = Math.Clamp(scaleRate, minScaleRate, 2.0f);
+        if (nowScaleRate == scaleRate)
         {
-            scaleRateValueField.SetText($"X{scaleRate}");
-            //scaleRateValueField.SetText(string.Format("X{0:F2}", scaleRate));
+            return; // 안함
         }
         
-        if (!baseFindObject)
+        //CodeUtilLibrary.SetColorLog($"SetScaleRate : X{scaleRate}");
+        
+        if (scaleRateValueField)
+        {
+            //scaleRateValueField.SetText($"X{scaleRate}");
+            scaleRateValueField.SetText(string.Format("X{0:F2}", scaleRate));
+        }
+        
+        nowScaleRate = scaleRate;
+
+        Vector3 rate = new Vector3(1.0f, 1.0f, 0.0f) * scaleRate;
+        if (!prefabBaseRect)
         {
             return;
         }
 
-        Vector3 rate = new Vector3(1.0f, 1.0f, 0.0f) * scaleRate;
-        prefabBaseObject.transform.localScale = rate;
-        baseFindObject.transform.localScale = rate;
-        RectTransform baseRect = CodeUtilLibrary.GetRectTransform(prefabBaseObject);
-        if (!baseRect)
-        {
-            return;
-        }
-        
-        baseRect.sizeDelta = imageSize * scaleRate;
+        prefabBaseRect.sizeDelta = imageSize;
+        prefabBaseRect.localScale = rate;
 
         // 가운데 맞춤
         if (baseScroll)
         {
-            baseScroll.horizontalNormalizedPosition = 0.5f;
-            baseScroll.verticalNormalizedPosition = 0.5f;
+            baseScroll.normalizedPosition = centerRate;
         }
+    }
+
+    private void AddScaleRate(Vector2 center, float delta)
+    {
+        if (!prefabBaseRect)
+        {
+            return;
+        }
+        
+        // 스크린 위치 -> 로컬포인트로 변경
+        Vector2 centerLoc;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(prefabBaseRect, center, mainCamera, out centerLoc);
+        Vector2 scrollCenter = centerLoc / prefabBaseRect.sizeDelta; // 스크롤 중심점 구하기
+        Vector2 newCenter = scrollCenter - (Vector2.one * (delta * 0.5f)); // 새로운 중심점 연산
+        SetScaleRate(nowScaleRate + delta, newCenter);
+        
+        //AddDebugLog($"AddScaleRate : touchDelta[{delta}], center[{center}, centerLoc{centerLoc}], realCenter[{scrollCenter} -> {newCenter}]");
     }
 
     private void InitStagePrefab(GameObject stagePrefab)
@@ -269,13 +380,13 @@ public class FindObjectMode : MonoBehaviour
         baseFindObject = stagePrefab;
         
         //stagePrefab.transform.localPosition = Vector3.zero;
-        RectTransform rect = CodeUtilLibrary.GetRectTransform(stagePrefab);
-        if (rect)
+        baseFindRect = CodeUtilLibrary.GetRectTransform(stagePrefab);
+        if (baseFindRect)
         {
-            imageSize = rect.sizeDelta;
+            imageSize = baseFindRect.sizeDelta;
             //imageSize.y += toolBoxHeight;
-            rect.sizeDelta = imageSize;
-            rect.anchoredPosition = Vector2.zero;
+            baseFindRect.sizeDelta = imageSize;
+            baseFindRect.anchoredPosition = Vector2.zero;
             //rect.position = Vector3.zero;
             /*rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
@@ -328,7 +439,8 @@ public class FindObjectMode : MonoBehaviour
             {
                 touchRect.anchorMin = Vector2.zero;
                 touchRect.anchorMax = Vector2.one;
-                touchRect.position = Vector3.zero;
+                touchRect.localScale = Vector3.one;
+                touchRect.anchoredPosition = Vector3.zero;
                 touchRect.sizeDelta = Vector2.zero;
             }
         }
@@ -340,6 +452,11 @@ public class FindObjectMode : MonoBehaviour
         if (lastFindObject)
         {
             Destroy(lastFindObject); // 기존에 사용하던 녀석은 삭제처리
+        }
+        
+        if (totalStandardRect)
+        {
+            minScaleRate = CodeUtilLibrary.GetInRectMinFitSize(totalStandardRect.rect.size, imageSize);
         }
         
         // 찾는 개수 한개
@@ -358,6 +475,7 @@ public class FindObjectMode : MonoBehaviour
 
     private void SetDefaultScaleRate()
     {
+        nowScaleRate = 0.0f;
         nowScaleRateListIndex = 0;
         float nowRate = GetScaleRateByList(nowScaleRateListIndex);
         SetScaleRate(nowRate);
@@ -424,6 +542,23 @@ public class FindObjectMode : MonoBehaviour
                 OnEndPlayHintFX(hint.gameObject);
             }
 
+            int keyIndex = findObject.index;
+            bool isAddToList = true;
+
+            for (int i = 0; i < findList.Count; i++)
+            {
+                if (findList[i].index == keyIndex)
+                {
+                    isAddToList = false;
+                    break;
+                }
+            }
+
+            if (isAddToList)
+            {
+                findList.Add(findObject);
+            }
+
             findObject.SetHint(); // 힌트 오브젝트 초기화 처리
         }
     }
@@ -435,6 +570,8 @@ public class FindObjectMode : MonoBehaviour
         {
             return;
         }
+
+        //InitDisplayHintADTime(); // 광고 출력 시간 초기화
         
         if (findObject)
         {
@@ -445,6 +582,8 @@ public class FindObjectMode : MonoBehaviour
             }
         }
 
+        AddRecord("TouchToCollect");
+            
         int keyIndex = findObject.index;
         for (int i = 0; i < findList.Count; i++)
         {
@@ -454,8 +593,6 @@ public class FindObjectMode : MonoBehaviour
                 break;
             }
         }
-
-        AddRecord("TouchToCollect");
         
         if (findObject.GetIsWrapped())
         {
@@ -478,6 +615,9 @@ public class FindObjectMode : MonoBehaviour
 
     private void OnFindAll()
     {
+        remainDelayHintADTime = 0.0f;
+        remainDisplayHintADTime = 0.0f;
+        
         Vector2 scaleRate = Vector2.one;
 
         if (totalStandardRect)
@@ -508,66 +648,6 @@ public class FindObjectMode : MonoBehaviour
             animPlayer.mOnEndPlay.AddListener(OnEndPlayDirection);
             animPlayer.gameObject.SetActive(true);
         }
-        
-        /*
-        GameObject activateObject = baseSwitcher ? baseSwitcher.GetActiveObject() : null;
-        RectTransform prefabRect = activateObject ? CodeUtilLibrary.GetRectTransform(activateObject) : null;
-        if (!prefabRect)
-        {
-            return;
-        }
-
-        Vector2 screenSize = Screen.safeArea.size;//SafeZoneChecker.GetScreenSizeWithSafeZone();
-        //Vector2 screenSize = new Vector2(Screen.width, Screen.height);
-        
-        float screenRate = screenSize.x / screenSize.y;
-        Vector2 prefabSize = prefabRect.sizeDelta;
-        prefabSize.y += 30.0f;
-        float prefabRate = prefabSize.x / prefabSize.y;
-        float computeRate = 0.0f;
-        bool isStandardHeight = true;
-        
-        if (screenRate >= prefabRate)
-        {
-            computeRate = screenSize.y / prefabSize.y;
-        }
-        else
-        {
-            isStandardHeight = false;
-            computeRate = screenSize.x / prefabSize.x;
-        }
-        
-        //prefabSize *= computeRate;
-        SetScaleRate(computeRate);
-        
-        if (animPlayer)
-        {
-            animPlayer.transform.SetParent(activateObject.transform);
-            RectTransform animRect = CodeUtilLibrary.GetRectTransform(animPlayer.transform);
-            if (animRect)
-            {
-                animRect.anchorMin = Vector2.zero;
-                animRect.anchorMax = Vector2.one;
-                animRect.position = Vector3.zero;
-                animRect.sizeDelta = Vector2.zero;
-            }
-            animPlayer.gameObject.SetActive(true);
-        }
-        
-        RectTransform baseRect = CodeUtilLibrary.GetRectTransform(prefabBaseObject);
-        if (baseRect)
-        {
-            Vector2 pivot = baseRect.pivot;
-            if (isStandardHeight)
-            {
-                pivot.y = 0.5f;
-            }
-            else
-            {
-                pivot.x = 0.5f;
-            }
-            baseRect.pivot = pivot;
-        }*/
     }
     
     private void InitRemainTouchCount(int count)
@@ -599,6 +679,35 @@ public class FindObjectMode : MonoBehaviour
         if (gameEndPanel)
         {
             gameEndPlayer.PlayAnim();
+        }
+
+        bool isDisplayBookShelf = isPlayRetry;
+        if (isPlayRetry)
+        {
+            if (stageIndex >= SaveManager.Instance.GetClearStage())
+            {
+                // 최대 저장된 클리어 스테이지 체크
+                isDisplayBookShelf = false;
+            }
+            else
+            {
+                StageTable nextStage = StageTableManager.Instance.GetNextStageTable(stageIndex);
+                if (nextStage == null)
+                {
+                    // 마지막 스테이지였음
+                    isDisplayBookShelf = false;
+                }
+                else if (nowProgressStage.chapter != nextStage.chapter)
+                {
+                    // 챕터가 달라짐
+                    isDisplayBookShelf = false;
+                }
+            }
+        }
+
+        if (gotoBookShelfPanel)
+        {
+            gotoBookShelfPanel.SetActive(isDisplayBookShelf);
         }
     }
 
@@ -640,6 +749,15 @@ public class FindObjectMode : MonoBehaviour
                 }
             }
         }
+
+        if (hintADSpine)
+        {
+            hintADSpine.gameObject.SetActive(false);
+        }
+        
+        maxHintADCount = ClientTableManager.Instance.GetBaseIntValue("MaxHintADCount", 3);
+        remainDelayHintADTime = displayHintADDelayTime;
+        remainDisplayHintADTime = 0.0f;
     }
 
     public void OnTouchCover(RectTransform parentRect, PointerEventData eventData, float dist)
@@ -682,12 +800,16 @@ public class FindObjectMode : MonoBehaviour
     #endregion
 
     #region Util
-    public void GotoLobby(bool isPlayEndChapterDirection = false)
+    public void GotoLobby()
     {
-        if (isPlayEndChapterDirection)
-        {
-            SceneManager.sceneLoaded += GameSceneLoaded;
-        }
+        GotoLobbyDirectionCheck(isPlayRetry ? LobbyInit.ComebackByRetry : LobbyInit.None, stageIndex);
+    }
+    
+    public void GotoLobbyDirectionCheck(LobbyInit init = LobbyInit.None, int param = 0)
+    {
+        initToLobby = init;
+        lobbyInitParam = param;
+        SceneManager.sceneLoaded += GameSceneLoaded;
         
         SceneManager.LoadScene("Lobby");
     }
@@ -704,7 +826,7 @@ public class FindObjectMode : MonoBehaviour
         Lobby lobby = lobbyMainObject.GetComponent<Lobby>();
         if (lobby)
         {
-            lobby.ToStartByInGame();
+            lobby.SetDirection(initToLobby, lobbyInitParam);
         }
     }
 
@@ -727,13 +849,15 @@ public class FindObjectMode : MonoBehaviour
         StageTable nextStage = StageTableManager.Instance.GetNextStageTable(stageIndex);
         if (nextStage == null)
         {
-            GotoLobby(true); // 마지막 스테이지였음
+            // 마지막 스테이지였음
+            GotoLobbyDirectionCheck(isPlayRetry ? LobbyInit.ComebackByRetry : LobbyInit.None, stageIndex);
             return;
         }
 
         if (nowProgressStage.chapter != nextStage.chapter)
         {
-            GotoLobby(true); // 챕터가 달라짐
+            // 챕터가 달라짐
+            GotoLobbyDirectionCheck(isPlayRetry ? LobbyInit.ComebackByRetry : LobbyInit.OpenNewChapter, stageIndex);
             return;
         }
         
@@ -752,6 +876,12 @@ public class FindObjectMode : MonoBehaviour
             return;
         }
 
+        if (!ItemManager.Instance.UseFunctionItem(FunctionItemType.Hint))
+        {
+            return;
+        }
+
+        RefreshHintCount();
         int levelIndex = Random.Range(0, findList.Count - 1);
         Level findObject = findList[levelIndex];
         if (!findObject)
@@ -760,14 +890,8 @@ public class FindObjectMode : MonoBehaviour
         }
 
         PlayHintFX(findObject);
-
-        // 포장지 없는 애들만 목록에서 없앰 (힌트 재출력 대비)
-        if (!findObject.IsWraped())
-        {
-            findList.RemoveAt(levelIndex);
-        }
+        findList.RemoveAt(levelIndex);
         
-        /*
         if (baseScroll)
         {
             RectTransform rect = CodeUtilLibrary.GetRectTransform(findObject.transform);
@@ -778,11 +902,11 @@ public class FindObjectMode : MonoBehaviour
                 Vector2 backupPos = pos; 
                 pos.x += rect.localPosition.x;
                 pos.y += rect.localPosition.y;
-                //baseScroll.horizontalNormalizedPosition = pos.x / parentRect.sizeDelta.x;
-                //baseScroll.verticalNormalizedPosition = pos.y / parentRect.sizeDelta.y;
-                CodeUtilLibrary.SetColorLog($"UseHint : local[{rect.localPosition}] pos[{pos}], backup[{backupPos}], focus[{baseScroll.horizontalNormalizedPosition}, {baseScroll.verticalNormalizedPosition}]", "aqua");
+                baseScroll.horizontalNormalizedPosition = pos.x / parentRect.sizeDelta.x;
+                baseScroll.verticalNormalizedPosition = pos.y / parentRect.sizeDelta.y;
+                //CodeUtilLibrary.SetColorLog($"UseHint : local[{rect.localPosition}] pos[{pos}], backup[{backupPos}], focus[{baseScroll.horizontalNormalizedPosition}, {baseScroll.verticalNormalizedPosition}]", "aqua");
             }
-        }*/
+        }
     }
     #endregion
 
@@ -816,12 +940,22 @@ public class FindObjectMode : MonoBehaviour
         }
     }
     
+    public void PlayTouchFX(Vector2 worldPos)
+    {
+        if (fxList)
+        {
+            BaseSimplePrefab prefab = fxList.GetNewActivePrefab((int)FindFXKind.TouchToCollect);
+            PlayFX(baseFindRect, prefab, worldPos, baseFindRect, OnEndPlayTouchFX);
+        }
+    }
+    
     public void PlayTouchFX(RectTransform parentRect, PointerEventData eventData)
     {
         if (fxList)
         {
             BaseSimplePrefab prefab = fxList.GetNewActivePrefab((int)FindFXKind.TouchToCollect);
-            PlayFX(parentRect, prefab, eventData, displayTouchRect, OnEndPlayTouchFX);
+            //PlayFX(parentRect, prefab, eventData, displayTouchRect, OnEndPlayTouchFX);
+            PlayFX(parentRect, prefab, eventData, baseFindRect, OnEndPlayTouchFX);
         }
     }
 
@@ -837,7 +971,8 @@ public class FindObjectMode : MonoBehaviour
         if (fxList)
         {
             BaseSimplePrefab prefab = fxList.GetNewActivePrefab((int)FindFXKind.TouchToWrong);
-            PlayFX(parentRect, prefab, eventData, displayWrongRect, OnEndPlayWrongFX);
+            //PlayFX(parentRect, prefab, eventData, displayWrongRect, OnEndPlayWrongFX);
+            PlayFX(parentRect, prefab, eventData, baseFindRect, OnEndPlayWrongFX);
         }
     }
 
@@ -881,7 +1016,34 @@ public class FindObjectMode : MonoBehaviour
         {
             Vector3 pos;
             RectTransformUtility.ScreenPointToWorldPointInRectangle(displayRect, eventData.position,
-                eventData.pressEventCamera, out pos);
+                mainCamera, out pos);
+            rect.SetParent(displayRect);
+            rect.position = pos;
+        }
+
+        SpineAnimPlayer anim = prefab.GetBasePrefab<SpineAnimPlayer>();
+        if (animPlayer)
+        {
+            anim.mOnEndPlayAllWithObject.RemoveAllListeners();
+            anim.mOnEndPlayAllWithObject.AddListener(endPlayEvent);
+            anim.PlayAnim();
+        }
+    }
+
+    private void PlayFX(RectTransform parentRect, BaseSimplePrefab prefab, Vector2 worldPos, RectTransform displayRect, UnityAction<GameObject> endPlayEvent)
+    {
+        if (!prefab)
+        {
+            return;
+        }
+
+        RectTransform rect = CodeUtilLibrary.GetRectTransform(prefab.transform);
+        GameObject displayPanel = fxList ? fxList.gameObject : null;
+        if (rect && displayRect)
+        {
+            Vector3 pos;
+            RectTransformUtility.ScreenPointToWorldPointInRectangle(displayRect, worldPos,
+                mainCamera, out pos);
             rect.SetParent(displayRect);
             rect.position = pos;
         }
@@ -899,7 +1061,7 @@ public class FindObjectMode : MonoBehaviour
     #region Sound
     private void PlayFindSound()
     {
-        if (!isPlayFXSound)
+        if (!SaveManager.Instance.GetSoundOptionValue(false))
         {
             return;
         }
@@ -919,6 +1081,195 @@ public class FindObjectMode : MonoBehaviour
         if (nowPlaySource)
         {
             nowPlaySource.Play();
+        }
+    }
+    #endregion
+
+    #region Item
+    private void SetHintCount(int count)
+    {
+        if (!hintSwitcher)
+        {
+            if (hintCountField)
+            {
+                hintCountField.SetText($"X{count}");
+            }
+            return;
+        }
+        
+        int nowActiveSwitcherIndex = hintSwitcher.GetActiveIndex();
+        bool isHaveHint = (count > 0);
+        int newActiveSwitcherIndex = isHaveHint ? 0 : 1;
+
+        if (isHaveHint)
+        {
+            if (hintCountField)
+            {
+                hintCountField.SetText($"X{count}");
+            }
+        }
+        
+        if (nowActiveSwitcherIndex != newActiveSwitcherIndex)
+        {
+            hintSwitcher.SetActiveByChildIndex(newActiveSwitcherIndex);
+
+            if (isHaveHint)
+            {
+                if (hintAnimPlayer)
+                {
+                    hintAnimPlayer.StopAnim();
+                }
+            }
+            else
+            {
+                if (hintAnimPlayer)
+                {
+                    hintAnimPlayer.PlayAnim();
+                }
+            }
+        }
+    }
+
+    private void RefreshHintCount()
+    {
+        SetHintCount(ItemManager.Instance.GetHaveFunctionItemCount(FunctionItemType.Hint));
+    }
+    #endregion
+
+    #region AD
+    private void DisplayHintAD()
+    {
+        if (hintADSpine)
+        {
+            hintADSpine.gameObject.SetActive(true);
+        }
+        
+        if (hintADAnim)
+        {
+            hintADAnim.PlayAnim();
+        }
+        
+        remainDisplayHintADTime = onceDisplayHintADTime;
+    }
+
+    private void EraseHintAD()
+    {
+        SpineUtilLibrary.StopSpineAnim(hintADSpine);
+        TrackEntry animEntry = SpineUtilLibrary.PlaySpineAnim(hintADSpine, "Ad_Up", false);
+        if (animEntry != null)
+        {
+            animEntry.Complete += (trackEntry => OnEraseHintAD());
+        }
+        remainDisplayHintADTime = 0.0f;
+        remainDelayHintADTime = displayHintADDelayTime;
+    }
+
+    private void OnEraseHintAD()
+    {
+        if (hintADSpine)
+        {
+            hintADSpine.gameObject.SetActive(false);
+        }
+    }
+
+    public void OnClickHintAD()
+    {
+        AdvertisementManager.Instance.PlayAd(OnEndWatchHintAD);
+    }
+
+    private void OnEndWatchHintAD(AdWatchError error)
+    {
+        if (error == AdWatchError.Success)
+        {
+            ItemManager.Instance.AddFunctionItem(FunctionItemType.Hint);
+            RefreshHintCount();
+            ItemManager.Instance.SaveHaveItem();
+        
+            //UseHint();
+        }
+        
+        EraseHintAD();
+    }
+
+    private void InitDisplayHintADTime()
+    {
+        if (remainDelayHintADTime > 0.0f)
+        {
+            remainDelayHintADTime = displayHintADDelayTime;
+        }
+    }
+    #endregion
+
+    #region Debug
+    private void AddDebugLog(string log)
+    {
+        if (!string.IsNullOrEmpty(debugStr))
+        {
+            //debugStr += "\n";
+        }
+
+        //debugStr += log;
+        debugStr = log;
+
+        if (debugField)
+        {
+            debugField.SetText(debugStr);
+        }
+    }
+    #endregion
+    
+    #region Touch
+    private void CheckMultiTouch()
+    {
+        int count = Input.touchCount;
+        if (count == 2)
+        {
+            if (baseScroll)
+            {
+                baseScroll.enabled = false; // 2 터치일 때 스크롤링 이동을 막는다.
+            }
+            
+            Touch touch1 = Input.GetTouch(0);
+            Touch touch2 = Input.GetTouch(1);
+            float nowDist = Vector2.Distance(touch1.position, touch2.position);
+            if (touchDist > 0.0f)
+            {
+                float delta = nowDist - touchDist;
+                delta *= 0.001f;
+                AddScaleRate(centerPos, delta);
+            }
+            else if (baseFindRect)
+            {
+                centerPos = (touch1.position + touch2.position) * 0.5f;
+            }
+            
+            touchDist = nowDist;
+            touchedScaleRate = nowScaleRate;
+        }
+        else
+        {
+            touchDist = 0.0f;
+            if (count < 2)
+            {
+                if (baseScroll)
+                {
+                    baseScroll.enabled = true; // 2포인트 이하면 스크롤 이동을 다시 가능하게함
+                }
+            }
+        }
+    }
+    #endregion
+
+    #region Scroll
+    private void ScrollingCheck()
+    {
+        if (Input.GetKeyUp(KeyCode.UpArrow))
+        {
+            AddScaleRate(Input.mousePosition, 0.01f);
+        }
+        if (Input.GetKeyUp(KeyCode.DownArrow))
+        {
+            AddScaleRate(Input.mousePosition, -0.01f);
         }
     }
     #endregion

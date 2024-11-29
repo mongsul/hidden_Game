@@ -4,3 +4,6 @@
 "DamagedLifeInRange","10"
 "IOSVibrationID","vibration_Short"
 "BannerADHeight","200"
+"DisplayHintADDelayTime","30"
+"OnceDisplayHintADTime","5"
+"MaxHintADCount","5"

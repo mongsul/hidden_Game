@@ -33,6 +33,14 @@ public class VibrationLibrary : SimpleManagerBase<VibrationLibrary>
 #endif
     }
 
+    public static void SetIsUseVibration(bool isUse)
+    {
+        if (Instance)
+        {
+            Instance.isUseVibration = isUse;
+        }
+    }
+
     public void ExecuteSimpleVibration()
     {
         if (!isUseVibration)

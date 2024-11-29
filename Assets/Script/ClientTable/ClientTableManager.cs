@@ -64,14 +64,7 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
     void Update()
     {
     }*/
-
-    private void OnDestroy()
-    {
-        simpleClientBaseTable.Clear();
-        clientLanguageTable.Clear();
-        languageCodeList.Clear();
-    }
-
+    
     #region Init
     public static List<T> LoadTable<T>(string fileName) where T : ClientTable// : UnityEngine.ScriptableObject
     {
@@ -241,17 +234,19 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
             for (int i = 0; i < baseTableList.Count; i++)
             {
                 ClientBaseTable table = baseTableList[i];
-                if (table.IsValidValue())
+                if (!clientLanguageTable.ContainsKey(table.rowValue))
                 {
-                    if (!clientLanguageTable.ContainsKey(table.rowValue))
-                    {
-                        clientLanguageTable.Add(table.rowValue, table.value);
-                    }
+                    clientLanguageTable.Add(table.rowValue, table.value);
                 }
             }
         }
 
         CallOnChangeLanguageCode();
+    }
+
+    public bool IsValidLanguageValue(string key)
+    {
+        return clientLanguageTable.ContainsKey(key);
     }
     
     public string GetLanguageValue(string key)

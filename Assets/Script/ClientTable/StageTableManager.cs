@@ -32,6 +32,7 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
     private Dictionary<int, int> chapterSortIndexMap = new Dictionary<int, int>();
     private Dictionary<int, StageTable> stageTableMap = new Dictionary<int, StageTable>();
     private Dictionary<int, int> chapterKeyIndexMap = new Dictionary<int, int>();
+    private Dictionary<int, int> chapterRewardItemMap = new Dictionary<int, int>(); // 아이템 번호 - 챕터 키값 맵 
     private int maxStageChapterKey;
     
     // Start is called before th
@@ -80,13 +81,15 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
     private void InitChapterTable()
     {
         List<ChapterTable> chapterTableList = ClientTableManager.LoadTable<ChapterTable>("Chapter");
-        chapterTableMap = new Dictionary<int, ChapterTable>();
-        chapterSortIndexMap = new Dictionary<int, int>();
+        chapterTableMap.Clear();
+        chapterSortIndexMap.Clear();
+        chapterRewardItemMap.Clear();
         maxStageChapterKey = 0;
         for (int i = 0; i < chapterTableList.Count; i++)
         {
             int key = chapterTableList[i].chapterIndex;
             int sort = chapterTableList[i].chapterSort;
+            int reward = chapterTableList[i].chapterReward;
             if (!chapterTableMap.ContainsKey(key))
             {
                 chapterTableMap.Add(key, chapterTableList[i]);
@@ -95,6 +98,14 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
             if (!chapterSortIndexMap.ContainsKey(sort))
             {
                 chapterSortIndexMap.Add(sort, key);
+            }
+
+            if (reward > 0)
+            {
+                if (!chapterRewardItemMap.ContainsKey(reward))
+                {
+                    chapterRewardItemMap.Add(reward, key);
+                }
             }
         }
     }
@@ -228,6 +239,16 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
         if (chapterSortIndexMap.ContainsKey(chapterSort))
         {
             return chapterSortIndexMap[chapterSort];
+        }
+
+        return 0;
+    }
+
+    public int GetChapterByRewardItem(int itemIndex)
+    {
+        if (chapterRewardItemMap.ContainsKey(itemIndex))
+        {
+            return chapterRewardItemMap[itemIndex];
         }
 
         return 0;

@@ -5,6 +5,7 @@ Function ExportToLocalizeRowCSV(MainSheet As Worksheet, StartRowIndex As Integer
     Dim NewLine As String
     Dim ado1 As Object
     Dim MaxColumn As Integer
+    Dim MaxRow As Integer
     
     NewLine = Chr(13) & Chr(10) '다음줄 문자열
     MaxColumn = 0
@@ -16,6 +17,15 @@ Function ExportToLocalizeRowCSV(MainSheet As Worksheet, StartRowIndex As Integer
         MaxColumn = MaxColumn + 1
     Next
     
+    MaxRow = StartRowIndex
+    For i = StartRowIndex To MainSheet.UsedRange.Rows.Count
+        If MainSheet.Cells(i, 1) = "" Then
+            Exit For
+        End If
+        
+        MaxRow = i
+    Next
+    
     
     'ADODB 설정
     Set ado1 = CreateObject("ADODB.Stream")
@@ -25,7 +35,7 @@ Function ExportToLocalizeRowCSV(MainSheet As Worksheet, StartRowIndex As Integer
     ado1.Open
     
     '마지막 행까지 반복
-    For i = StartRowIndex To MainSheet.UsedRange.Rows.Count
+    For i = StartRowIndex To MaxRow
         str = ""
         For j = 1 To MaxColumn
             If j <> MaxColumn Then

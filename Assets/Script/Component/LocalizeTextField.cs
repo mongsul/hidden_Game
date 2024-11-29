@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Library;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -31,17 +32,26 @@ namespace UI.Common
                     contentsList.Add(content);
                 }
             }
+
+            public void ClearContent()
+            {
+                if (contentsList != null)
+                {
+                    contentsList.Clear();
+                }
+            }
         }
     
         [FormerlySerializedAs("TextField")] [SerializeField] private TMP_Text textField;
         [FormerlySerializedAs("Localize")] [SerializeField] private LocalizeInfo localize;
-
-        private TMP_Text fieldValue;
     
         // Start is called before the first frame update
         void Start()
         {
-            ClientTableManager.Instance.AddChangeLanguageCodeEvent(RefreshLocalize);
+            if (Application.isPlaying)
+            {
+                ClientTableManager.Instance.AddChangeLanguageCodeEvent(RefreshLocalize);
+            }
             InitThis();
         }
 
@@ -53,7 +63,15 @@ namespace UI.Common
 
         private void OnDestroy()
         {
-            ClientTableManager.Instance.RemoveChangeLanguageCodeEvent(RefreshLocalize);
+            if (Application.isPlaying)
+            {
+                ClientTableManager.Instance.RemoveChangeLanguageCodeEvent(RefreshLocalize);
+            }
+        }
+
+        private void OnEnable()
+        {
+            RefreshLocalize();
         }
 
 #if UNITY_EDITOR
@@ -118,23 +136,23 @@ namespace UI.Common
 
         public void SetText(LocalizeInfo localizeInfo)
         {
-            if (!fieldValue)
+            if (!textField)
             {
-                if (textField)
+                if (gameObject)
                 {
-                    fieldValue = textField;
-                }
-                else if (gameObject)
-                {
-                    fieldValue = gameObject.GetComponent<TMP_Text>();
+                    textField = gameObject.GetComponent<TMP_Text>();
                 }
             }
             
             localize = localizeInfo;
         
-            if (fieldValue)
+            if (textField)
             {
-                fieldValue.SetText(GetLocalilzeString(localize));
+                string localizeString = GetLocalilzeString(localize);
+                
+                //CodeUtilLibrary.SetColorLog($"SetText : {localizeString}", "lime");
+                
+                textField.SetText(localizeString);
             }
         }
 
@@ -146,106 +164,59 @@ namespace UI.Common
         #region Static
         public static string GetLocalilzeString(LocalizeInfo localize)
         {
-            string text = "";
-            string localeText = "";
-            bool isExecuteLocalize = true;
-            
-            if (localize.localizeKey != "")
-            {
-                localeText = ClientTableManager.Instance.GetLanguageValue(localize.localizeKey);
-            }
-            if ((localeText == "") || (localeText == "none"))
-            {
-                isExecuteLocalize = false;
-                text = localize.localizeKey;
-            }
-
-            if (isExecuteLocalize)
-            {
-                int contentsCount = 0;
-                if (localize.contentsList != null)
-                {
-                    contentsCount = localize.contentsList.Count;
-                }
-                if (contentsCount > 0)
-                {
-                    string localizeStr = ClientTableManager.Instance.GetLanguageValue(localize.localizeKey);
-                    List<string> cutStr = new List<string>(localizeStr.Split('}'));
-#if UNITY_EDITOR
-                    //Debug.Log($"SetText - localizeStr[{localizeStr}], contentsCount[{contentsCount}], cutStrCount[{cutStr.Count}]");
-#endif
-                    if (contentsCount < cutStr.Count - 1)
-                    {
-                        int endCount = cutStr.Count - 1;
-                        for (int i = contentsCount; i < endCount; i++)
-                        {
-                            localize.contentsList.Add(""); // 빈칸으로 메워둔다.
-                        }
-                    }
-                    //Debug.Log($"SetText - contentsCount[{localize.contentsList.Count}]");
-                    
-                    object[] args = localize.contentsList.Cast<object>().ToArray();
-                    text = string.Format(localizeStr, args);
-                }
-                else
-                {
-                    text = ClientTableManager.Instance.GetLanguageValue(localize.localizeKey);
-                }
-            }
-
-            return text;
+            return GetFormatStringByLocalizeInfo(localize, Application.isPlaying);
         }
         
-        public static string GetFormatStringByLocalizeInfo(LocalizeInfo localize)
+        public static string GetFormatStringByLocalizeInfo(LocalizeInfo localize, bool isLocalize = false)
         {
-            string text = "";
-            string localeText = "";
-            bool isExecuteLocalize = true;
-            
-            if (localize.localizeKey != "")
+            if (localize == null)
             {
-                localeText = localize.localizeKey;
-            }
-            if ((localeText == "") || (localeText == "none"))
-            {
-                isExecuteLocalize = false;
-                text = localize.localizeKey;
+                return "";
             }
 
-            if (isExecuteLocalize)
+            if (string.IsNullOrEmpty(localize.localizeKey))
             {
-                int contentsCount = 0;
-                if (localize.contentsList != null)
+                return "";
+            }
+                
+            string localizeStr = localize.localizeKey;
+            if (isLocalize)
+            {
+                if (!ClientTableManager.Instance.IsValidLanguageValue(localizeStr))
                 {
-                    contentsCount = localize.contentsList.Count;
+                    return localizeStr;
                 }
-                if (contentsCount > 0)
+                
+                localizeStr = ClientTableManager.Instance.GetLanguageValue(localizeStr);
+            }
+
+            int contentsCount = 0;
+            if (localize.contentsList != null)
+            {
+                contentsCount = localize.contentsList.Count;
+            }
+                
+            if (contentsCount > 0)
+            {
+                List<string> cutStr = new List<string>(localizeStr.Split('}'));
+//#if UNITY_EDITOR
+                //Debug.Log($"SetText - localizeStr[{localizeStr}], contentsCount[{contentsCount}], cutStrCount[{cutStr.Count}]");
+//#endif
+                if (contentsCount < cutStr.Count - 1)
                 {
-                    string localizeStr = localize.localizeKey;
-                    List<string> cutStr = new List<string>(localizeStr.Split('}'));
-#if UNITY_EDITOR
-                    //Debug.Log($"SetText - localizeStr[{localizeStr}], contentsCount[{contentsCount}], cutStrCount[{cutStr.Count}]");
-#endif
-                    if (contentsCount < cutStr.Count - 1)
+                    int endCount = cutStr.Count - 1;
+                    for (int i = contentsCount; i < endCount; i++)
                     {
-                        int endCount = cutStr.Count - 1;
-                        for (int i = contentsCount; i < endCount; i++)
-                        {
-                            localize.contentsList.Add(""); // 빈칸으로 메워둔다.
-                        }
+                        localize.contentsList.Add(""); // 빈칸으로 메워둔다.
                     }
-                    //Debug.Log($"SetText - contentsCount[{localize.contentsList.Count}]");
+                }
+                //Debug.Log($"SetText - contentsCount[{localize.contentsList.Count}]");
                     
-                    object[] args = localize.contentsList.Cast<object>().ToArray();
-                    text = string.Format(localizeStr, args);
-                }
-                else
-                {
-                    text = localize.localizeKey;
-                }
+                object[] args = localize.contentsList.Cast<object>().ToArray();
+                return string.Format(localizeStr, args);
             }
 
-            return text;
+            return localizeStr;
         }
         #endregion
     }

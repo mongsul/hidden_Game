@@ -11,6 +11,13 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
+public enum LobbyInit
+{
+    None = 0, // 일반 입장 상태 (일반 타이틀 연출 사용
+    OpenNewChapter, // 새로운 챕터 열림
+    ComebackByRetry, // 다시 하기에서 돌아왔을 때
+}
+
 public class Lobby : MonoBehaviour
 {
     private enum LobbyState
@@ -30,7 +37,6 @@ public class Lobby : MonoBehaviour
     [FormerlySerializedAs("MachinePlayer")] [SerializeField] private SpineAnimPlayer machinePlayer;
     [FormerlySerializedAs("ChapterTitleField")] [SerializeField] private LocalizeTextField chapterTitleField;
 
-    [FormerlySerializedAs("TouchNoticeTitleField")] [SerializeField] private LocalizeTextField touchNoticeTitleField;
     [FormerlySerializedAs("NoticeTouchMachineObject")] [SerializeField] private GameObject noticeTouchMachineObject;
     [FormerlySerializedAs("TitleObject")] [SerializeField] private GameObject titleObject;
     
@@ -52,9 +58,12 @@ public class Lobby : MonoBehaviour
     [FormerlySerializedAs("BookOpenDirectionAnim")] [SerializeField] private SpineAnimPlayer bookOpenDirectionAnim;
     [FormerlySerializedAs("BookCloseDirectionAnim")] [SerializeField] private SpineAnimPlayer bookCloseDirectionAnim;
     [FormerlySerializedAs("BookCloseImage")] [SerializeField] private Image bookCloseImage;
-    [FormerlySerializedAs("StartBookOpenDirectioinDelayTime")] [SerializeField] private float startBookOpenDirectioinDelayTime = 1.5f; 
+    [FormerlySerializedAs("StartBookOpenDirectioinDelayTime")] [SerializeField] private float startBookOpenDirectioinDelayTime = 1.5f;
 
-    private bool isExecuteStartDirection = true;
+    [FormerlySerializedAs("BgColorSetter")] [SerializeField] private ObjectKeyColorSetter bgColorSetter;
+    [SerializeField] private ObjectKeyFXImageSetter fxImageSetter;
+    
+    [SerializeField] private BookShelfPopup bookShelf;
     
     private int stageValue = 0;
     private StageTable nextStage;
@@ -62,10 +71,18 @@ public class Lobby : MonoBehaviour
     private int lastClearStage;
     private StageTable lastStage;
     private LobbyState lobbyState = LobbyState.None;
+
+    private List<ObjectKeyActivator> themeActivatorList;
+
+    private LobbyInit initState = LobbyInit.None;
+    private int initParam = 0; // 초기화 연출에 같이 사용할 인자값
     
     // Start is called before the first frame update
     void Start()
     {
+        PreloadManager.ExecutePreload();
+        themeActivatorList = ObjectKeyActivator.GetAllKeyActivatorList();
+        
         if (machineSpine)
         {
             SkeletonUtility bone = SpineUtilLibrary.SpawnHierarchySpineBone(machineSpine);
@@ -83,6 +100,8 @@ public class Lobby : MonoBehaviour
                 }
             }
         }
+
+        RefreshTheme();
         
         if (titleImage)
         {
@@ -137,6 +156,8 @@ public class Lobby : MonoBehaviour
         }
         
         StartTitleLoopDirection();
+
+        bool isExecuteStartDirection = (initState == LobbyInit.None);
         if (isExecuteStartDirection)
         {
             StartTitleDirection();
@@ -157,8 +178,24 @@ public class Lobby : MonoBehaviour
             {
                 titleDirectionAnim.PlayLastAnim();
             }
+        }
 
-            StartOpenBookDirection();
+        switch (initState)
+        {
+            case LobbyInit.OpenNewChapter:
+            {
+                StartOpenBookDirection();
+            }
+                break;
+            case LobbyInit.ComebackByRetry:
+            {
+                if (bookShelf)
+                {
+                    bookShelf.gameObject.SetActive(true);
+                    bookShelf.SetDisplayStageBook(initParam);
+                }
+            }
+                break;
         }
     }
 
@@ -222,9 +259,10 @@ public class Lobby : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
-    public void ToStartByInGame()
+    public void SetDirection(LobbyInit init = LobbyInit.None, int param = 0)
     {
-        isExecuteStartDirection = false;
+        initState = init;
+        initParam = param;
     }
 
     public void OnClickStartOnTitleDirection()
@@ -638,5 +676,37 @@ public class Lobby : MonoBehaviour
         }
 
         return table.stage;
+    }
+
+    private void RefreshTheme()
+    {
+        string themeName = ItemManager.Instance.GetNowEquippedThemeName();
+        if (machineSpine)
+        {
+            machineSpine.Skeleton.SetSkin(themeName);
+        }
+
+        if (bgColorSetter)
+        {
+            bgColorSetter.SetActivateKey(themeName);
+        }
+
+        if (fxImageSetter)
+        {
+            fxImageSetter.SetActivateKey(themeName);
+        }
+
+        if (themeActivatorList != null)
+        {
+            for (int i = 0; i < themeActivatorList.Count; i++)
+            {
+                themeActivatorList[i].SetNowActivateKey(themeName);
+            }
+        }
+    }
+
+    public void OnEquippedTheme()
+    {
+        RefreshTheme();
     }
 }

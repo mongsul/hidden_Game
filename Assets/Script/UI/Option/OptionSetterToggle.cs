@@ -14,6 +14,8 @@ public class OptionSetterToggle : MonoBehaviour, IOptionValueConnector
     [FormerlySerializedAs("OnButton")] [SerializeField] private OptionBaseButton onButton;
     [FormerlySerializedAs("OffButton")] [SerializeField] private OptionBaseButton offButton;
 
+    [FormerlySerializedAs("IsUseInLobby")] [SerializeField] private bool isUseInLobby;
+
     private bool isActivate;
     
     [Serializable]
@@ -23,7 +25,7 @@ public class OptionSetterToggle : MonoBehaviour, IOptionValueConnector
     [FormerlySerializedAs("OnValueChangeEvent")]
     [SerializeField]
     public ToggleValueEvent mOnValueChange;
-    
+
     /*
     // Start is called before the first frame update
     void Start()
@@ -91,5 +93,10 @@ public class OptionSetterToggle : MonoBehaviour, IOptionValueConnector
     public void ValueToSaveData()
     {
         SaveManager.Instance.SetOptionValue(GetOptionSaveKey(), GetValue().ToString());
+    }
+
+    public bool IsUseLobby()
+    {
+        return isUseInLobby;
     }
 }

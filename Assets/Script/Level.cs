@@ -72,8 +72,8 @@ public class Level : MonoBehaviour, IPointerClickHandler
     void Update()
     {
     }*/
-
-    private void OnEnable()
+    
+    public void OnOpen()
     {
         if (wrap)
         {
@@ -149,7 +149,8 @@ public class Level : MonoBehaviour, IPointerClickHandler
             {
                 hintRect.anchorMax = new UnityEngine.Vector2(0.5f, 0.5f);
                 hintRect.anchorMin = new UnityEngine.Vector2(0.5f, 0.5f);
-                hintRect.localPosition = Vector3.zero;
+                hintRect.anchoredPosition = Vector3.zero;
+                hintRect.localScale = Vector3.one;
             }
             
             SpineAnimPlayer anim = hint.GetBasePrefab<SpineAnimPlayer>();

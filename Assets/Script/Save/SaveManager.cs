@@ -75,6 +75,36 @@ public class SaveManager : SaveBaseManager
         if (nowMaxClearStage < stage)
         {
             saveData.clearStage = stage;
+
+            StageTable nowClearTable = StageTableManager.Instance.GetStageTable(stage);
+            StageTable nextStageTable = StageTableManager.Instance.GetNextStageTable(stage);
+            bool isEndChapter = false;
+            if (nowClearTable != null)
+            {
+                if (nextStageTable == null)
+                {
+                    isEndChapter = true;
+                }
+                else if (nowClearTable.chapter != nextStageTable.chapter)
+                {
+                    isEndChapter = true;
+                }
+
+                if (isEndChapter)
+                {
+                    ChapterTable chapterTable = StageTableManager.Instance.GetChapterTable(nowClearTable.chapter);
+                    if (chapterTable != null)
+                    {
+                        if (chapterTable.chapterReward != 0)
+                        {
+                            // 챕터 보상 수급
+                            ItemManager.Instance.AddHaveItemCount(chapterTable.chapterReward);
+                            SaveFile(SaveKind.Item);
+                        }
+                    }
+                }
+            }
+            
             SaveGameOption();
         }
     }

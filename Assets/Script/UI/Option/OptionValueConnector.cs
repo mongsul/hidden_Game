@@ -7,4 +7,5 @@ public interface IOptionValueConnector
     public void InitThis();
     public void ValueToSaveData();
     public void SetApplyOption();
+    public bool IsUseLobby();
 }

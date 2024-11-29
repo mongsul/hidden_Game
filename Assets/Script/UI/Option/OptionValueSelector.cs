@@ -10,8 +10,11 @@ public class OptionValueSelector : MonoBehaviour, IOptionValueConnector
 {
     [FormerlySerializedAs("Title")] [SerializeField] private LocalizeTextField title;
 
+    [FormerlySerializedAs("IsUseInLobby")] [SerializeField] private bool isUseInLobby;
+
     [FormerlySerializedAs("DisplayValueList")] [SerializeField] private List<string> displayValueList;
     [FormerlySerializedAs("ValueList")] [SerializeField] private List<string> valueList;
+    
     private int nowSelectIndex = 0;
     
     [Serializable]
@@ -156,5 +159,10 @@ public class OptionValueSelector : MonoBehaviour, IOptionValueConnector
 
         string value = GetSelectValue();
         mOnChangeValue?.Invoke(value);
+    }
+
+    public bool IsUseLobby()
+    {
+        return isUseInLobby;
     }
 }
