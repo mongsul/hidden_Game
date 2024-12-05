@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7801864440621209047}
   - component: {fileID: 4438221575272704113}
   - component: {fileID: 303554515867704940}
+  - component: {fileID: 9215121956147284212}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -65,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB0B4\uC6A9\uBCF4\uAE30"
+  m_text: LookBookContents
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 94696aac86957554b8a8f4d778b9d3af, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: c2dbb70e6e88f7f40ad6890358d4e3f7, type: 2}
@@ -74,8 +75,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4282597458
+  m_fontColor: {r: 0.32156864, g: 0.2509804, b: 0.2627451, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -134,6 +135,23 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &9215121956147284212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1108480520613386786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4be40d3098e8bce49930fb683107cda4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textField: {fileID: 303554515867704940}
+  localize:
+    localizeKey: LookBookContents
+    contentsList: []
+  isApplyLocalize: 1
 --- !u!1 &2370775089527416395
 GameObject:
   m_ObjectHideFlags: 0
@@ -146,7 +164,6 @@ GameObject:
   - component: {fileID: 3180042000357521537}
   - component: {fileID: 8222117500806490153}
   - component: {fileID: 96577713408286617}
-  - component: {fileID: 4795879796839156658}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -255,29 +272,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8222117500806490153}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
---- !u!114 &4795879796839156658
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2370775089527416395}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e5956c563a68e34aad5d3ebaa28ac4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  linkButton: {fileID: 96577713408286617}
-  originalObject: {fileID: 0}
-  replaceObject: {fileID: 0}
-  isDisplayInitToReplaceObject: 0
-  mOnPress:
-    m_PersistentCalls:
-      m_Calls: []
-  mOnOpenLevel:
-    m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 132885512853477000}
+        m_TargetAssemblyTypeName: ChapterBookPanel, Assembly-CSharp
+        m_MethodName: OnClickChapter
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4638981485412258557
 GameObject:
   m_ObjectHideFlags: 0
@@ -460,7 +467,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -502,6 +509,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80544f5fb12512046aa448e81c1453f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  openSwitcher: {fileID: 5547483485563980694}
+  chapterCoverImage: {fileID: 2606423963948909656}
+  mOnSelect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7822307971937182405
 GameObject:
   m_ObjectHideFlags: 0
@@ -569,7 +581,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: bb3f195165b97c544bd6c83d2cd8f588, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -623,9 +635,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ButtonClick, Assembly-CSharp
-        m_MethodName: ClickSound
+      - m_Target: {fileID: 132885512853477000}
+        m_TargetAssemblyTypeName: ChapterBookPanel, Assembly-CSharp
+        m_MethodName: OnClickChapter
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

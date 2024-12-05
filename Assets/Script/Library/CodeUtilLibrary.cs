@@ -437,6 +437,22 @@ namespace Core.Library
 
             return list[listIndex];
         }
+        
+        public static bool GetListValue<T>(List<T> list, int listIndex, ref T returnValue)
+        {
+            if (list == null)
+            {
+                return false;
+            }
+
+            if ((listIndex < 0) || (listIndex >= list.Count))
+            {
+                return false;
+            }
+
+            returnValue = list[listIndex];
+            return true;
+        }
         #endregion
 
         #region Particle

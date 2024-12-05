@@ -44,6 +44,7 @@ namespace UI.Common
     
         [FormerlySerializedAs("TextField")] [SerializeField] private TMP_Text textField;
         [FormerlySerializedAs("Localize")] [SerializeField] private LocalizeInfo localize;
+        [SerializeField] private bool isApplyLocalize = true;
     
         // Start is called before the first frame update
         void Start()
@@ -52,6 +53,7 @@ namespace UI.Common
             {
                 ClientTableManager.Instance.AddChangeLanguageCodeEvent(RefreshLocalize);
             }
+            
             InitThis();
         }
 
@@ -107,8 +109,7 @@ namespace UI.Common
 
         public void SetContents(string content)
         {
-            localize.contentsList = new List<string>();
-            localize.contentsList.Add(content);
+            localize.SetContent(content);
             SetText(localize);
         }
 
@@ -148,11 +149,13 @@ namespace UI.Common
         
             if (textField)
             {
-                string localizeString = GetLocalilzeString(localize);
+                string localizeString = GetFormatStringByLocalizeInfo(localize, isApplyLocalize ? Application.isPlaying : false);
                 
                 //CodeUtilLibrary.SetColorLog($"SetText : {localizeString}", "lime");
-                
-                textField.SetText(localizeString);
+                if (!string.IsNullOrEmpty(localizeString))
+                {
+                    textField.SetText(localizeString);
+                }
             }
         }
 
@@ -162,11 +165,6 @@ namespace UI.Common
         }
 
         #region Static
-        public static string GetLocalilzeString(LocalizeInfo localize)
-        {
-            return GetFormatStringByLocalizeInfo(localize, Application.isPlaying);
-        }
-        
         public static string GetFormatStringByLocalizeInfo(LocalizeInfo localize, bool isLocalize = false)
         {
             if (localize == null)
@@ -188,6 +186,11 @@ namespace UI.Common
                 }
                 
                 localizeStr = ClientTableManager.Instance.GetLanguageValue(localizeStr);
+
+                if (string.IsNullOrEmpty(localizeStr))
+                {
+                    return localize.localizeKey;
+                }
             }
 
             int contentsCount = 0;
@@ -198,13 +201,14 @@ namespace UI.Common
                 
             if (contentsCount > 0)
             {
-                List<string> cutStr = new List<string>(localizeStr.Split('}'));
+                string[] split = localizeStr.Split('}');
+                int cutCount = (split == null) ? 0 : split.Length;
 //#if UNITY_EDITOR
                 //Debug.Log($"SetText - localizeStr[{localizeStr}], contentsCount[{contentsCount}], cutStrCount[{cutStr.Count}]");
 //#endif
-                if (contentsCount < cutStr.Count - 1)
+                if (contentsCount < cutCount - 1)
                 {
-                    int endCount = cutStr.Count - 1;
+                    int endCount = cutCount - 1;
                     for (int i = contentsCount; i < endCount; i++)
                     {
                         localize.contentsList.Add(""); // 빈칸으로 메워둔다.

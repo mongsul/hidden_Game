@@ -4,6 +4,8 @@ using Spine;
 using Spine.Unity;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
+using Event = Spine.Event;
 
 #if UNITY_EDITOR
 using Spine.Unity.Editor;
@@ -14,7 +16,7 @@ namespace Script.Library
     public class SpineUtilLibrary : MonoBehaviour
     {
         #region Spine
-        public static TrackEntry PlaySpineAnim(SkeletonGraphic skeleton, string animName, bool isLoop)
+        public static TrackEntry PlaySpineAnim(SkeletonGraphic skeleton, string animName, bool isLoop, UnityAction onEndEvent = null)
         {
             TrackEntry trackEntry = new TrackEntry();
             if (!skeleton)
@@ -29,26 +31,13 @@ namespace Script.Library
                 return null;
             }
 
-            return skeleton.AnimationState.SetAnimation(0, anim, isLoop);
-        }
-
-        public static TrackEntry PlaySpineAnim(SkeletonAnimation skeleton, string animName, bool isLoop)
-        {
-
-            TrackEntry trackEntry = new TrackEntry();
-            if (!skeleton)
+            trackEntry = skeleton.AnimationState.SetAnimation(0, anim, isLoop);
+            if (!isLoop && (trackEntry != null) && (onEndEvent != null))
             {
-                return null;
+                trackEntry.Complete += (trackEntry => onEndEvent.Invoke());
             }
 
-            SkeletonData skeletonData = skeleton.skeletonDataAsset.GetSkeletonData(true);
-            Spine.Animation anim = skeletonData.FindAnimation(animName);
-            if (anim == null)
-            {
-                return null;
-            }
-
-            return skeleton.AnimationState.SetAnimation(0, anim, isLoop);
+            return trackEntry;
         }
 
         /*
@@ -355,6 +344,42 @@ namespace Script.Library
             }
 
             return spineEventList;
+        }
+        
+        public static void BindSpineEventFunction(SkeletonGraphic skeleton, UnityAction<TrackEntry, Event> onEventFunction = null)
+        {
+            TrackEntry trackEntry = new TrackEntry();
+            if (!skeleton)
+            {
+                return;
+            }
+
+            if (onEventFunction != null)
+            {
+                skeleton.AnimationState.Event += onEventFunction.Invoke;
+            }
+        }
+
+        public static bool IsEqualEvent(Event e, EventDataReferenceAsset eventRef)
+        {
+            if ((e != null) && (eventRef != null))
+            {
+                return (e.Data == eventRef.EventData);
+            }
+
+            // 이벤트 둘중 하나가 유효하지 않음
+            return false;
+        }
+
+        public static bool IsEqualEvent(Event e, string eventName)
+        {
+            if ((e != null) && !string.IsNullOrEmpty(eventName))
+            {
+                return e.Data.Name.Equals(eventName);
+            }
+
+            // 이벤트 둘중 하나가 유효하지 않음
+            return false;
         }
         #endregion
     }

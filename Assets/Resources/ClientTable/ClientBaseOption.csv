@@ -6,4 +6,5 @@
 "BannerADHeight","200"
 "DisplayHintADDelayTime","30"
 "OnceDisplayHintADTime","5"
-"MaxHintADCount","5"
+"MaxHintADCount","40"
+"AddTouchCountByAd","5"

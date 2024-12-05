@@ -283,6 +283,14 @@ namespace UI.Common.Base
                 {
                     list.DeactivateList.Add(prefab);
                 }
+
+                if (addPrefabTransform)
+                {
+                    if (prefab.transform.parent != addPrefabTransform)
+                    {
+                        prefab.transform.SetParent(addPrefabTransform);
+                    }
+                }
             }
             else
             {

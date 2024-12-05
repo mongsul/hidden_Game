@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Core.Library;
 using Script.Library;
 using Spine;
@@ -10,6 +11,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using Event = Spine.Event;
 
 public enum LobbyInit
 {
@@ -59,11 +61,15 @@ public class Lobby : MonoBehaviour
     [FormerlySerializedAs("BookCloseDirectionAnim")] [SerializeField] private SpineAnimPlayer bookCloseDirectionAnim;
     [FormerlySerializedAs("BookCloseImage")] [SerializeField] private Image bookCloseImage;
     [FormerlySerializedAs("StartBookOpenDirectioinDelayTime")] [SerializeField] private float startBookOpenDirectioinDelayTime = 1.5f;
-
+    
     [FormerlySerializedAs("BgColorSetter")] [SerializeField] private ObjectKeyColorSetter bgColorSetter;
     [SerializeField] private ObjectKeyFXImageSetter fxImageSetter;
     
     [SerializeField] private BookShelfPopup bookShelf;
+
+    [SerializeField][SpineEvent] private string changeSkinEventName;
+    [SerializeField] private List<GameObject> changeSkinDeactivateObjectList; // 스킨 바꿀때 off -> on 처리 해줄 오브젝트 목록
+    [SerializeField] private GameObject themeSoundAudio;
     
     private int stageValue = 0;
     private StageTable nextStage;
@@ -76,12 +82,22 @@ public class Lobby : MonoBehaviour
 
     private LobbyInit initState = LobbyInit.None;
     private int initParam = 0; // 초기화 연출에 같이 사용할 인자값
+
+    private bool isGameRetry = false;
+
+    private bool isChangeSkin = false;
+    private List<ObjectKeySoundPlayer> themeSoundList;
     
     // Start is called before the first frame update
     void Start()
     {
         PreloadManager.ExecutePreload();
         themeActivatorList = ObjectKeyActivator.GetAllKeyActivatorList();
+
+        if (themeSoundAudio)
+        {
+            themeSoundList = themeSoundAudio.GetComponentsInChildren<ObjectKeySoundPlayer>(true).ToList();
+        }
         
         if (machineSpine)
         {
@@ -99,6 +115,8 @@ public class Lobby : MonoBehaviour
                     }
                 }
             }
+            
+            SpineUtilLibrary.BindSpineEventFunction(machineSpine, OnMachineEvent);
         }
 
         RefreshTheme();
@@ -252,7 +270,15 @@ public class Lobby : MonoBehaviour
         }
     }
 
-    public void StartLevelStage(int level)
+    private void OnMachineEvent(TrackEntry trackEntry, Event e)
+    {
+        if (SpineUtilLibrary.IsEqualEvent(e, changeSkinEventName))
+        {
+            SetEquippedTheme();
+        }
+    }
+
+    public void StartLevelStage()
     {
         string sceneName = "FindObjectScene";//$"Level {level}";
         SceneManager.sceneLoaded += GameSceneLoaded;
@@ -406,7 +432,8 @@ public class Lobby : MonoBehaviour
         lobbyState = LobbyState.OnStart;
         if (stageValue != 0)
         {
-            StartLevelStage(stageValue);
+            isGameRetry = false;
+            StartLevelStage();
         }
         else
         {
@@ -428,7 +455,7 @@ public class Lobby : MonoBehaviour
         FindObjectMode findObjectMode = gameManagerObject.GetComponent<FindObjectMode>();
         if (findObjectMode)
         {
-            findObjectMode.SetStage(stageValue);
+            findObjectMode.SetStage(stageValue, isGameRetry);
         }
     }
 
@@ -680,10 +707,54 @@ public class Lobby : MonoBehaviour
 
     private void RefreshTheme()
     {
+        ChangeTheme(false);
+    }
+
+    private void ChangeTheme(bool isChangeAnim)
+    {
+        isChangeSkin = false;
+        if (isChangeAnim)
+        {
+            SetActivateThemeObject(false);
+            TrackEntry animEntry = SpineUtilLibrary.PlaySpineAnim(machineSpine, "SkinChanging", false, OnEndPlayChangeSkin);
+        }
+        else
+        {
+            SetEquippedTheme();
+        }
+    }
+
+    private void OnEndPlayChangeSkin()
+    {
+        SetActivateThemeObject(true);
+        SetEquippedTheme();
+    }
+
+    private void SetActivateThemeObject(bool isActivate)
+    {
+        for (int i = 0; i < changeSkinDeactivateObjectList.Count; i++)
+        {
+            GameObject obj = changeSkinDeactivateObjectList[i];
+            if (obj)
+            {
+                obj.SetActive(isActivate);
+            }
+        }
+    }
+
+    private void SetEquippedTheme()
+    {
+        if (isChangeSkin)
+        {
+            return;
+        }
+
+        isChangeSkin = true;
+        int i;
         string themeName = ItemManager.Instance.GetNowEquippedThemeName();
         if (machineSpine)
         {
-            machineSpine.Skeleton.SetSkin(themeName);
+            SpineUtilLibrary.SetSpineSkin(machineSpine, themeName);
         }
 
         if (bgColorSetter)
@@ -698,15 +769,30 @@ public class Lobby : MonoBehaviour
 
         if (themeActivatorList != null)
         {
-            for (int i = 0; i < themeActivatorList.Count; i++)
+            for (i = 0; i < themeActivatorList.Count; i++)
             {
                 themeActivatorList[i].SetNowActivateKey(themeName);
+            }
+        }
+
+        if (themeSoundList != null)
+        {
+            for (i = 0; i < themeSoundList.Count; i++)
+            {
+                themeSoundList[i].SetNowActivateKey(themeName);
             }
         }
     }
 
     public void OnEquippedTheme()
     {
-        RefreshTheme();
+        ChangeTheme(true);
+    }
+
+    public void StartRetryStage(int stageIndex)
+    {
+        isGameRetry = true;
+        stageValue = stageIndex;
+        StartLevelStage();
     }
 }

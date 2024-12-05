@@ -144,8 +144,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: PLAY
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 37b38f6b1fe4d7046ac91610a6ba0885, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: a233e880b9071b543b54704c3fd9ad6e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -716,8 +716,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 310.6, y: 416.2}
-  m_SizeDelta: {x: 310.4, y: 95.6}
+  m_AnchoredPosition: {x: 273.9, y: 337.6}
+  m_SizeDelta: {x: 383.8, y: 88.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3998788205879147693
 CanvasRenderer:
@@ -964,6 +964,7 @@ MonoBehaviour:
   localize:
     localizeKey: RestorePurchase
     contentsList: []
+  isApplyLocalize: 1
 --- !u!1 &4002584765308358426
 GameObject:
   m_ObjectHideFlags: 0
@@ -1265,6 +1266,7 @@ MonoBehaviour:
   localize:
     localizeKey: Option
     contentsList: []
+  isApplyLocalize: 1
 --- !u!1 &6112448596566807895
 GameObject:
   m_ObjectHideFlags: 0

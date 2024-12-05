@@ -12,7 +12,7 @@ public class SoundVolumeChanger : MonoBehaviour
     [FormerlySerializedAs("Sound")] [SerializeField]
     protected AudioSource sound;
 
-    [FormerlySerializedAs("IsBGM")] [SerializeField] private bool isBGM;
+    [FormerlySerializedAs("IsBGM")] [SerializeField] protected bool isBGM;
 
     /*
     // Start is called before the first frame update
@@ -31,18 +31,19 @@ public class SoundVolumeChanger : MonoBehaviour
         SetUseVolume(isUseSound);
     }
 
-    private void SetUseVolume(bool isUseSound)
+    protected void SetUseVolume(bool isUseSound)
     {
         if (sound)
         {
+            //CodeUtilLibrary.SetColorLog($"SetUseVolume[{name}] : isUseSound[{isUseSound}]", "aqua");
             sound.volume = isUseSound ? 1.0f : 0.0f;
         }
     }
 
     public static void ApplySoundOptionToScene(bool isBGM, bool isUseSound)
     {
-        bool bgmVolume = SaveManager.Instance.GetSoundOptionValue(true);
-        bool fxVolume = SaveManager.Instance.GetSoundOptionValue(false);
+        //bool bgmVolume = SaveManager.Instance.GetSoundOptionValue(true);
+        //bool fxVolume = SaveManager.Instance.GetSoundOptionValue(false);
         List<SoundVolumeChanger> soundChangerList = CodeUtilLibrary.GetComponentsListInActiveScene<SoundVolumeChanger>();
         for (int i = 0; i < soundChangerList.Count; i++)
         {

@@ -50,7 +50,7 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
     private LanguageEvent mOnChangeLanguage;
     
     #if UNITY_IOS
-    private Dictionary<string, int> soundIDTable = new Dictionary<string, string>();
+    private Dictionary<string, int> soundIDTable = new Dictionary<string, int>();
     #endif
     
     // Start is called before the first frame update
@@ -144,7 +144,17 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
                 if (table)
                 {
                     string tableName = table.name;
-                    string langCode = tableName.Substring(tableName.Length - 2, 2); // 끝의 2문자를 사용함
+                    string[] cutLang = tableName.Split("_");
+                    int length = (cutLang == null) ? 0 : cutLang.Length;
+                    string langCode;
+                    if (length > 1)
+                    {
+                        langCode = cutLang[length - 1];
+                    }
+                    else
+                    {
+                        langCode = tableName.Substring(tableName.Length - 2, 2); // 끝의 2문자를 사용함
+                    }
                     languageCodeList.Add(langCode);
                 }
             }
@@ -224,7 +234,8 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
                 return;
             }
         }
-        
+
+        nowLangCode = code;
         SaveManager.Instance.SetLanguageCode(code);
         
         List<ClientBaseTable> baseTableList = LoadLanguageTable<ClientBaseTable>(code);
@@ -277,6 +288,11 @@ public class ClientTableManager : SingletonTemplate<ClientTableManager>
     public void RemoveChangeLanguageCodeEvent(UnityAction localizeAction)
     {
         mOnChangeLanguage?.RemoveListener(localizeAction);
+    }
+
+    public string GetNowLanguageCode()
+    {
+        return nowLangCode;
     }
     #endregion
 

@@ -112,10 +112,10 @@ public class SaveBaseManager : SingletonTemplate<SaveManager>
     private Dictionary<string, StringMapGroup> saveGroup = new Dictionary<string, StringMapGroup>();
 
     #region Save
-    private static string GetSaveFolder()
+    protected static string GetSaveFolder()
     {
 #if UNITY_EDITOR
-        return Application.dataPath + "/Save";
+        return Path.Combine(Application.dataPath, "../Save");
 #else
         return Application.persistentDataPath + "/Save";
 #endif

@@ -5,17 +5,11 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
-public enum ProductType
-{
-    None = 0, // 예외처리
-    HINT, // 힌트
-    THEME, // 테마
-}
-
 public class ProductTable : ClientTable
 {
     public int productIdx;
-    public ProductType productType;
+    public ItemType productType;
+    public string productName;
     public int itemIdx;
     public int itemValue;
     public float itemCost;
@@ -31,7 +25,7 @@ public enum PurchaseError
 public class ShopManager : SingletonTemplate<ShopManager>
 {
     private Dictionary<int, ProductTable> productMap = new Dictionary<int, ProductTable>();
-    private Dictionary<ProductType, int> productTypeKeyMap = new Dictionary<ProductType, int>(); // 키 값 = 상품 타입
+    private Dictionary<ItemType, int> productTypeKeyMap = new Dictionary<ItemType, int>(); // 키 값 = 상품 타입
     private Dictionary<int, int> supplyProductMap = new Dictionary<int, int>(); // 키 값 = 구매시 제공 아이템 번호
     
     [Serializable]
@@ -89,7 +83,7 @@ public class ShopManager : SingletonTemplate<ShopManager>
         }
     }
 
-    public int ProductTypeToIndex(ProductType type)
+    public int ProductTypeToIndex(ItemType type)
     {
         if (productTypeKeyMap.ContainsKey(type))
         {
@@ -133,7 +127,7 @@ public class ShopManager : SingletonTemplate<ShopManager>
         OnSuccessBuyProduct(index); // 일단 구매 성공을 바로 날림
     }
 
-    public void RequestBuyProduct(ProductType type, UnityAction<PurchaseError, int> purchaseEvent)
+    public void RequestBuyProduct(ItemType type, UnityAction<PurchaseError, int> purchaseEvent)
     {
         RequestBuyProduct(ProductTypeToIndex(type), purchaseEvent);
     }

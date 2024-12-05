@@ -33,6 +33,7 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
     private Dictionary<int, StageTable> stageTableMap = new Dictionary<int, StageTable>();
     private Dictionary<int, int> chapterKeyIndexMap = new Dictionary<int, int>();
     private Dictionary<int, int> chapterRewardItemMap = new Dictionary<int, int>(); // 아이템 번호 - 챕터 키값 맵 
+    private Dictionary<int, int> chapterInMaxStageMap = new Dictionary<int, int>();
     private int maxStageChapterKey;
     
     // Start is called before th
@@ -113,12 +114,15 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
     private void InitStageTable()
     {
         List<StageTable> stageTableList = ClientTableManager.LoadTable<StageTable>("Stage");
-        stageTableMap = new Dictionary<int, StageTable>();
-        chapterKeyIndexMap = new Dictionary<int, int>();
+        stageTableMap.Clear();
+        chapterKeyIndexMap.Clear();
+        chapterInMaxStageMap.Clear();
         for (int i = 0; i < stageTableList.Count; i++)
         {
             int key = stageTableList[i].stageIndex;
+            int chapter = stageTableList[i].chapter;
             int chapterKey = GetChapterKey(stageTableList[i]);
+            int stage = stageTableList[i].stage;
             if (!stageTableMap.ContainsKey(key))
             {
                 stageTableMap.Add(key, stageTableList[i]);
@@ -130,6 +134,20 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
                 if (maxStageChapterKey < chapterKey)
                 {
                     maxStageChapterKey = chapterKey; // 최대 챕터 키 기록
+                }
+            }
+
+            // 챕터당 최대 스테이지 값 적용
+            if (!chapterInMaxStageMap.ContainsKey(chapter))
+            {
+                chapterInMaxStageMap.Add(chapter, stage);
+            }
+            else
+            {
+                int nowSavedStage = chapterInMaxStageMap[chapter];
+                if (stage > nowSavedStage)
+                {
+                    chapterInMaxStageMap[chapter] = stage;
                 }
             }
         }
@@ -228,6 +246,11 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
         return null;
     }
 
+    public ChapterTable GetChapterTableBySort(int chapterSort)
+    {
+        return GetChapterTable(GetChapterBySort(chapterSort));
+    }
+
     public int GetChapterSort(int chapterIndex)
     {
         ChapterTable chapterTable = GetChapterTable(chapterIndex);
@@ -252,5 +275,21 @@ public class StageTableManager : SingletonTemplate<StageTableManager>
         }
 
         return 0;
+    }
+
+    public int GetMaxChapterStage(int chapter)
+    {
+        if (chapterInMaxStageMap.ContainsKey(chapter))
+        {
+            return chapterInMaxStageMap[chapter];
+        }
+
+        return 0;
+    }
+
+    public StageTable GetMaxChapterStageTable(int chapter)
+    {
+        int stage = GetMaxChapterStage(chapter);
+        return GetStageTableByChapterInfo(GetChapterSort(chapter), stage);
     }
 }

@@ -10,6 +10,7 @@ public enum ItemType
     THEME,
     HINT,
     PURCHASE,
+    ADREMOVE,
     Max, // 최대 종류 개수 체크
 }
 
@@ -295,6 +296,8 @@ public class ItemManager : SingletonTemplate<ItemManager>
         {
             case ItemType.HINT:
                 return FunctionItemType.Hint;
+            case ItemType.ADREMOVE:
+                return FunctionItemType.ADRemover;
         }
 
         return FunctionItemType.None;

@@ -64,6 +64,7 @@ public class FindObjectMode : MonoBehaviour
     [FormerlySerializedAs("DisplayEndDirectionDelayTime")] [SerializeField] private float displayEndDirectionDelayTime = 3.0f;
     
     [FormerlySerializedAs("FindSoundAudio")] [SerializeField] private GameObject findSoundAudio;
+    [SerializeField] private GameObject chapterSoundAudio;
 
     [FormerlySerializedAs("BottomToolBoxRect")] [SerializeField] private RectTransform bottomToolBoxRect;
     [FormerlySerializedAs("BottonToolBoxDefaultSize")] [SerializeField] private float bottonToolBoxDefaultSize = 200.0f;
@@ -79,9 +80,13 @@ public class FindObjectMode : MonoBehaviour
 
     [FormerlySerializedAs("HintSwitcher")] [SerializeField] private ObjectSwitcher hintSwitcher;
     [FormerlySerializedAs("HintAnimPlayer")] [SerializeField] private SpineAnimPlayer hintAnimPlayer;
+
+    [SerializeField] private BuyTouchCountPanel buyTouchCountPanel;
+    [SerializeField] private BuyItemPanel buyPanel;
     
     [FormerlySerializedAs("DebugField")] [SerializeField] private TMP_Text debugField;
 
+    [SerializeField] private GameObject gotoNextStagePanel;
     [SerializeField] private GameObject gotoBookShelfPanel;
     
     private GameObject baseFindObject; // 찾기 페널 (stage1-1등, 로드 후 인스턴스 생성 한 파일)
@@ -102,6 +107,7 @@ public class FindObjectMode : MonoBehaviour
 
     private List<AudioSource> findSoundList = new List<AudioSource>();
     private bool isPlayFXSound = false;
+    private List<ObjectKeySoundPlayer> chapterSoundList = new List<ObjectKeySoundPlayer>();
 
     private float displayHintADDelayTime = 60.0f;
     private float onceDisplayHintADTime = 3.0f;
@@ -121,15 +127,24 @@ public class FindObjectMode : MonoBehaviour
 
     private Vector2 centerPos;
 
+    private bool isSetStageIndex = false;
     private bool isPlayRetry = false;
+
+    private bool isAlreadyDisplayAddTouchCount = false;
 
     // Start is called before the first frame update
     void Start()
     {
+        PreloadManager.ExecutePreload();
         isPlayFXSound = SaveManager.Instance.GetSoundOptionValue(false);
         if (findSoundAudio)
         {
             findSoundList = findSoundAudio.GetComponentsInChildren<AudioSource>(true).ToList();
+        }
+
+        if (chapterSoundAudio)
+        {
+            chapterSoundList = chapterSoundAudio.GetComponentsInChildren<ObjectKeySoundPlayer>(true).ToList();
         }
 
         damagedLifeInRange = ClientTableManager.Instance.GetBaseFloatValue("DamagedLifeInRange", 10.0f);
@@ -225,7 +240,10 @@ public class FindObjectMode : MonoBehaviour
         }
 
         // 테스트 기능 (스테이지 지정시 바로 시작)
-        SetStage(stageIndex);
+        if (!isSetStageIndex)
+        {
+            SetStage(stageIndex, isPlayRetry);
+        }
 #endif
     }
     
@@ -271,8 +289,14 @@ public class FindObjectMode : MonoBehaviour
     #region Stage
     public void SetStage(int stage, bool isRetry = false)
     {
+        isSetStageIndex = true;
         stageIndex = stage;
         isPlayRetry = isRetry;
+        isAlreadyDisplayAddTouchCount = false;
+        
+        #if UNITY_EDITOR
+        CodeUtilLibrary.SetColorLog($"SetStage : stage[{stage}], isRetry[{isRetry}]", "lime");
+        #endif
 
         nowProgressStage = StageTableManager.Instance.GetStageTable(stageIndex);
         if (nowProgressStage == null)
@@ -282,8 +306,9 @@ public class FindObjectMode : MonoBehaviour
         
         int chapter = StageTableManager.Instance.GetChapterSort(nowProgressStage.chapter);
         int chapterStage = nowProgressStage.stage;
-        
-        InitRemainTouchCount(nowProgressStage.touchCount);
+        bool isHaveRemoveAD = ItemManager.Instance.IsPossibleUseFunctionItem(FunctionItemType.ADRemover);
+        int hpRate = isHaveRemoveAD ? 2 : 1;
+        InitRemainTouchCount(nowProgressStage.touchCount * hpRate);
         
         if (!prefabBaseRect)
         {
@@ -300,12 +325,10 @@ public class FindObjectMode : MonoBehaviour
         }
         
         GameObject newStagePrefab = Instantiate<GameObject>(stagePrefab, Vector3.zero, Quaternion.identity, prefabBaseRect);
-        if (!newStagePrefab)
+        if (newStagePrefab)
         {
-            return;
+            InitStagePrefab(newStagePrefab);
         }
-
-        InitStagePrefab(newStagePrefab);
         
         SetDefaultScaleRate();
         OnGameStart();
@@ -313,7 +336,6 @@ public class FindObjectMode : MonoBehaviour
     #endregion
 
     #region StagePrefab
-
     public void SetScaleRate(float scaleRate)
     {
         SetScaleRate(scaleRate, new Vector2(0.5f, 0.5f));
@@ -321,7 +343,7 @@ public class FindObjectMode : MonoBehaviour
     
     public void SetScaleRate(float scaleRate, Vector2 centerRate)
     {
-        scaleRate = Math.Clamp(scaleRate, minScaleRate, 2.0f);
+        scaleRate = Math.Clamp(scaleRate, minScaleRate, 3.0f);
         if (nowScaleRate == scaleRate)
         {
             return; // 안함
@@ -669,6 +691,24 @@ public class FindObjectMode : MonoBehaviour
         Invoke("OnDisplayGameEndPanel", displayEndDirectionDelayTime);
     }
 
+    private void DisplayEndAdCheck()
+    {
+        bool isDisplayAd = isPlayRetry ? false : nowProgressStage.afterAd;
+        if (isDisplayAd)
+        {
+            AdvertisementManager.Instance.PlayAd(OnWatchedGameEndAd);
+        }
+        else
+        {
+            OnDisplayGameEndPanel();
+        }
+    }
+
+    private void OnWatchedGameEndAd(AdWatchError error)
+    {
+        OnDisplayGameEndPanel();
+    }
+
     private void OnDisplayGameEndPanel()
     {
         if (gameEndPanel)
@@ -681,13 +721,13 @@ public class FindObjectMode : MonoBehaviour
             gameEndPlayer.PlayAnim();
         }
 
-        bool isDisplayBookShelf = isPlayRetry;
+        bool isDisplayNextStage = true;
         if (isPlayRetry)
         {
             if (stageIndex >= SaveManager.Instance.GetClearStage())
             {
                 // 최대 저장된 클리어 스테이지 체크
-                isDisplayBookShelf = false;
+                isDisplayNextStage = false;
             }
             else
             {
@@ -695,19 +735,24 @@ public class FindObjectMode : MonoBehaviour
                 if (nextStage == null)
                 {
                     // 마지막 스테이지였음
-                    isDisplayBookShelf = false;
+                    isDisplayNextStage = false;
                 }
                 else if (nowProgressStage.chapter != nextStage.chapter)
                 {
                     // 챕터가 달라짐
-                    isDisplayBookShelf = false;
+                    isDisplayNextStage = false;
                 }
             }
         }
 
+        if (gotoNextStagePanel)
+        {
+            gotoNextStagePanel.SetActive(isDisplayNextStage);
+        }
+
         if (gotoBookShelfPanel)
         {
-            gotoBookShelfPanel.SetActive(isDisplayBookShelf);
+            gotoBookShelfPanel.SetActive(isPlayRetry);
         }
     }
 
@@ -758,6 +803,24 @@ public class FindObjectMode : MonoBehaviour
         maxHintADCount = ClientTableManager.Instance.GetBaseIntValue("MaxHintADCount", 3);
         remainDelayHintADTime = displayHintADDelayTime;
         remainDisplayHintADTime = 0.0f;
+
+        int chapterSoundCount = (chapterSoundList == null) ? 0 : chapterSoundList.Count;
+        if (chapterSoundCount < 1)
+        {
+            if (chapterSoundAudio)
+            {
+                chapterSoundList = chapterSoundAudio.GetComponentsInChildren<ObjectKeySoundPlayer>(true).ToList();
+            }
+        }
+        
+        if (chapterSoundList != null)
+        {
+            string chapter = StageTableManager.Instance.GetChapterSort(nowProgressStage.chapter).ToString();
+            for (int i = 0; i < chapterSoundList.Count; i++)
+            {
+                chapterSoundList[i].SetNowActivateKey(chapter);
+            }
+        }
     }
 
     public void OnTouchCover(RectTransform parentRect, PointerEventData eventData, float dist)
@@ -789,6 +852,19 @@ public class FindObjectMode : MonoBehaviour
     }
 
     private void OnGameOver()
+    {
+        if (isAlreadyDisplayAddTouchCount)
+        {
+            OnRealGameOver();
+        }
+        else
+        {
+            isAlreadyDisplayAddTouchCount = true;
+            DisplayAddTouchAdPanel();
+        }
+    }
+
+    private void OnRealGameOver()
     {
         AddRecord("GameOver");
         SaveManager.Instance.SaveFile(SaveKind.Record); // 기록 저장
@@ -863,7 +939,9 @@ public class FindObjectMode : MonoBehaviour
         
         SetStage(nextStage.stageIndex);
     }
+    #endregion
 
+    #region Hint
     public void UseHint()
     {
         if (findList == null)
@@ -906,6 +984,23 @@ public class FindObjectMode : MonoBehaviour
                 baseScroll.verticalNormalizedPosition = pos.y / parentRect.sizeDelta.y;
                 //CodeUtilLibrary.SetColorLog($"UseHint : local[{rect.localPosition}] pos[{pos}], backup[{backupPos}], focus[{baseScroll.horizontalNormalizedPosition}, {baseScroll.verticalNormalizedPosition}]", "aqua");
             }
+        }
+    }
+
+    public void DisplayPurchaseHint()
+    {
+        if (buyPanel)
+        {
+            int productIndex = ShopManager.Instance.ProductTypeToIndex(ItemType.HINT);
+            buyPanel.SetPurchaseItem(productIndex, OnSuccessPurchaseHint);
+        }
+    }
+
+    private void OnSuccessPurchaseHint(ProductTable product)
+    {
+        if (product != null)
+        {
+            RefreshHintCount();
         }
     }
     #endregion
@@ -1076,10 +1171,13 @@ public class FindObjectMode : MonoBehaviour
             return;
         }
 
-        int index = Random.Range(0, findSoundList.Count - 1);
+        int index = Random.Range(0, findSoundList.Count);
         AudioSource nowPlaySource = findSoundList[index];
         if (nowPlaySource)
         {
+            //#if UNITY_EDITOR
+            //CodeUtilLibrary.SetColorLog($"PlayFindSound[{index}] : {nowPlaySource.clip}", "aqua");
+            //#endif
             nowPlaySource.Play();
         }
     }
@@ -1139,6 +1237,14 @@ public class FindObjectMode : MonoBehaviour
     #region AD
     private void DisplayHintAD()
     {
+        if (maxHintADCount < 1)
+        {
+            return;
+        }
+
+        // 힌트 나오는 횟수 적용
+        maxHintADCount--;
+        
         if (hintADSpine)
         {
             hintADSpine.gameObject.SetActive(true);
@@ -1155,11 +1261,7 @@ public class FindObjectMode : MonoBehaviour
     private void EraseHintAD()
     {
         SpineUtilLibrary.StopSpineAnim(hintADSpine);
-        TrackEntry animEntry = SpineUtilLibrary.PlaySpineAnim(hintADSpine, "Ad_Up", false);
-        if (animEntry != null)
-        {
-            animEntry.Complete += (trackEntry => OnEraseHintAD());
-        }
+        TrackEntry animEntry = SpineUtilLibrary.PlaySpineAnim(hintADSpine, "Ad_Up", false, OnEraseHintAD);
         remainDisplayHintADTime = 0.0f;
         remainDelayHintADTime = displayHintADDelayTime;
     }
@@ -1257,6 +1359,48 @@ public class FindObjectMode : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void DisplayAddTouchAdPanel()
+    {
+        if (buyTouchCountPanel)
+        {
+            buyTouchCountPanel.gameObject.SetActive(true);
+        }
+    }
+
+    public void OnClickWatchAddTouchAd()
+    {
+        AdvertisementManager.Instance.PlayAd(OnEndWatchAddTouchAd);
+    }
+
+    public void OnEndWatchAddTouchAd(AdWatchError error)
+    {
+        if (error == AdWatchError.Success)
+        {
+            int addCount = ClientTableManager.Instance.GetBaseIntValue("AddTouchCountByAd");
+            remainTouchCount += addCount;
+            RefreshRemainTouchCount();
+            
+            if (buyTouchCountPanel)
+            {
+                buyTouchCountPanel.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            OnEraseWatchAddTouchAd();
+        }
+    }
+
+    public void OnEraseWatchAddTouchAd()
+    {
+        if (buyTouchCountPanel)
+        {
+            buyTouchCountPanel.gameObject.SetActive(false);
+        }
+        
+        OnRealGameOver();
     }
     #endregion
 

@@ -21,15 +21,6 @@ public class SaveManager : SaveBaseManager
     private SaveClass saveData;
     
     #region Base
-    private static string GetSaveFolder()
-    {
-#if UNITY_EDITOR
-        return Application.dataPath + "/Save";
-#else
-        return Application.persistentDataPath + "/Save";
-#endif
-    }
-    
     private static string GetSavePath()
     {
         return GetSaveFolder() + "/SaveData.json";

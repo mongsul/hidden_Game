@@ -67,7 +67,7 @@ public class GachaMachine<T>// : MonoBehaviour
             return defaultValue;
         }
         
-        int randomValue = Random.Range(0, maxValue);
+        int randomValue = Random.Range(0, maxValue + 1); // Random.Range 의 최대값은 포함이 안되서 +1 해줌 
         int checkValue = 0;
         T lastT = defaultValue;
         #if UNITY_EDITOR
