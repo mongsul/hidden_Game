@@ -29,7 +29,7 @@ public class Level : MonoBehaviour, IPointerClickHandler
     public class FindObjectEvent : UnityEvent<Level>{}
     
     [Serializable]
-    public class TouchPosEvent : UnityEvent<RectTransform, PointerEventData>{}
+    public class TouchPosEvent : UnityEvent<RectTransform, PointerEventData, bool>{}
 
     [FormerlySerializedAs("OnFindObjectEvent")]
     [SerializeField]
@@ -89,7 +89,7 @@ public class Level : MonoBehaviour, IPointerClickHandler
         RectTransform rect = GetMyRect();
         if (rect)
         {
-            mOnPress?.Invoke(rect, eventData);
+            mOnPress?.Invoke(rect, eventData, false);
         }
     }
 
@@ -178,7 +178,7 @@ public class Level : MonoBehaviour, IPointerClickHandler
 
     private void OnPressWrapping(RectTransform parentRect, PointerEventData eventData)
     {
-        mOnPress?.Invoke(parentRect, eventData);
+        mOnPress?.Invoke(parentRect, eventData, true);
     }
 
     private RectTransform GetMyRect()

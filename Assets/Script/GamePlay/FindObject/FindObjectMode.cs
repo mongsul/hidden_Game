@@ -26,6 +26,7 @@ public class FindObjectMode : MonoBehaviour
         TouchToCollect = 0,
         TouchToWrong,
         UseHint,
+        OpenWrapBox,
     }
     
 #if UNITY_EDITOR
@@ -688,7 +689,7 @@ public class FindObjectMode : MonoBehaviour
 
     private void OnEndPlayDirection()
     {
-        Invoke("OnDisplayGameEndPanel", displayEndDirectionDelayTime);
+        Invoke("DisplayEndAdCheck", displayEndDirectionDelayTime);
     }
 
     private void DisplayEndAdCheck()
@@ -1044,13 +1045,13 @@ public class FindObjectMode : MonoBehaviour
         }
     }
     
-    public void PlayTouchFX(RectTransform parentRect, PointerEventData eventData)
+    public void PlayTouchFX(RectTransform parentRect, PointerEventData eventData, bool isOpenWrapBox)
     {
         if (fxList)
         {
-            BaseSimplePrefab prefab = fxList.GetNewActivePrefab((int)FindFXKind.TouchToCollect);
+            BaseSimplePrefab prefab = fxList.GetNewActivePrefab((int)(isOpenWrapBox ? FindFXKind.OpenWrapBox : FindFXKind.TouchToCollect));
             //PlayFX(parentRect, prefab, eventData, displayTouchRect, OnEndPlayTouchFX);
-            PlayFX(parentRect, prefab, eventData, baseFindRect, OnEndPlayTouchFX);
+            PlayFX(parentRect, prefab, eventData, baseFindRect, isOpenWrapBox ? OnEndPlayOpenWrapBoxFX : OnEndPlayTouchFX);
         }
     }
 
@@ -1150,6 +1151,21 @@ public class FindObjectMode : MonoBehaviour
             anim.mOnEndPlayAllWithObject.AddListener(endPlayEvent);
             anim.PlayAnim();
         }
+    }
+    
+    public void PlayOpenWrapBoxFX(RectTransform parentRect, PointerEventData eventData)
+    {
+        if (fxList)
+        {
+            BaseSimplePrefab prefab = fxList.GetNewActivePrefab((int)FindFXKind.OpenWrapBox);
+            //PlayFX(parentRect, prefab, eventData, displayTouchRect, OnEndPlayTouchFX);
+            PlayFX(parentRect, prefab, eventData, baseFindRect, OnEndPlayTouchFX);
+        }
+    }
+
+    public void OnEndPlayOpenWrapBoxFX(GameObject fxObject)
+    {
+        OnEndPlayFX(fxObject, (int)FindFXKind.OpenWrapBox);
     }
     #endregion
 

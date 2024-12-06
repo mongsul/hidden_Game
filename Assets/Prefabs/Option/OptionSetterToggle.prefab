@@ -270,6 +270,7 @@ MonoBehaviour:
   localize:
     localizeKey: BGM
     contentsList: []
+  isApplyLocalize: 1
 --- !u!1 &2097509509048156707
 GameObject:
   m_ObjectHideFlags: 0
@@ -356,6 +357,18 @@ PrefabInstance:
     - target: {fileID: 90264978828628389, guid: 2dcf4a3e37f338c4b9ec0491d6545784, type: 3}
       propertyPath: localize.localizeKey
       value: Option_On
+      objectReference: {fileID: 0}
+    - target: {fileID: 534823574696728062, guid: 2dcf4a3e37f338c4b9ec0491d6545784, type: 3}
+      propertyPath: m_Colors.m_PressedColor.b
+      value: 0.41960785
+      objectReference: {fileID: 0}
+    - target: {fileID: 534823574696728062, guid: 2dcf4a3e37f338c4b9ec0491d6545784, type: 3}
+      propertyPath: m_Colors.m_PressedColor.g
+      value: 0.42745098
+      objectReference: {fileID: 0}
+    - target: {fileID: 534823574696728062, guid: 2dcf4a3e37f338c4b9ec0491d6545784, type: 3}
+      propertyPath: m_Colors.m_PressedColor.r
+      value: 0.43529412
       objectReference: {fileID: 0}
     - target: {fileID: 534823574696728062, guid: 2dcf4a3e37f338c4b9ec0491d6545784, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size

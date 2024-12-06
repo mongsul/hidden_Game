@@ -167,5 +167,28 @@ public class ShopManager : SingletonTemplate<ShopManager>
 
         return null;
     }
+
+    public bool IsPossiblePurchase(int productIndex)
+    {
+        return IsPossiblePurchase(GetProductTable(productIndex));
+    }
+
+    public bool IsPossiblePurchase(ProductTable product)
+    {
+        if (product == null)
+        {
+            return false;
+        }
+
+        int itemIndex = product.itemIdx;
+        ItemTable item = ItemManager.Instance.GetItemTable(itemIndex);
+        if (item == null)
+        {
+            return false;
+        }
+
+        int haveCount = ItemManager.Instance.GetHaveItemCount(itemIndex);
+        return (haveCount < item.maxHaveCount);
+    }
     #endregion
 }

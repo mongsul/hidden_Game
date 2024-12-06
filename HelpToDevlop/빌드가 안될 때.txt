@@ -1,0 +1,12 @@
+키스토어 패스워드가 필요한데..이게 에디터를 끄면 날아간다고 함
+키스토어 패스워드는
+
+Project Settings
+-> Player
+-> Publishing Settings
+에서
+Project Keystore 에서 Path 밑 Password
+-> 201804
+Project Key 에서 Alias 밑 Password
+-> 201807
+

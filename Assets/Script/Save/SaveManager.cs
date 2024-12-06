@@ -91,6 +91,7 @@ public class SaveManager : SaveBaseManager
                             // 챕터 보상 수급
                             ItemManager.Instance.AddHaveItemCount(chapterTable.chapterReward);
                             SaveFile(SaveKind.Item);
+                            ItemManager.Instance.EquipItem(chapterTable.chapterReward);
                         }
                     }
                 }

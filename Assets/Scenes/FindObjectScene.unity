@@ -1829,6 +1829,7 @@ MonoBehaviour:
   - {fileID: 5676961209099171829, guid: e3e0512fc319de149b28bdcf6f615c15, type: 3}
   - {fileID: 2170903547051194565, guid: 5fff0e023f0d9244eb1d4f977ad2e2df, type: 3}
   - {fileID: 3694700136645323585, guid: b4003221d425ed748891b9193e0c3928, type: 3}
+  - {fileID: 5676961209099171829, guid: fc60d9df1bacb334da9e47ccd69ea379, type: 3}
   addPrefabTransform: {fileID: 847556108}
   maximumActivateCount: 50
   mOnInit:
@@ -3628,7 +3629,7 @@ GameObject:
   - component: {fileID: 1843401832}
   - component: {fileID: 1843401831}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: DebugPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

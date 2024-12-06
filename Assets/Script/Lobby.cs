@@ -15,7 +15,7 @@ using Event = Spine.Event;
 
 public enum LobbyInit
 {
-    None = 0, // 일반 입장 상태 (일반 타이틀 연출 사용
+    None = 0, // 일반 입장 상태 (일반 타이틀 연출 사용)
     OpenNewChapter, // 새로운 챕터 열림
     ComebackByRetry, // 다시 하기에서 돌아왔을 때
 }
@@ -70,6 +70,8 @@ public class Lobby : MonoBehaviour
     [SerializeField][SpineEvent] private string changeSkinEventName;
     [SerializeField] private List<GameObject> changeSkinDeactivateObjectList; // 스킨 바꿀때 off -> on 처리 해줄 오브젝트 목록
     [SerializeField] private GameObject themeSoundAudio;
+
+    [SerializeField] private BuyItemPanel adRemoverBuyPopup;
     
     private int stageValue = 0;
     private StageTable nextStage;
@@ -176,6 +178,7 @@ public class Lobby : MonoBehaviour
         StartTitleLoopDirection();
 
         bool isExecuteStartDirection = (initState == LobbyInit.None);
+        
         if (isExecuteStartDirection)
         {
             StartTitleDirection();
@@ -331,6 +334,11 @@ public class Lobby : MonoBehaviour
         if (titleObject)
         {
             titleObject.SetActive(true);
+        }
+
+        if (nextStage == null)
+        {
+            SpineUtilLibrary.PlaySpineAnim(machineSpine, "Lock", true);
         }
     }
 
@@ -606,7 +614,7 @@ public class Lobby : MonoBehaviour
 
         if (!StageTableManager.Instance.IsValidStage(savedStage))
         {
-            savedStage = clearStage;
+            //savedStage = clearStage;
         }
 
         stageValue = savedStage;
@@ -728,6 +736,16 @@ public class Lobby : MonoBehaviour
     {
         SetActivateThemeObject(true);
         SetEquippedTheme();
+            
+        if (nextStage != null)
+        {
+            int stage = GetStageForMachineButton(lastStage);
+            SpineUtilLibrary.PlaySpineAnim(machineSpine, $"Machine1Button{stage}On", true);
+        }
+        else
+        {
+            SpineUtilLibrary.PlaySpineAnim(machineSpine, "Lock", true);
+        }
     }
 
     private void SetActivateThemeObject(bool isActivate)
@@ -794,5 +812,13 @@ public class Lobby : MonoBehaviour
         isGameRetry = true;
         stageValue = stageIndex;
         StartLevelStage();
+    }
+
+    public void OnClickBuyAdRemover()
+    {
+        if (adRemoverBuyPopup)
+        {
+            adRemoverBuyPopup.SetPurchaseItem(ShopManager.Instance.ProductTypeToIndex(ItemType.ADREMOVE), null);
+        }
     }
 }
