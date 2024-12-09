@@ -761,7 +761,7 @@ public class FindObjectMode : MonoBehaviour
             gameEndPanel.SetActive(true);
         }
 
-        if (gameEndPanel)
+        if (gameEndPlayer)
         {
             gameEndPlayer.PlayAnim();
         }

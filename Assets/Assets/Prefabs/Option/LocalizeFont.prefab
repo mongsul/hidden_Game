@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &128536283504426079
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1823978041545370312}
+  - component: {fileID: 1499144635900999281}
+  m_Layer: 0
+  m_Name: LocalizeFont
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1823978041545370312
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128536283504426079}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 200, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1499144635900999281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128536283504426079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f5169c502c39ac4794220ecdc9fcf34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fontList:
+  - UseFont: {fileID: 11400000, guid: 11d1174527e1bf94b828c3abd96ec888, type: 2}
+    FontMaterial: {fileID: 2100000, guid: 35a08714bef92284ebab53bc09cf84d5, type: 2}
+    LocalizeCode: zhTw
+  - UseFont: {fileID: 11400000, guid: 151bb4cf9b87fef4da74811272c85192, type: 2}
+    FontMaterial: {fileID: 2100000, guid: 040f200f181fee9489e29851b5091492, type: 2}
+    LocalizeCode: vn
+  - UseFont: {fileID: 11400000, guid: 11d1174527e1bf94b828c3abd96ec888, type: 2}
+    FontMaterial: {fileID: 2100000, guid: 35a08714bef92284ebab53bc09cf84d5, type: 2}
+    LocalizeCode: ja
+  - UseFont: {fileID: 11400000, guid: 94696aac86957554b8a8f4d778b9d3af, type: 2}
+    FontMaterial: {fileID: 2100000, guid: c2dbb70e6e88f7f40ad6890358d4e3f7, type: 2}
+    LocalizeCode: en
+  - UseFont: {fileID: 11400000, guid: 151bb4cf9b87fef4da74811272c85192, type: 2}
+    FontMaterial: {fileID: 2100000, guid: 040f200f181fee9489e29851b5091492, type: 2}
+    LocalizeCode: es
+  - UseFont: {fileID: 11400000, guid: 151bb4cf9b87fef4da74811272c85192, type: 2}
+    FontMaterial: {fileID: 2100000, guid: 040f200f181fee9489e29851b5091492, type: 2}
+    LocalizeCode: th
+  - UseFont: {fileID: 11400000, guid: 94696aac86957554b8a8f4d778b9d3af, type: 2}
+    FontMaterial: {fileID: 2100000, guid: c2dbb70e6e88f7f40ad6890358d4e3f7, type: 2}
+    LocalizeCode: id
+  defaultFont:
+    UseFont: {fileID: 11400000, guid: 94696aac86957554b8a8f4d778b9d3af, type: 2}
+    FontMaterial: {fileID: 2100000, guid: c2dbb70e6e88f7f40ad6890358d4e3f7, type: 2}
