@@ -16,4 +16,13 @@ public class ProjectUtilLibrary : MonoBehaviour
         }
     }
     #endregion
+
+    #region Prefab
+    public static GameObject LoadStagePrefab(int chapterSort, int stage)
+    {
+        string prefabName = $"stage{chapterSort}-{stage}";
+        string path = "Prefabs/Stage/";
+        return ResourceManager.Instance.LoadPrefab<GameObject>(new ResourcePathData(path), prefabName);
+    }
+    #endregion
 }

@@ -1,0 +1,14 @@
+{
+    "stringMapKeyList": [
+        "language",
+        "BGMSound",
+        "FXSound",
+        "Vibration"
+    ],
+    "stringMapValueList": [
+        "ge",
+        "True",
+        "True",
+        "True"
+    ]
+}

@@ -44,6 +44,9 @@ public class FindObjectMode : MonoBehaviour
     
     [FormerlySerializedAs("BaseScroll")] [SerializeField] private ScrollRect baseScroll;
     [SerializeField] private RectTransform scrollViewportRect;
+
+    private float defaultScrollViewportRectOffsetMinY = 0.0f;  // [2024/12/9 kmlee123, 24-12-9-1] (code add)
+
     [FormerlySerializedAs("PrefabBaseObject")] [SerializeField] private GameObject prefabBaseObject;
     [SerializeField] private RectTransform prefabBaseRect;
 
@@ -89,6 +92,10 @@ public class FindObjectMode : MonoBehaviour
 
     [SerializeField] private GameObject gotoNextStagePanel;
     [SerializeField] private GameObject gotoBookShelfPanel;
+    
+    [SerializeField] private SoundPlayer displayAdHintSound;
+    [SerializeField] private SoundPlayer clearGameSound;
+    [SerializeField] private SoundPlayer gameOverSound;
     
     private GameObject baseFindObject; // 찾기 페널 (stage1-1등, 로드 후 인스턴스 생성 한 파일)
     private RectTransform baseFindRect; // 찾기 페널 RectTransform
@@ -170,57 +177,61 @@ public class FindObjectMode : MonoBehaviour
             }
         }
         
-        if (bottomToolBoxRect)
-        {
-            // 배너 광고 및 하단 세이프존 처리
-            bool isActivateAD = ItemManager.Instance.IsActivateAD(); // 광고 활성화 여부
-            float bottomHeight = bottonToolBoxDefaultSize;
-            Vector2 safeZonePos = ResolutionManager.Instance.GetSafeZonePos();
-            float safeZoneBottomHeight = safeZonePos.y;
-            if (isActivateAD)
-            {
-                float bannerHeight = ClientTableManager.Instance.GetBaseFloatValue("BannerADHeight", 200.0f);
-                if (bannerHeight < safeZoneBottomHeight)
-                {
-                    bannerHeight = safeZoneBottomHeight;
-                }
-
-                bottomHeight += bannerHeight;
-                
-                if (bannerAdPanel)
-                {
-                    RectTransform bannerRect = CodeUtilLibrary.GetRectTransform(bannerAdPanel);
-                    if (bannerRect)
-                    {
-                        Vector2 bannerSize = bannerRect.sizeDelta;
-                        bannerSize.y = bannerHeight;
-                        bannerRect.sizeDelta = bannerSize;
-                    }
-                    
-                    bannerAdPanel.SetActive(true);
-                }
-            }
-            else
-            {
-                bottomHeight += safeZoneBottomHeight;
-                if (bannerAdPanel)
-                {
-                    bannerAdPanel.SetActive(false);
-                }
-            }
-
-            Vector2 bottomSize = bottomToolBoxRect.sizeDelta;
-            bottomSize.y = bottomHeight;
-            bottomToolBoxRect.sizeDelta = bottomSize;
-            //toolBoxHeight += bottomHeight;
-            
-            if (scrollViewportRect)
-            {
-                Vector2 viewportPos = scrollViewportRect.offsetMin;
-                viewportPos.y += bottomSize.y;
-                scrollViewportRect.offsetMin = viewportPos;
-            }
-        }
+        // [2024/12/9 kmlee123, 24-12-9-1] (code modify)
+        // if (bottomToolBoxRect)
+        // {
+        //     // 배너 광고 및 하단 세이프존 처리
+        //     bool isActivateAD = ItemManager.Instance.IsActivateAD(); // 광고 활성화 여부
+        //     float bottomHeight = bottonToolBoxDefaultSize;
+        //     Vector2 safeZonePos = ResolutionManager.Instance.GetSafeZonePos();
+        //     float safeZoneBottomHeight = safeZonePos.y;
+        //     if (isActivateAD)
+        //     {
+        //         float bannerHeight = ClientTableManager.Instance.GetBaseFloatValue("BannerADHeight", 200.0f);
+        //         if (bannerHeight < safeZoneBottomHeight)
+        //         {
+        //             bannerHeight = safeZoneBottomHeight;
+        //         }
+        //
+        //         bottomHeight += bannerHeight;
+        //
+        //         if (bannerAdPanel)
+        //         {
+        //             RectTransform bannerRect = CodeUtilLibrary.GetRectTransform(bannerAdPanel);
+        //             if (bannerRect)
+        //             {
+        //                 Vector2 bannerSize = bannerRect.sizeDelta;
+        //                 bannerSize.y = bannerHeight;
+        //                 bannerRect.sizeDelta = bannerSize;
+        //             }
+        //          
+        //             bannerAdPanel.SetActive(true);
+        //         }
+        //     }
+        //     else
+        //     {
+        //         bottomHeight += safeZoneBottomHeight;
+        //         if (bannerAdPanel)
+        //         {
+        //             bannerAdPanel.SetActive(false);
+        //         }
+        //     }
+        //
+        //     Vector2 bottomSize = bottomToolBoxRect.sizeDelta;
+        //     bottomSize.y = bottomHeight;
+        //     bottomToolBoxRect.sizeDelta = bottomSize;
+        //     //toolBoxHeight += bottomHeight;
+        // 
+        //     if (scrollViewportRect)
+        //     {
+        //         Vector2 viewportPos = scrollViewportRect.offsetMin;
+        //         viewportPos.y += bottomSize.y;
+        //         scrollViewportRect.offsetMin = viewportPos;
+        //     }
+        // }
+        defaultScrollViewportRectOffsetMinY = scrollViewportRect.offsetMin.y;
+        RefreshBottomUIsSize();
+        AdvertisementManager.Instance.StartBannerAd(bannerAdPanel, RefreshBottomUIsSize);
 
         if (hintADSpine && hintAdMsgField)
         {
@@ -287,6 +298,37 @@ public class FindObjectMode : MonoBehaviour
     #endif
     }
 
+    public void RefreshBottomUIsSize()  // [2024/12/9 kmlee123, 24-12-9-1] (code add)
+    {
+        if (bottomToolBoxRect)
+        {
+            // 배너 광고 및 하단 세이프존 처리
+            float bottomHeight = bottonToolBoxDefaultSize;
+            Vector2 safeZonePos = ResolutionManager.Instance.GetSafeZonePos();
+            float safeZoneBottomHeight = safeZonePos.y;
+
+            float bannerHeight = AdvertisementManager.Instance.GetBannerHeight();
+            if (bannerHeight < safeZoneBottomHeight)
+            {
+                bannerHeight = safeZoneBottomHeight;
+            }
+
+            bottomHeight += bannerHeight;
+
+            Vector2 bottomSize = bottomToolBoxRect.sizeDelta;
+            bottomSize.y = bottomHeight;
+            bottomToolBoxRect.sizeDelta = bottomSize;
+            //toolBoxHeight += bottomHeight;
+            
+            if (scrollViewportRect)
+            {
+                Vector2 viewportPos = scrollViewportRect.offsetMin;
+                viewportPos.y = defaultScrollViewportRectOffsetMinY + bottomSize.y;
+                scrollViewportRect.offsetMin = viewportPos;
+            }
+        }
+    }
+
     #region Stage
     public void SetStage(int stage, bool isRetry = false)
     {
@@ -316,9 +358,7 @@ public class FindObjectMode : MonoBehaviour
             return;
         }
         
-        string prefabName = $"stage{chapter}-{chapterStage}";
-        string path = "Prefabs/Stage/";
-        GameObject stagePrefab = ResourceManager.Instance.LoadPrefab<GameObject>(new ResourcePathData(path), prefabName);
+        GameObject stagePrefab = ProjectUtilLibrary.LoadStagePrefab(chapter, chapterStage);
         if (!stagePrefab)
         {
             GotoLobby(); // 일단 로비로 강제송환한다.
@@ -588,7 +628,6 @@ public class FindObjectMode : MonoBehaviour
 
     private void OnFindObject(Level findObject)
     {
-        PlayFindSound();
         if (findObject.IsEndFindObject())
         {
             return;
@@ -712,6 +751,11 @@ public class FindObjectMode : MonoBehaviour
 
     private void OnDisplayGameEndPanel()
     {
+        if (clearGameSound)
+        {
+            clearGameSound.PlaySound();
+        }
+        
         if (gameEndPanel)
         {
             gameEndPanel.SetActive(true);
@@ -742,6 +786,12 @@ public class FindObjectMode : MonoBehaviour
                 {
                     // 챕터가 달라짐
                     isDisplayNextStage = false;
+                }
+                else
+                {
+                    int sort = StageTableManager.Instance.GetChapterSort(nextStage.chapter);
+                    GameObject nextPrefab = ProjectUtilLibrary.LoadStagePrefab(sort, nextStage.stage);
+                    isDisplayNextStage = (nextPrefab != null); // 다음 스테이지 프리팝 유효할 경우에 출력함
                 }
             }
         }
@@ -868,7 +918,14 @@ public class FindObjectMode : MonoBehaviour
     private void OnRealGameOver()
     {
         AddRecord("GameOver");
+        
+        if (gameOverSound)
+        {
+            gameOverSound.PlaySound();
+        }
+        
         SaveManager.Instance.SaveFile(SaveKind.Record); // 기록 저장
+        
         if (gameOverPanel)
         {
             gameOverPanel.SetActive(true);
@@ -935,6 +992,14 @@ public class FindObjectMode : MonoBehaviour
         {
             // 챕터가 달라짐
             GotoLobbyDirectionCheck(isPlayRetry ? LobbyInit.ComebackByRetry : LobbyInit.OpenNewChapter, stageIndex);
+            return;
+        }
+        
+        int sort = StageTableManager.Instance.GetChapterSort(nextStage.chapter);
+        GameObject nextPrefab = ProjectUtilLibrary.LoadStagePrefab(sort, nextStage.stage);
+        if (nextPrefab == null)
+        {
+            GotoLobby(); // 다음 스테이지 프리팝 유효하지 않으면, 로비로 돌아감
             return;
         }
         
@@ -1049,6 +1114,7 @@ public class FindObjectMode : MonoBehaviour
     {
         if (fxList)
         {
+            PlayFindSound();
             BaseSimplePrefab prefab = fxList.GetNewActivePrefab((int)(isOpenWrapBox ? FindFXKind.OpenWrapBox : FindFXKind.TouchToCollect));
             //PlayFX(parentRect, prefab, eventData, displayTouchRect, OnEndPlayTouchFX);
             PlayFX(parentRect, prefab, eventData, baseFindRect, isOpenWrapBox ? OnEndPlayOpenWrapBoxFX : OnEndPlayTouchFX);
@@ -1256,6 +1322,11 @@ public class FindObjectMode : MonoBehaviour
         if (maxHintADCount < 1)
         {
             return;
+        }
+
+        if (displayAdHintSound)
+        {
+            displayAdHintSound.PlaySound();
         }
 
         // 힌트 나오는 횟수 적용

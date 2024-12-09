@@ -11,6 +11,7 @@ public class BuyItemPanel : MonoBehaviour
 {
     [SerializeField] private LocalizeTextField nameField;
     [SerializeField] private LocalizeTextField priceField;
+    [SerializeField] private SoundPlayer displaySound;
     
     [Serializable]
     public class BuyEvent : UnityEvent<ProductTable>{}
@@ -36,10 +37,18 @@ public class BuyItemPanel : MonoBehaviour
         {
             return;
         }
+
+        if (displaySound)
+        {
+            displaySound.PlaySound();
+        }
         
         gameObject.SetActive(true);
         successEvent.RemoveAllListeners();
-        successEvent.AddListener(successCallback);
+        if (successCallback != null)
+        {
+            successEvent.AddListener(successCallback);
+        }
 
         if (nameField)
         {

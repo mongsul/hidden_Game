@@ -36,14 +36,12 @@ public class Lobby : MonoBehaviour
 
     [FormerlySerializedAs("LogoSpine")] [SerializeField] private SkeletonGraphic logoSpine;
     [FormerlySerializedAs("MachineSpine")] [SerializeField] private SkeletonGraphic machineSpine;
-    [FormerlySerializedAs("MachinePlayer")] [SerializeField] private SpineAnimPlayer machinePlayer;
     [FormerlySerializedAs("ChapterTitleField")] [SerializeField] private LocalizeTextField chapterTitleField;
 
     [FormerlySerializedAs("NoticeTouchMachineObject")] [SerializeField] private GameObject noticeTouchMachineObject;
     [FormerlySerializedAs("TitleObject")] [SerializeField] private GameObject titleObject;
     
     [FormerlySerializedAs("BackButton")] [SerializeField] private GameObject backButton;
-    [FormerlySerializedAs("ZoomOutPlayer")] [SerializeField] private SpineAnimPlayer zoomOutPlayer;
     [FormerlySerializedAs("TouchGameStartPlayer")] [SerializeField] private SpineAnimPlayer touchGameStartPlayer;
 
     [FormerlySerializedAs("StartButton")] [SerializeField] private GameObject startButton;
@@ -72,13 +70,18 @@ public class Lobby : MonoBehaviour
     [SerializeField] private GameObject themeSoundAudio;
 
     [SerializeField] private BuyItemPanel adRemoverBuyPopup;
-    
+
+    [SerializeField] private SoundPlayer chapterChangeSound;
+    [SerializeField] private SoundPlayer themeChangeSound;
+
     private int stageValue = 0;
     private StageTable nextStage;
 
     private int lastClearStage;
     private StageTable lastStage;
     private LobbyState lobbyState = LobbyState.None;
+    private int machinePreviewIndex; // 자판기 확대 전 번호
+    private int machineStartIndex; // 자판기 확대 후 번호
 
     private List<ObjectKeyActivator> themeActivatorList;
 
@@ -122,7 +125,7 @@ public class Lobby : MonoBehaviour
         }
 
         RefreshTheme();
-        
+
         if (titleImage)
         {
             SpineUtilLibrary.AttachToSpineBone(logoSpine, "Logo", titleImage.gameObject);
@@ -158,22 +161,6 @@ public class Lobby : MonoBehaviour
         lastStage = StageTableManager.Instance.GetStageTable(lastClearStage);
 
         SetStartStageIndex();
-        
-        if (chapterTitleField)
-        {
-            int chapter = 0;
-            if (nextStage == null)
-            {
-                chapter = (lastStage != null) ? lastStage.chapter : 1;
-            }
-            else
-            {
-                chapter = nextStage.chapter;
-            }
-            
-            int chapterSort = StageTableManager.Instance.GetChapterSort(chapter);
-            chapterTitleField.SetText($"ChaterTitle_{chapterSort}");
-        }
         
         StartTitleLoopDirection();
 
@@ -217,13 +204,25 @@ public class Lobby : MonoBehaviour
                 }
             }
                 break;
+
+            default:  /// [2024/12/9 kmlee123, 24-12-9-1] (code add)
+            {
+                AdvertisementManager.Instance.LoadRewardedAd();  // [2024/12/9 kmlee123, 24-12-9-1] (code add)
+            }
+            break;
         }
+
+        AdvertisementManager.Instance.ReleaseBannerAd();  // [2024/12/9 kmlee123, 24-12-9-1] (code add)
     }
 
     /*
     // Update is called once per frame
     void Update()
     {
+        if (machineSpine)
+        {
+            machineSpine.AnimationState.ToString()
+        }
     }*/
 
     private void StartOpenBookDirection()
@@ -271,6 +270,39 @@ public class Lobby : MonoBehaviour
         {
             titleButton.SetActive(false);
         }
+
+        if (initState == LobbyInit.OpenNewChapter)
+        {
+            if (lastStage != null)
+            {
+                int chapterSort = StageTableManager.Instance.GetChapterSort(lastStage.chapter);
+                if (chapterSort % 2 == 0)
+                {
+                    // 짝수 챕터 클리어 했을 경우, 다음 자판기로 교체 애니메이션 출력
+                    SpineUtilLibrary.PlaySpineAnim(machineSpine, "StageChange", false, OnEndPlayStageChange);
+                }
+                else
+                {
+                    OnEndPlayStageChange();
+                }
+            }
+        }
+    }
+
+    private void OnEndPlayStageChange()
+    {
+        if (chapterChangeSound)
+        {
+            chapterChangeSound.PlaySound();
+        }
+        
+        SetNextStage(StageTableManager.Instance.GetNextStageTable(stageValue));
+        if (nextStage != null)
+        {
+            stageValue = nextStage.stageIndex;
+        }
+        
+        StartTitleLoopDirection();
     }
 
     private void OnMachineEvent(TrackEntry trackEntry, Event e)
@@ -338,7 +370,7 @@ public class Lobby : MonoBehaviour
 
         if (nextStage == null)
         {
-            SpineUtilLibrary.PlaySpineAnim(machineSpine, "Lock", true);
+            SetLockState();
         }
     }
 
@@ -404,14 +436,32 @@ public class Lobby : MonoBehaviour
         {
             if (nextStage != null)
             {
-                int stage = GetStageForMachineButton(lastStage);
-                SpineUtilLibrary.PlaySpineAnim(machineSpine, $"Machine1Button{stage}On", true);
+                DisplayLoopPreviewMachine();
             }
             else
             {
-                SpineUtilLibrary.PlaySpineAnim(machineSpine, "Lock", true);
+                SetLockState();
             }
         }
+    }
+
+    public void OnEndZoomOut()
+    {
+        DisplayLoopPreviewMachine();
+        OnEndStarTitleDirection();
+    }
+
+    private void DisplayLoopPreviewMachine()
+    {
+        string animName = $"Machine1Button{machinePreviewIndex}On";
+        //string animName = $"Machine1Button{0}On";
+#if UNITY_EDITOR
+        //CodeUtilLibrary.SetColorLog($"DisplayLoopPreviewMachine : animName[{animName}]", "aqua");
+#endif
+        
+        //SpineUtilLibrary.PlaySpineAnim(machineSpine, $"Machine1Button0On", true);
+        //SpineUtilLibrary.StopSpineAnim(machineSpine);
+        SpineUtilLibrary.PlaySpineAnim(machineSpine, animName, true);
     }
 
     public void OnEndStarTitleDirection()
@@ -427,12 +477,12 @@ public class Lobby : MonoBehaviour
         {
             backButton.SetActive(false);
         }
-
-        if (zoomOutPlayer)
-        {
-            int stage = (lastStage != null) ? lastStage.stage : 0;
-            zoomOutPlayer.PlayAnim(stage);
-        }
+        
+        string animName = $"Machine3Button{machinePreviewIndex}On";
+#if UNITY_EDITOR
+        //CodeUtilLibrary.SetColorLog($"PlayMachineDirection : animName[{animName}]", "aqua");
+#endif
+        SpineUtilLibrary.PlaySpineAnim(machineSpine, animName, false, OnEndZoomOut);
     }
 
     public void StartBySavedLevel()
@@ -491,27 +541,11 @@ public class Lobby : MonoBehaviour
             visibleButtonSwitcher.gameObject.SetActive(false);
         }
 
-        string animName = $"Machine2Button{GetStageForMachineButton(lastStage)}On";
-        TrackEntry animEntry = SpineUtilLibrary.PlaySpineAnim(machineSpine, animName, false);
-        if (animEntry != null)
-        {
-            animEntry.Complete += (trackEntry => OnEndPlayMachineDirection());
-        }
-        else
-        {
-            OnEndPlayMachineDirection();
-        }
-        
-        /*
-        if (machinePlayer)
-        {
-            int stage = (lastStage != null) ? lastStage.stage : 0;
-            machinePlayer.PlayAnim(stage);
-        }
-        else
-        {
-            OnEndPlayMachineDirection();
-        }*/
+        string animName = $"Machine2Button{machinePreviewIndex}On";
+        #if UNITY_EDITOR
+        //CodeUtilLibrary.SetColorLog($"PlayMachineDirection : animName[{animName}]", "aqua");
+        #endif
+        SpineUtilLibrary.PlaySpineAnim(machineSpine, animName, false, OnEndPlayMachineDirection);
     }
 
     public void OnClickMachine()
@@ -538,8 +572,7 @@ public class Lobby : MonoBehaviour
 
     public void OnEndPlayMachineDirection()
     {
-        int nextStageIndex = GetStageForMachineButton(nextStage);
-        string animName = $"button{nextStageIndex}";
+        string animName = $"button{machineStartIndex}";
         SpineUtilLibrary.PlaySpineAnim(machineSpine, animName, true);
         
         if (backButton)
@@ -596,7 +629,22 @@ public class Lobby : MonoBehaviour
         }
         
         lobbyState = LobbyState.PlayStartTouchDirection;
-        touchGameStartPlayer.PlayAnim(stageValue);
+        touchGameStartPlayer.PlayAnim(machineStartIndex);
+    }
+
+    private void SetLockState()
+    {
+        SpineUtilLibrary.PlaySpineAnim(machineSpine, "Lock", true);
+
+        if (chapterTitleField)
+        {
+            chapterTitleField.SetText("ComingSoon");
+        }
+
+        if (noticeTouchMachineObject)
+        {
+            noticeTouchMachineObject.SetActive(false);
+        }
     }
 
     private void SetStartStageIndex()
@@ -609,16 +657,92 @@ public class Lobby : MonoBehaviour
         }
         else
         {
-            savedStage = StageTableManager.Instance.GetNextStageTableIndex(savedStage);
+            if (initState != LobbyInit.OpenNewChapter)
+            {
+                savedStage = StageTableManager.Instance.GetNextStageTableIndex(savedStage);
+            }
         }
 
+        /*
         if (!StageTableManager.Instance.IsValidStage(savedStage))
         {
             //savedStage = clearStage;
-        }
+        }*/
 
         stageValue = savedStage;
-        nextStage = StageTableManager.Instance.GetStageTable(stageValue);
+        SetNextStage(StageTableManager.Instance.GetStageTable(stageValue));
+    }
+
+    private void SetNextStage(StageTable next)
+    {
+        nextStage = next;
+
+        machinePreviewIndex = 0;
+        machineStartIndex = 0;
+        bool isValidLastStage = (lastStage != null);
+        if (isValidLastStage)
+        {
+            machinePreviewIndex = lastStage.stage;
+        }
+
+        if (nextStage != null)
+        {
+            int sort = StageTableManager.Instance.GetChapterSort(nextStage.chapter);
+            GameObject nextPrefab = ProjectUtilLibrary.LoadStagePrefab(sort, nextStage.stage);
+            if (nextPrefab == null)
+            {
+                nextStage = null;
+            }
+        }
+        
+        if (isValidLastStage && (nextStage != null))
+        {
+            int lastChapter = lastStage.chapter;
+            int nextChapter = nextStage.chapter;
+            int lastChapterSort = StageTableManager.Instance.GetChapterSort(lastChapter);
+            if (lastChapter == nextChapter)
+            {
+                // 같은 챕터일 경우
+                int lineCount = (lastChapterSort % 2 == 0) ? GetMachineOneLineCount() : 0;
+                machinePreviewIndex = lastStage.stage + lineCount;
+                machineStartIndex = nextStage.stage + lineCount;
+            }
+            else
+            {
+                // 다른 챕터일 경우
+                if (lastChapterSort % 2 == 0)
+                {
+                    // 마지막에 클리어한 챕터가 짝수
+                    machinePreviewIndex = 0;
+                    machineStartIndex = 1;
+                }
+                else
+                {
+                    machinePreviewIndex = GetMachineOneLineCount();
+                    machineStartIndex = machinePreviewIndex + 1;
+                }
+            }
+        }
+        
+        if (chapterTitleField)
+        {
+            int chapter = 0;
+            if (nextStage == null)
+            {
+                chapter = (lastStage != null) ? lastStage.chapter : 1;
+            }
+            else
+            {
+                chapter = nextStage.chapter;
+            }
+            
+            int chapterSort = StageTableManager.Instance.GetChapterSort(chapter);
+            chapterTitleField.SetText($"ChaterTitle_{chapterSort}");
+        }
+        
+        #if UNITY_EDITOR
+        //CodeUtilLibrary.SetColorLog($"SetNextStage : machinePreviewIndex[{machinePreviewIndex}], machineStartIndex[{machineStartIndex}]", "aqua");
+        #endif
     }
 
     public void SetInitState()
@@ -721,9 +845,16 @@ public class Lobby : MonoBehaviour
     private void ChangeTheme(bool isChangeAnim)
     {
         isChangeSkin = false;
+        //CodeUtilLibrary.SetColorLog($"ChangeTheme : isChangeAnim[{isChangeAnim}]", "aqua");
         if (isChangeAnim)
         {
             SetActivateThemeObject(false);
+
+            if (themeChangeSound)
+            {
+                themeChangeSound.PlaySound();
+            }
+            
             TrackEntry animEntry = SpineUtilLibrary.PlaySpineAnim(machineSpine, "SkinChanging", false, OnEndPlayChangeSkin);
         }
         else
@@ -739,12 +870,11 @@ public class Lobby : MonoBehaviour
             
         if (nextStage != null)
         {
-            int stage = GetStageForMachineButton(lastStage);
-            SpineUtilLibrary.PlaySpineAnim(machineSpine, $"Machine1Button{stage}On", true);
+            DisplayLoopPreviewMachine();
         }
         else
         {
-            SpineUtilLibrary.PlaySpineAnim(machineSpine, "Lock", true);
+            SetLockState();
         }
     }
 
@@ -818,7 +948,12 @@ public class Lobby : MonoBehaviour
     {
         if (adRemoverBuyPopup)
         {
-            adRemoverBuyPopup.SetPurchaseItem(ShopManager.Instance.ProductTypeToIndex(ItemType.ADREMOVE), null);
+            adRemoverBuyPopup.SetPurchaseItem(ShopManager.Instance.ProductTypeToIndex(ItemType.ADREMOVE), OnPurchaseAdRemover);
         }
+    }
+
+    private void OnPurchaseAdRemover(ProductTable product)
+    {
+        // 광고 제거 구매 완료시 호출
     }
 }

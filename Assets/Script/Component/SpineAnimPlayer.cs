@@ -8,6 +8,7 @@ using UI.Common;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
+using Event = Spine.Event;
 
 // _SJ      스파인 애님 플레이어
 public class SpineAnimPlayer : MonoBehaviour
@@ -15,7 +16,8 @@ public class SpineAnimPlayer : MonoBehaviour
     [Serializable]
     public enum EditPlayParamType
     {
-        Plus = 0,
+        None = 0,
+        Plus,
         Minus,
         Multiply,
         Divide,
@@ -29,6 +31,9 @@ public class SpineAnimPlayer : MonoBehaviour
     
     [Serializable]
     public class PlayObjectEvent : UnityEvent<GameObject>{}
+    
+    [Serializable]
+    public class PlaySpineEvent : UnityEvent<Event>{}
 
     [Serializable]
     private struct SpineStreamGroup
@@ -46,34 +51,59 @@ public class SpineAnimPlayer : MonoBehaviour
         [FormerlySerializedAs("EndValue")] [SerializeField] public int endValue;
     }
 
-    [FormerlySerializedAs("SpineStreamAnimList")] [SerializeField] private List<SpineStreamGroup> spineStreamAnimList;
-    [FormerlySerializedAs("BaseSpine")] [SerializeField] private SkeletonGraphic baseSpine;
+    [Serializable]
+    private struct SpineEventGroup
+    {
+        [SerializeField] [SpineEvent] public string EventName;
+        [SerializeField] public PlaySpineEvent CallEvent;
+    }
 
-    [FormerlySerializedAs("OnStartPlayEvent")] [SerializeField]
-    public PlaySimpleEvent mOnStartPlay;
-    
-    [FormerlySerializedAs("OnStartPlayWithObjectEvent")] [SerializeField]
-    public PlayObjectEvent mOnStartPlayWithObject;
+    [SerializeField] private List<SpineStreamGroup> spineStreamAnimList;
+    [SerializeField] private SkeletonGraphic baseSpine;
+    [SerializeField] private List<SpineEventGroup> eventList; 
 
-    [FormerlySerializedAs("OnEndPlayAllEvent")] [SerializeField]
-    public PlaySimpleEvent mOnEndPlayAll;
-    
-    [FormerlySerializedAs("OnEndPlayAllWithObjectEvent")] [SerializeField]
-    public PlayObjectEvent mOnEndPlayAllWithObject;
+    [SerializeField] public PlaySimpleEvent mOnStartPlay;
+    [SerializeField] public PlayObjectEvent mOnStartPlayWithObject;
+    [SerializeField] public PlaySimpleEvent mOnEndPlayAll;
+    [SerializeField] public PlayObjectEvent mOnEndPlayAllWithObject;
     
     private int nowPlayIndex;
     private LocalizeTextField.LocalizeInfo nameInfo = new LocalizeTextField.LocalizeInfo();
     
-    /*
     // Start is called before the first frame update
     void Start()
     {
+        int eventCount = (eventList == null) ? 0 : eventList.Count;
+        if (eventCount > 0)
+        {
+            SpineUtilLibrary.BindSpineEventFunction(baseSpine, OnSpineEvent);
+        }
     }
 
+    /*
     // Update is called once per frame
     void Update()
     {
     }*/
+
+    public SkeletonGraphic GetSpine()
+    {
+        return baseSpine;
+    }
+
+    private void OnSpineEvent(TrackEntry trackEntry, Event e)
+    {
+        for (int i = 0; i < eventList.Count; i++)
+        {
+            if (SpineUtilLibrary.IsEqualEvent(e, eventList[i].EventName))
+            {
+                if (eventList[i].CallEvent != null)
+                {
+                    eventList[i].CallEvent?.Invoke(e);
+                }
+            }
+        }
+    }
 
     private bool GetSpineInfo(int listIndex, out SpineStreamGroup spineInfo)
     {

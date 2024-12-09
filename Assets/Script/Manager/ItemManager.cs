@@ -528,7 +528,7 @@ public class ItemManager : SingletonTemplate<ItemManager>
     // 광고가 활성화 되어있는가 여부
     public bool IsActivateAD()
     {
-        return IsPossibleUseFunctionItem(FunctionItemType.ADRemover);
+        return !IsPossibleUseFunctionItem(FunctionItemType.ADRemover);
     }
     #endregion
 }

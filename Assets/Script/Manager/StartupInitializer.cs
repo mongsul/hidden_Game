@@ -41,5 +41,7 @@ public class StartupInitializer : MonoBehaviour {
         ClientTableManager.Instance.InitTable();
         StageTableManager.Instance.InitTable();
         ShopManager.Instance.InitTable();
+
+        AdvertisementManager.Instance.Init();  // [2024/12/9 kmlee123, 24-12-9-1] (code add)
     }
 }
